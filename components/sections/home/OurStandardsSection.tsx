@@ -12,7 +12,7 @@ export default function OurStandardsSection() {
   return (
     <section
       id="standards"
-      className="relative z-10 flex min-h-screen flex-col justify-center bg-sand px-6 py-24"
+      className="relative z-10 flex min-h-screen flex-col justify-center bg-sand px-4 py-14 sm:px-6 sm:py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
         <p className="font-script text-3xl text-primary sm:text-4xl">

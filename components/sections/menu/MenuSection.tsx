@@ -7,6 +7,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
+import { useIsMobile } from "@/hooks/useMobile";
+import MenuSectionFilter from "@/components/sections/menu/MenuSectionFilter";
+import ProductCardMobile from "@/components/custom/ProductCardMobile";
 
 interface FetchedProduct {
   id: string;
@@ -30,7 +33,9 @@ export default function MenuSection() {
   const [products, setProducts] = useState<FetchedProduct[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCity, setSelectedCity] = useState("Thành phố Hồ Chí Minh");
+  const [search, setSearch] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -46,7 +51,7 @@ export default function MenuSection() {
   }, []);
 
   const fetchProducts = useCallback(
-    async (categoryId: string, pageNum: number, city: string) => {
+    async (categoryId: string, pageNum: number) => {
       try {
         setIsLoading(true);
         const params = new URLSearchParams({
@@ -56,7 +61,7 @@ export default function MenuSection() {
           limit: String(PRODUCTS_PER_PAGE),
           page: String(pageNum),
           locale,
-          city,
+          search: search.trim(),
         });
         if (categoryId !== "all") {
           params.set("category_id", categoryId);
@@ -74,7 +79,7 @@ export default function MenuSection() {
         setIsLoading(false);
       }
     },
-    [locale, setPagination],
+    [locale, search, setPagination],
   );
 
   useEffect(() => {
@@ -82,12 +87,13 @@ export default function MenuSection() {
   }, [fetchCategories]);
 
   useEffect(() => {
-    fetchProducts(activeCategory, page, selectedCity);
-  }, [fetchProducts, activeCategory, page, selectedCity]);
+    fetchProducts(activeCategory, page);
+  }, [fetchProducts, activeCategory, page]);
 
   const handleSelectCategory = (id: string) => {
     setActiveCategory(id);
     resetPage();
+    setIsFilterOpen(false);
   };
 
   // pagination
@@ -125,53 +131,21 @@ export default function MenuSection() {
   const formatPrice = (price: number) => price.toLocaleString("vi-VN") + " đ";
 
   return (
-    <section className="relative z-10 bg-sand px-6 py-16">
+    <section className="relative z-10 bg-sand sm:px-6 sm:py-16 px-4 py-8">
       <div className="mx-auto max-w-7xl">
-        {/* Category filter buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => handleSelectCategory("all")}
-            className={cn(
-              "rounded-full border px-5 py-2 text-sm font-semibold transition",
-              activeCategory === "all"
-                ? "border-primary bg-primary text-white shadow-sm"
-                : "border-charcoal/15 bg-white text-charcoal/60 hover:border-primary/50 hover:text-charcoal",
-            )}
-          >
-            {t("menuPage.menuFilter.all")}
-          </button>
-
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              onClick={() => handleSelectCategory(category.id)}
-              className={cn(
-                "rounded-full border px-5 py-2 text-sm font-semibold transition",
-                activeCategory === category.id
-                  ? "border-primary bg-primary text-white shadow-sm"
-                  : "border-charcoal/15 bg-white text-charcoal/60 hover:border-primary/50 hover:text-charcoal",
-              )}
-            >
-              {category.name[locale as "en" | "vi"] ?? category.name.vi}
-            </button>
-          ))}
-
-          {/* City */}
-          <select
-            value={selectedCity}
-            onChange={(e) => {
-              setSelectedCity(e.target.value);
-              resetPage();
-            }}
-            className="rounded-full border border-charcoal/15 bg-white px-5 py-2 text-sm font-semibold text-charcoal outline-none transition focus:border-primary"
-          >
-            <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
-            <option value="Hà Nội">Hà Nội</option>
-            <option value="Đà Nẵng">Đà Nẵng</option>
-          </select>
-        </div>
+        <MenuSectionFilter
+          isMobile={isMobile}
+          categories={categories}
+          activeCategory={activeCategory}
+          search={search}
+          isFilterOpen={isFilterOpen}
+          onSelectCategory={handleSelectCategory}
+          onSearchChange={(value) => {
+            setSearch(value);
+            resetPage();
+          }}
+          onFilterOpenChange={setIsFilterOpen}
+        />
 
         {/* Product grid */}
         {isLoading ? (
@@ -185,21 +159,43 @@ export default function MenuSection() {
           </div>
         ) : (
           <>
-            <div className="mt-16 grid gap-8 text-left sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: product.slug,
-                    image: product.image_url?.[0] ?? "/images/placeholder.webp",
-                    name: product.name,
-                    description: product.description,
-                    price: formatPrice(product.price),
-                    status: product.status,
-                  }}
-                  animation={false}
-                />
-              ))}
+            <div className="mt-8 sm:mt-16">
+              {/* Desktop */}
+              <div className="hidden gap-8 text-left sm:grid sm:grid-cols-2 lg:grid-cols-3">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={{
+                      id: product.slug,
+                      image:
+                        product.image_url?.[0] ?? "/images/placeholder.webp",
+                      name: product.name,
+                      description: product.description,
+                      price: formatPrice(product.price),
+                      status: product.status,
+                    }}
+                    animation={false}
+                  />
+                ))}
+              </div>
+
+              {/* Mobile */}
+              <div className="grid gap-3 text-left sm:hidden">
+                {products.map((product) => (
+                  <ProductCardMobile
+                    key={product.id}
+                    product={{
+                      id: product.slug,
+                      image:
+                        product.image_url?.[0] ?? "/images/placeholder.webp",
+                      name: product.name,
+                      description: product.description,
+                      price: formatPrice(product.price),
+                      status: product.status,
+                    }}
+                  />
+                ))}
+              </div>
             </div>
 
             {products.length === 0 && (

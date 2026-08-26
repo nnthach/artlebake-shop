@@ -1,6 +1,6 @@
 "use client";
 
-import ProductCard from "@/components/custom/ProductCard";
+import ProductCarousel from "@/components/custom/ProductCarousel";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/context/I18nContext";
 import { useInView } from "@/hooks/useInView";
@@ -19,7 +19,7 @@ interface FetchedProduct {
 }
 
 export default function BestsellerSection() {
-  const { ref, inView } = useInView<HTMLDivElement>();
+  const { ref } = useInView<HTMLDivElement>();
   const { t, locale } = useI18n();
   const [products, setProducts] = useState<FetchedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,10 +50,11 @@ export default function BestsellerSection() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const formatPrice = (price: number) => price.toLocaleString("vi-VN") + " đ";
-
   return (
-    <section id="bestsellers" className="relative z-10 bg-sand px-6 py-24">
+    <section
+      id="bestsellers"
+      className="relative z-10 bg-sand px-4 py-14 sm:px-6 sm:py-24"
+    >
       <div className="mx-auto max-w-7xl text-center">
         <p className="font-script text-3xl text-primary sm:text-4xl">
           {t("homePage.bestSellerSection.badge")}
@@ -65,35 +66,30 @@ export default function BestsellerSection() {
           {t("homePage.bestSellerSection.description")}
         </p>
 
-        <div
-          ref={ref}
-          className="mt-14 grid gap-8 text-left sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {isLoading
-            ? Array.from({ length: 3 }).map((_, i) => (
+        <div ref={ref} className="mt-8 sm:mt-14 w-full overflow-hidden">
+          {isLoading ? (
+            <div className="flex w-max items-center gap-4 px-2 sm:gap-6">
+              {Array.from({ length: 5 }).map((_, index) => (
                 <div
-                  key={i}
-                  className="h-80 animate-pulse rounded-2xl bg-white/60"
-                />
-              ))
-            : products.slice(0, 6).map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: product.slug,
-                    image: product.image_url?.[0] ?? "/images/placeholder.webp",
-                    name: product.name,
-                    description: product.description,
-                    price: formatPrice(product.price),
-                  }}
-                  index={index}
-                  inView={inView}
-                  animation
+                  key={index}
+                  className="
+            h-[220px] w-[220px]
+            shrink-0
+            animate-pulse
+            rounded-3xl
+            bg-charcoal/10
+            sm:h-[280px] sm:w-[280px]
+            lg:h-[320px] lg:w-[320px]
+          "
                 />
               ))}
+            </div>
+          ) : (
+            <ProductCarousel products={products} />
+          )}
         </div>
 
-        <div className="mt-14">
+        <div className="mt-8 sm:mt-14">
           <Link href={"/menu"}>
             <Button variant="default" size="lg" className="font-semibold">
               {t("button.exploreMenu")} <ArrowRight className="h-4 w-4" />

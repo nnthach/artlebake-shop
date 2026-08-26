@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 1. GET PARAMETERS
-    const { is_active, category_id, order, locale, page, limit, city } =
+    const { is_active, category_id, order, locale, page, limit, city, search } =
       getSearchParams(req);
 
     const ascending = order === "asc";
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     // 3. generate cache key
     const cacheKey = generateCacheKey(
       "products",
-      "",
+      search || "",
       limitNum,
       pageNum,
       "created_at",
@@ -122,6 +122,12 @@ export async function GET(req: NextRequest) {
 
     if (category_id !== null && category_id !== "") {
       productQuery = productQuery.eq("category_id", category_id);
+    }
+    if (search !== "") {
+      productQuery = productQuery.ilike(
+        "product_translations.name",
+        `%${search}%`,
+      );
     }
     const { data: products, error: productError, count } = await productQuery;
 

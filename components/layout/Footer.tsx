@@ -44,7 +44,7 @@ export default function Footer() {
   return (
     <footer
       id="contact"
-      className="relative z-10 bg-sand border-t border-sand-200 px-6 py-16 text-charcoal/80"
+      className="relative z-10 bg-sand border-t border-sand-200 px-4 py-10 sm:px-6 sm:py-16 text-charcoal/80"
     >
       <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>

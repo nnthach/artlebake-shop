@@ -69,7 +69,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 px-6 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 transition-all duration-300 ${
         isScrolled ? "bg-sand/90 shadow-sm backdrop-blur-md" : "bg-transparent"
       }`}
     >
@@ -88,7 +88,9 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
               className="h-8 w-8 rounded-full object-cover"
             />
 
-            <span className="font-serif">Artle Bakeshop</span>
+            <span className="font-serif sm:text-base text-sm">
+              Artle Bakeshop
+            </span>
           </div>
         </Link>
 
@@ -184,15 +186,14 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className={`h-12 w-12 p-0 ${
+                className={`gap-0 p-0 ${
                   isScrolled
-                    ? "text-charcoal hover:bg-charcoal/10"
+                    ? "text-primary hover:bg-primary/10"
                     : "text-white hover:bg-white/10"
                 }`}
                 aria-label="Toggle menu"
               >
-                <Menu className="h-10 w-10" strokeWidth={2.5} />
+                <Menu className="!h-5 !w-5" strokeWidth={2.5} />
               </Button>
             </SheetTrigger>
             <SheetContent

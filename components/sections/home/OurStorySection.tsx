@@ -13,7 +13,7 @@ export default function OurStorySection() {
     <section
       ref={ref}
       id="story"
-      className="relative z-10 flex min-h-screen flex-col justify-center overflow-hidden bg-primary px-6 py-24"
+      className="relative z-10 flex min-h-screen flex-col justify-center overflow-hidden bg-primary px-4 py-14 sm:px-6 sm:py-24"
     >
       <Wheat className="pointer-events-none absolute -right-12 -top-12 h-72 w-72 rotate-12 text-charcoal/[0.04]" />
 

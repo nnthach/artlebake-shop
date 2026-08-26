@@ -169,12 +169,12 @@ export default function ProductDetailClient({
         <div className="relative z-10 mx-auto max-w-2xl text-center">
           <Link
             href="/menu"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-white/70 transition hover:text-amber"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-white/70 transition hover:text-primary"
           >
             <ChevronLeft className="h-4 w-4" /> {t("button.backToMenu")}
           </Link>
           {categoryName && (
-            <p className="mt-4 font-script text-3xl text-amber">
+            <p className="mt-4 font-script text-3xl text-primary">
               {categoryName}
             </p>
           )}
@@ -197,7 +197,9 @@ export default function ProductDetailClient({
             />
           </div>
 
-          <p className="mt-8 text-2xl font-bold text-amber">{formattedPrice}</p>
+          <p className="mt-8 text-2xl font-bold text-primary">
+            {formattedPrice}
+          </p>
           <p className="mx-auto mt-4 max-w-md text-charcoal/60">
             {product.description}
           </p>
@@ -205,13 +207,13 @@ export default function ProductDetailClient({
           {product.ingredients.length > 0 && (
             <div className="mx-auto mt-10 max-w-sm text-left">
               <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-charcoal">
-                <Wheat className="h-4 w-4 text-amber" />
+                <Wheat className="h-4 w-4 text-primary" />
                 {t("productDetailPage.ingredients")}
               </h2>
               <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-charcoal/60">
                 {product.ingredients.map((ingredient) => (
                   <li key={ingredient.id} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber" />
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                     {ingredient.name?.[locale as "en" | "vi"] ??
                       ingredient.name.vi}
                   </li>
@@ -222,7 +224,7 @@ export default function ProductDetailClient({
 
           <div className="mt-10 flex flex-col items-center gap-3">
             <Button
-              variant={isOutOfStock ? "secondary" : "accent"}
+              variant={isOutOfStock ? "secondary" : "default"}
               size="lg"
               className={cn(
                 "font-semibold",
@@ -255,7 +257,7 @@ export default function ProductDetailClient({
       {relatedProducts.length > 0 && (
         <section className="relative z-10 bg-white px-6 py-16">
           <div className="mx-auto max-w-7xl">
-            <p className="text-center font-script text-2xl text-amber">
+            <p className="text-center font-script text-2xl text-primary">
               {t("productDetailPage.youMightAlsoLike")}
             </p>
             <div className="mt-10 grid gap-8 text-left sm:grid-cols-2 lg:grid-cols-3">

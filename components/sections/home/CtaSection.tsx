@@ -10,7 +10,7 @@ import React from "react";
 export default function CtaSection() {
   const { t } = useI18n();
   return (
-    <section className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-sand px-6 py-24 text-center">
+    <section className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-sand px-4 py-14 sm:px-6 sm:py-24 text-center">
       <Image
         src="/images/cake_banner.webp"
         alt="Fresh pastries on the counter"
