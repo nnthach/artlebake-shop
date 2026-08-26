@@ -1,5 +1,4 @@
 import { payosConfig } from "@/lib/payos";
-import stripeClient from "@/lib/stripe";
 import { createSupabaseServerClient, supabaseAdmin } from "@/lib/supabase";
 import { generateOrderCode } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -245,39 +244,6 @@ export async function POST(req: NextRequest) {
           data: {
             id: order.id,
             payment_link: paymentLink.checkoutUrl,
-          },
-        },
-        { status: 201, headers: res.headers },
-      );
-    } else {
-      // 10.2.1 Create payment stripe
-      const paymentIntent = await stripeClient.paymentIntents.create({
-        amount: total,
-        currency: "vnd",
-        payment_method_types: ["card"], // đồng bộ với bên client
-        metadata: {
-          orderId: order.id,
-        },
-      });
-
-      // 10.2.2 Create payment table
-      const { data: payment, error: paymentError } = await supabaseAdmin
-        .from("payments")
-        .insert({
-          order_id: order.id,
-          method: paymentMethod,
-          amount: total,
-          payment_intent_id: paymentIntent.id,
-        })
-        .single();
-      if (paymentError) throw paymentError;
-      return NextResponse.json(
-        {
-          success: true,
-          data: {
-            id: order.id,
-            clientSecret: paymentIntent.client_secret,
-            payment,
           },
         },
         { status: 201, headers: res.headers },

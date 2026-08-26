@@ -4,19 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ChevronDown,
-  CreditCard,
-  Loader2,
-  QrCode,
-  ShoppingBag,
-} from "lucide-react";
+import { ChevronDown, Loader2, QrCode, ShoppingBag } from "lucide-react";
 
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import CustomerOrderInfo from "@/components/sections/order/CustomerOrderInfo";
 import OrderSummary from "@/components/sections/order/OrderSummary";
-import VisaIcon from "@/components/icons/VisaIcon";
 import {
   Collapsible,
   CollapsibleContent,
@@ -62,15 +55,7 @@ export default function OrderPage() {
     },
   });
 
-  const [isVisaOpen, setIsVisaOpen] = useState(false);
   const [isQrOpen, setIsQrOpen] = useState(false);
-
-  // visa
-  const handleVisaOpenChange = (open: boolean) => {
-    setIsVisaOpen(open);
-    if (open) setValue("paymentMethod", "visa", { shouldValidate: false });
-  };
-  // end visa
 
   // qr
   const handleQrOpenChange = (open: boolean) => {
@@ -175,69 +160,6 @@ export default function OrderPage() {
                   </h2>
 
                   <div className="mt-4 space-y-3">
-                    {/* Card / Visa payment */}
-                    <Collapsible
-                      open={isVisaOpen}
-                      onOpenChange={handleVisaOpenChange}
-                      className="rounded-xl border border-charcoal/10"
-                    >
-                      <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 p-4 text-left">
-                        <div className="flex items-center gap-3">
-                          <VisaIcon className="h-6 w-9 shrink-0" />
-                          <div>
-                            <p className="text-sm font-semibold text-charcoal">
-                              {t("orderPage.payment.visa.title")}
-                            </p>
-                            <p className="text-xs text-charcoal/50">
-                              {t("orderPage.payment.visa.description")}
-                            </p>
-                          </div>
-                        </div>
-                        <ChevronDown
-                          className={`h-4 w-4 shrink-0 text-charcoal/40 transition-transform ${
-                            isVisaOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-4 border-t border-charcoal/10 p-4">
-                        {/* {grandTotal > 0 && (
-                          <Elements
-                            stripe={getStripe()}
-                            options={{
-                              mode: "payment",
-                              amount: grandTotal,
-                              currency: "vnd",
-                              paymentMethodTypes: ["card"],
-                            }}
-                          >
-                            <CheckOutForm
-                              handleSubmit={handleSubmit}
-                              isSubmitting={isSubmitting}
-                              createOrderPayload={createOrderPayload}
-                            />
-                          </Elements>
-                        )} */}
-                        <div className="flex flex-col items-center rounded-xl border border-dashed border-charcoal/15 bg-sand/40 px-5 py-8 text-center">
-                          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber/10 text-amber">
-                            <CreditCard className="h-6 w-6" strokeWidth={1.8} />
-                          </span>
-                          <span className="mt-4 inline-flex rounded-full bg-amber/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber">
-                            {locale === "vi" ? "Sắp ra mắt" : "Coming soon"}
-                          </span>
-                          <h3 className="mt-3 text-sm font-semibold text-charcoal">
-                            {locale === "vi"
-                              ? "Thanh toán bằng thẻ đang được hoàn thiện"
-                              : "Card payment is being prepared"}
-                          </h3>
-                          <p className="mt-2 max-w-sm text-xs leading-relaxed text-charcoal/55">
-                            {locale === "vi"
-                              ? "Tính năng này sẽ sớm được cập nhật. Vui lòng chọn phương thức thanh toán khác."
-                              : "This feature will be available soon. Please choose another payment method for now."}
-                          </p>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-
                     {/* QR code / PayOS payment */}
                     <Collapsible
                       open={isQrOpen}

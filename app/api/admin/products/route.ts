@@ -1,5 +1,3 @@
-import { createEmbedding } from "@/lib/cohere";
-import { buildProductEmbeddingContent } from "@/lib/embedding/product-content";
 import { deleteCacheByResource } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { getSearchParams } from "@/lib/utils";
@@ -208,22 +206,6 @@ export async function POST(req: NextRequest) {
       .eq("id", product.id)
       .single();
     if (fetchError) throw fetchError;
-
-    // Step 5: Embedding
-    const content = buildProductEmbeddingContent(fullProduct);
-
-    const embedding = await createEmbedding(content);
-    const { error: embeddingError } = await supabaseAdmin
-      .from("product_embeddings")
-      .insert({
-        product_id: product.id,
-        content,
-        embedding,
-      });
-
-    if (embeddingError) {
-      console.error("Create product embedding error:", embeddingError);
-    }
 
     // Step 6: Delete cache
     void deleteCacheByResource("products");
