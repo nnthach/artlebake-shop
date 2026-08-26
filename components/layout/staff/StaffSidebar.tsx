@@ -109,7 +109,7 @@ export function StaffSidebar() {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-bold text-sidebar-foreground">
-                    Petit Bakery
+                    Artle Bakeshop
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
                     Staff Portal

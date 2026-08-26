@@ -17,7 +17,7 @@ export default function MenuHeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-charcoal-900/70 via-charcoal-900/40 to-charcoal-900/80" />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center text-center animate-fadeInUp">
-        <p className="font-script text-4xl text-amber sm:text-5xl">
+        <p className="font-script text-4xl text-primary sm:text-5xl">
           {t("menuPage.heroSection.badge")}
         </p>
         <h1 className="mt-1 text-4xl font-bold leading-[1.15] text-white sm:text-5xl whitespace-pre-line">

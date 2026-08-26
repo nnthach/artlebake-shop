@@ -135,8 +135,8 @@ export default function MenuSection() {
             className={cn(
               "rounded-full border px-5 py-2 text-sm font-semibold transition",
               activeCategory === "all"
-                ? "border-amber bg-amber text-white shadow-sm"
-                : "border-charcoal/15 bg-white text-charcoal/60 hover:border-amber/50 hover:text-charcoal",
+                ? "border-primary bg-primary text-white shadow-sm"
+                : "border-charcoal/15 bg-white text-charcoal/60 hover:border-primary/50 hover:text-charcoal",
             )}
           >
             {t("menuPage.menuFilter.all")}
@@ -150,8 +150,8 @@ export default function MenuSection() {
               className={cn(
                 "rounded-full border px-5 py-2 text-sm font-semibold transition",
                 activeCategory === category.id
-                  ? "border-amber bg-amber text-white shadow-sm"
-                  : "border-charcoal/15 bg-white text-charcoal/60 hover:border-amber/50 hover:text-charcoal",
+                  ? "border-primary bg-primary text-white shadow-sm"
+                  : "border-charcoal/15 bg-white text-charcoal/60 hover:border-primary/50 hover:text-charcoal",
               )}
             >
               {category.name[locale as "en" | "vi"] ?? category.name.vi}
@@ -165,7 +165,7 @@ export default function MenuSection() {
               setSelectedCity(e.target.value);
               resetPage();
             }}
-            className="rounded-full border border-charcoal/15 bg-white px-5 py-2 text-sm font-semibold text-charcoal outline-none transition focus:border-amber"
+            className="rounded-full border border-charcoal/15 bg-white px-5 py-2 text-sm font-semibold text-charcoal outline-none transition focus:border-primary"
           >
             <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
             <option value="Hà Nội">Hà Nội</option>
@@ -219,7 +219,7 @@ export default function MenuSection() {
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1}
                   aria-label={t("menuPage.pagination.previous")}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-charcoal/15 bg-white text-charcoal/60 transition hover:border-amber/50 hover:text-charcoal disabled:pointer-events-none disabled:opacity-40"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-charcoal/15 bg-white text-charcoal/60 transition hover:border-primary/50 hover:text-charcoal disabled:pointer-events-none disabled:opacity-40"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -241,8 +241,8 @@ export default function MenuSection() {
                       className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold transition",
                         item === page
-                          ? "border-amber bg-amber text-white shadow-sm"
-                          : "border-charcoal/15 bg-white text-charcoal/60 hover:border-amber/50 hover:text-charcoal",
+                          ? "border-primary bg-primary text-white shadow-sm"
+                          : "border-charcoal/15 bg-white text-charcoal/60 hover:border-primary/50 hover:text-charcoal",
                       )}
                     >
                       {item}
@@ -255,7 +255,7 @@ export default function MenuSection() {
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page === pagination.total_pages}
                   aria-label={t("menuPage.pagination.next")}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-charcoal/15 bg-white text-charcoal/60 transition hover:border-amber/50 hover:text-charcoal disabled:pointer-events-none disabled:opacity-40"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-charcoal/15 bg-white text-charcoal/60 transition hover:border-primary/50 hover:text-charcoal disabled:pointer-events-none disabled:opacity-40"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>

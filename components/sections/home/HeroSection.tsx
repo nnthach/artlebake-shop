@@ -55,7 +55,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_55%_at_50%_42%,rgba(0,0,0,0.4),transparent_70%)]" />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center text-center animate-fadeInUp">
-        <p className="font-script text-4xl text-amber sm:text-5xl">
+        <p className="font-script text-4xl text-primary sm:text-5xl">
           {t("homePage.heroSection.badge")}
         </p>
         <h1 className="mt-1 text-4xl font-bold leading-[1.15] text-white sm:text-5xl lg:text-6xl whitespace-pre-line">
@@ -67,7 +67,7 @@ export default function HeroSection() {
 
         <Link
           href="/menu"
-          className="group mt-8 inline-flex items-center gap-2 border-b border-white/40 pb-1 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:border-amber hover:text-amber"
+          className="group mt-8 inline-flex items-center gap-2 border-b border-white/40 pb-1 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:border-primary hover:text-primary"
         >
           {t("button.orderNow")}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -83,7 +83,7 @@ export default function HeroSection() {
             onClick={() => setActive(i)}
             className={`rounded-full transition-all ${
               i === active
-                ? "h-2.5 w-2.5 bg-amber"
+                ? "h-2.5 w-2.5 bg-primary"
                 : "h-1.5 w-1.5 bg-white/40 hover:bg-white/70"
             }`}
           />

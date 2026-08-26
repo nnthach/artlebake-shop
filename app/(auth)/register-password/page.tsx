@@ -55,7 +55,9 @@ export default function RegisterPassword() {
       }
 
       toast.success(
-        locale == "vi" ? "Đặt mật khẩu thành công!" : "Password set successfully!",
+        locale == "vi"
+          ? "Đặt mật khẩu thành công!"
+          : "Password set successfully!",
       );
       router.replace("/");
     } catch (error) {
@@ -85,7 +87,7 @@ export default function RegisterPassword() {
             <Croissant className="h-5 w-5 text-white" />
           </span>
           <span className="font-serif text-xl font-bold text-white">
-            Petit Bakery
+            Artle Bakeshop
           </span>
         </Link>
 
@@ -101,7 +103,11 @@ export default function RegisterPassword() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-5"
+        >
           <div>
             <label
               htmlFor="password"

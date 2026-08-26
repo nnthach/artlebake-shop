@@ -18,7 +18,7 @@ export default function WhyChooseSection() {
   return (
     <section
       id="why"
-      className="relative z-10 flex flex-col justify-center bg-gradient-to-br from-[#EAE1D3] via-[#F2EBE0] to-[#E5DBCB] px-6 py-24"
+      className="relative z-10 flex flex-col justify-center bg-gradient-to-br from-[#E8E8E5] via-[#F0F0EE] to-[#DCDCD8] px-6 py-24"
     >
       <div className="mx-auto max-w-6xl text-center">
         <h2 className="font-serif text-4xl italic text-charcoal sm:text-5xl">

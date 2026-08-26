@@ -62,9 +62,9 @@ const config: Config = {
           ring: "hsl(var(--sidebar-ring))",
         },
         sand: {
-          "100": "#F5EFE6",
-          "200": "#EDE3D3",
-          DEFAULT: "#FAF6F0",
+          "100": "#F7F7F5",
+          "200": "#F0F0EE",
+          DEFAULT: "#FCFCFA",
         },
         charcoal: {
           "800": "#303030",

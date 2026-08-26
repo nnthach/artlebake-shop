@@ -15,7 +15,7 @@ export default function OurStandardsSection() {
       className="relative z-10 flex min-h-screen flex-col justify-center bg-sand px-6 py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-        <p className="font-script text-3xl text-amber sm:text-4xl">
+        <p className="font-script text-3xl text-primary sm:text-4xl">
           {t("homePage.standardSection.badge")}
         </p>
         <h2 className="mt-2 text-3xl font-bold leading-tight text-charcoal sm:text-4xl">

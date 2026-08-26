@@ -13,7 +13,7 @@ export default function OurStorySection() {
     <section
       ref={ref}
       id="story"
-      className="relative z-10 flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-br from-[#EAE1D3] via-[#F2EBE0] to-[#E5DBCB] px-6 py-24"
+      className="relative z-10 flex min-h-screen flex-col justify-center overflow-hidden bg-primary px-6 py-24"
     >
       <Wheat className="pointer-events-none absolute -right-12 -top-12 h-72 w-72 rotate-12 text-charcoal/[0.04]" />
 
@@ -43,7 +43,7 @@ export default function OurStorySection() {
 
         <div className="text-center lg:text-left">
           <p
-            className={`font-script text-3xl text-amber sm:text-4xl ${
+            className={`font-script text-3xl text-white sm:text-4xl ${
               inView ? "animate-fadeUp opacity-100" : "opacity-0 translate-y-6"
             }`}
           >
@@ -51,7 +51,7 @@ export default function OurStorySection() {
           </p>
           <h2
             style={{ animationDelay: "100ms" }}
-            className={`mt-2 text-3xl font-bold leading-tight text-charcoal sm:text-4xl ${
+            className={`mt-2 text-3xl font-bold leading-tight text-white sm:text-4xl ${
               inView ? "animate-fadeUp opacity-100" : "opacity-0 translate-y-6"
             }`}
           >
@@ -60,7 +60,7 @@ export default function OurStorySection() {
 
           <p
             style={{ animationDelay: "250ms" }}
-            className={`mt-4 text-charcoal/70 whitespace-pre-line ${
+            className={`mt-4 text-white/70 whitespace-pre-line ${
               inView ? "animate-fadeUp opacity-100" : "opacity-0 translate-y-6"
             }`}
           >

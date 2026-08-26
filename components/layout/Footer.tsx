@@ -1,7 +1,8 @@
 "use client";
 
 import { useI18n } from "@/context/I18nContext";
-import { Clock, Croissant, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -48,10 +49,14 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 text-xl font-bold text-charcoal">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber">
-              <Croissant className="h-5 w-5 text-white" />
-            </span>
-            <span className="font-serif">Petit Bakery</span>
+            <Image
+              src="/images/logo.jpg"
+              alt="Artle Bakeshop"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover"
+            />
+            <span className="font-serif">Artle Bakeshop</span>
           </div>
           <p className="mt-4 text-sm text-charcoal/60 whitespace-pre-line">
             {t("footer.brand.description")}
@@ -134,17 +139,20 @@ export default function Footer() {
           </h4>
           <ul className="mt-4 space-y-3 text-sm text-charcoal/60">
             <li className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-amber" />{" "}
+              <MapPin className="mt-0.5 h-4 w-4 text-primary" />{" "}
               {t("footer.visit.address")}
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-amber" /> {t("footer.visit.phone")}
+              <Phone className="h-4 w-4 text-primary" />{" "}
+              {t("footer.visit.phone")}
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-amber" /> {t("footer.visit.email")}
+              <Mail className="h-4 w-4 text-primary" />{" "}
+              {t("footer.visit.email")}
             </li>
             <li className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber" /> {t("footer.visit.hours")}
+              <Clock className="h-4 w-4 text-primary" />{" "}
+              {t("footer.visit.hours")}
             </li>
           </ul>
         </div>

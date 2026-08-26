@@ -59,9 +59,7 @@ export default function SignInPage() {
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      toast.error(
-        locale == "vi" ? "Đăng nhập thất bại!" : "Sign in failed!",
-      );
+      toast.error(locale == "vi" ? "Đăng nhập thất bại!" : "Sign in failed!");
     }
   };
 
@@ -86,7 +84,7 @@ export default function SignInPage() {
             <Croissant className="h-5 w-5 text-white" />
           </span>
           <span className="font-serif text-xl font-bold text-white">
-            Petit Bakery
+            Artle Bakeshop
           </span>
         </Link>
 

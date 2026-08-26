@@ -55,7 +55,7 @@ export default function BestsellerSection() {
   return (
     <section id="bestsellers" className="relative z-10 bg-sand px-6 py-24">
       <div className="mx-auto max-w-7xl text-center">
-        <p className="font-script text-3xl text-amber sm:text-4xl">
+        <p className="font-script text-3xl text-primary sm:text-4xl">
           {t("homePage.bestSellerSection.badge")}
         </p>
         <h2 className="mt-2 text-3xl font-bold text-charcoal sm:text-4xl whitespace-pre-line">
@@ -95,7 +95,7 @@ export default function BestsellerSection() {
 
         <div className="mt-14">
           <Link href={"/menu"}>
-            <Button variant="accent" size="lg" className="font-semibold">
+            <Button variant="default" size="lg" className="font-semibold">
               {t("button.exploreMenu")} <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

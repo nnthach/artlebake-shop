@@ -8,7 +8,9 @@ interface CartTriggerButtonProps {
   scrolled: boolean;
 }
 
-export default function CartTriggerButton({ scrolled }: CartTriggerButtonProps) {
+export default function CartTriggerButton({
+  scrolled,
+}: CartTriggerButtonProps) {
   const { totalItems, setIsOpen } = useCart();
   const { t } = useI18n();
 
@@ -19,7 +21,7 @@ export default function CartTriggerButton({ scrolled }: CartTriggerButtonProps) 
       aria-label={t("cart.iconLabel")}
       className={`relative flex h-10 w-10 items-center justify-center rounded-full transition ${
         scrolled
-          ? "text-charcoal hover:bg-charcoal/10"
+          ? "text-primary hover:bg-primary/10"
           : "text-white hover:bg-white/10"
       }`}
     >

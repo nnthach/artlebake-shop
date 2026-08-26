@@ -20,7 +20,7 @@ export default function CtaSection() {
       <div className="absolute inset-0 bg-sand" />
 
       <div className="relative z-10 mx-auto max-w-2xl">
-        <p className="font-script text-3xl text-amber sm:text-4xl">
+        <p className="font-script text-3xl text-primary sm:text-4xl">
           {t("homePage.ctaSection.badge")}
         </p>
         <h2 className="mt-4 text-3xl font-bold leading-tight text-charcoal sm:text-4xl">
@@ -37,7 +37,7 @@ export default function CtaSection() {
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <Link href={"/menu"}>
             <Button
-              variant="accent"
+              variant="default"
               size={"lg"}
               className="gap-2 font-semibold"
             >

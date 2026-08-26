@@ -1,4 +1,4 @@
-# Petit Bakery Landing Page
+# Artle Bakeshop Landing Page
 
 A modern and responsive bakery landing page built with **Next.js**, **TypeScript**, and **Tailwind CSS**.
 

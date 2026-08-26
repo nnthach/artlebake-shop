@@ -23,10 +23,10 @@ export default function LanguageToggle({
       type="button"
       onClick={() => setLocale(NEXT_LOCALE[locale])}
       aria-label={`Switch language to ${NEXT_LOCALE[locale].toUpperCase()}`}
-      className={`group flex items-center gap-1.5 rounded-full border px-3 py-1 ${admin ? "text-[13px] font-bold" : "text-[14px]"} tracking-wide transition-all duration-300 ${
+      className={`group flex items-center gap-1.5 rounded-full border-2 px-3 py-1 ${admin ? "text-[13px] font-bold" : "text-[14px]"} tracking-wide transition-all duration-300 ${
         isLight
           ? "border-white/30 text-white/80 hover:border-white hover:text-white"
-          : "border-charcoal/15 text-charcoal/60 hover:border-amber/60 hover:text-amber-600"
+          : "border-primary/15 text-primary/60 hover:border-primary hover:text-primary"
       }`}
     >
       <Globe

@@ -57,9 +57,7 @@ export default function SignUpPage() {
       }
     } catch (error) {
       console.error("Sign up error:", error);
-      toast.error(
-        locale == "vi" ? "Đăng ký thất bại!" : "Sign up failed!",
-      );
+      toast.error(locale == "vi" ? "Đăng ký thất bại!" : "Sign up failed!");
     }
   };
 
@@ -84,7 +82,7 @@ export default function SignUpPage() {
             <Croissant className="h-5 w-5 text-white" />
           </span>
           <span className="font-serif text-xl font-bold text-white">
-            Petit Bakery
+            Artle Bakeshop
           </span>
         </Link>
 
@@ -100,7 +98,11 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-4"
+        >
           <div>
             <label
               htmlFor="full_name"

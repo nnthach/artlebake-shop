@@ -156,7 +156,7 @@ export const translations = {
         titleOne: "Baked With Passion,",
         titleTwo: "Shared With Love.",
         description:
-          "At Petit Bakery, every loaf and pastry carries the care of real hands and honest ingredients — because you deserve nothing less.",
+          "At Artle Bakeshop, every loaf and pastry carries the care of real hands and honest ingredients — because you deserve nothing less.",
       },
     },
     // menu page
@@ -243,7 +243,7 @@ export const translations = {
     footer: {
       brand: {
         description:
-          "Petit Bakery bakes with honest ingredients and real care, so every visit feels a little like coming home.",
+          "Artle Bakeshop bakes with honest ingredients and real care, so every visit feels a little like coming home.",
       },
       menu: {
         title: "Our Menu",
@@ -268,7 +268,7 @@ export const translations = {
         email: "hello@petitbakery.com",
         hours: "Open Daily: 6:00 AM – 8:00 PM",
       },
-      copyright: "© 2026 Petit Bakery. Baked with love, every day.",
+      copyright: "© 2026 Artle Bakeshop. Baked with love, every day.",
     },
 
     // order page
@@ -408,7 +408,7 @@ export const translations = {
       dashboardPage: {
         headerTitle: {
           title: "Dashboard",
-          subtitle: "Overview of Petit Bakery's activity",
+          subtitle: "Overview of Artle Bakeshop's activity",
         },
       },
       // shared table
@@ -1073,7 +1073,7 @@ export const translations = {
         titleOne: "Làm Bằng Đam Mê,",
         titleTwo: "Trao Đi Bằng Yêu Thương.",
         description:
-          "Tại Petit Bakery, mỗi chiếc bánh mì và bánh ngọt đều chứa đựng sự chăm chút từ đôi tay thật và nguyên liệu chân thật — vì bạn xứng đáng nhận được điều tốt nhất.",
+          "Tại Artle Bakeshop, mỗi chiếc bánh mì và bánh ngọt đều chứa đựng sự chăm chút từ đôi tay thật và nguyên liệu chân thật — vì bạn xứng đáng nhận được điều tốt nhất.",
       },
     },
 
@@ -1161,7 +1161,7 @@ export const translations = {
     footer: {
       brand: {
         description:
-          "Petit Bakery làm bánh từ những nguyên liệu chân thật và sự chăm chút thật tâm, để mỗi lần ghé qua đều thấy ấm áp như về nhà.",
+          "Artle Bakeshop làm bánh từ những nguyên liệu chân thật và sự chăm chút thật tâm, để mỗi lần ghé qua đều thấy ấm áp như về nhà.",
       },
       menu: {
         title: "Thực Đơn",
@@ -1186,7 +1186,7 @@ export const translations = {
         email: "hello@petitbakery.com",
         hours: "Mở Cửa Hằng Ngày: 6:00 – 20:00",
       },
-      copyright: "© 2026 Petit Bakery. Làm bằng cả tình yêu, mỗi ngày.",
+      copyright: "© 2026 Artle Bakeshop. Làm bằng cả tình yêu, mỗi ngày.",
     },
 
     // order page
@@ -1326,7 +1326,7 @@ export const translations = {
       dashboardPage: {
         headerTitle: {
           title: "Tổng quan",
-          subtitle: "Tổng quan hoạt động của Petit Bakery",
+          subtitle: "Tổng quan hoạt động của Artle Bakeshop",
         },
       },
       // shared table

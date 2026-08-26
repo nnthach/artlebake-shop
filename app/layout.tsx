@@ -18,9 +18,9 @@ const dancingScript = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: "Petit Bakery - Baked With Passion, Shared With Love",
+  title: "Artle Bakeshop - Baked With Passion, Shared With Love",
   description:
-    "Petit Bakery handcrafts fresh bread, pastries, and cakes daily using honest ingredients and real care — bringing genuine value to every customer.",
+    "Artle Bakeshop handcrafts fresh bread, pastries, and cakes daily using honest ingredients and real care — bringing genuine value to every customer.",
   keywords: ["bakery", "bread", "pastries", "cakes", "artisan bakery"],
 };
 

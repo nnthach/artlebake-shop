@@ -74,7 +74,7 @@ export function AdminHeader() {
                 href="/"
                 className="text-muted-foreground hover:text-foreground"
               >
-                Petit Bakery
+                Artle Bakeshop
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>

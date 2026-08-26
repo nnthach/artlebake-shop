@@ -1,6 +1,6 @@
 "use client";
 
-import { Croissant, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -25,6 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 import LanguageToggle from "../custom/LanguageToggle";
 import CartSheet from "./CartSheet";
 import CartTriggerButton from "./CartTriggerButton";
+import Image from "next/image";
 
 function getInitials(fullName: string) {
   const parts = fullName?.trim().split(/\s+/) || "";
@@ -73,16 +74,21 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between py-4">
-        <Link href={"/"}>
+        <Link href="/">
           <div
             className={`flex items-center gap-2 text-xl font-bold transition-colors ${
               isScrolled ? "text-charcoal" : "text-white"
             }`}
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber">
-              <Croissant className="h-5 w-5 text-white" />
-            </span>
-            <span className="font-serif">Petit Bakery</span>
+            <Image
+              src="/images/logo.jpg"
+              alt="Artle Bakeshop"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover"
+            />
+
+            <span className="font-serif">Artle Bakeshop</span>
           </div>
         </Link>
 
@@ -157,7 +163,11 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
             </DropdownMenu>
           ) : (
             <Link href={"/signin"}>
-              <Button variant="accent" className="font-semibold py-1" size="sm">
+              <Button
+                variant="default"
+                className="font-semibold py-1"
+                size="sm"
+              >
                 {t("headerButton.signin")}
               </Button>
             </Link>
@@ -190,7 +200,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
               className="w-3/4 border-l border-charcoal/10 bg-sand text-charcoal sm:max-w-sm"
             >
               <SheetTitle className="text-left text-lg font-bold text-charcoal">
-                Petit Bakery
+                Artle Bakeshop
               </SheetTitle>
               <div className="mt-6 flex">
                 <LanguageToggle scrolled={scrolled} variant="dark" />
