@@ -74,7 +74,9 @@ export default function CreateCategoryModal({
       if (!res.ok) throw new Error("Failed to create category");
 
       toast.success(
-        locale === "vi" ? "Tạo danh mục thành công!" : "Category created successfully!",
+        locale === "vi"
+          ? "Tạo danh mục thành công!"
+          : "Category created successfully!",
       );
       reset();
       setOpen(false);
@@ -82,7 +84,9 @@ export default function CreateCategoryModal({
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể tạo danh mục." : "Failed to create category.",
+        locale === "vi"
+          ? "Không thể tạo danh mục."
+          : "Failed to create category.",
       );
     }
   };
@@ -95,7 +99,7 @@ export default function CreateCategoryModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={"accent"} size="sm" className="gap-2">
+        <Button variant={"default"} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           {t("admin.categoriesPage.createModal.trigger")}
         </Button>
@@ -162,7 +166,7 @@ export default function CreateCategoryModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting}
               className="min-w-24"
             >

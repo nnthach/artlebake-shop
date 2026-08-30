@@ -23,7 +23,7 @@ export default function OrderFailPage() {
             {t("orderPage.result.fail.message")}
           </p>
           <Link href="/order" className="mt-2">
-            <Button variant="accent" className="font-semibold">
+            <Button variant="default" className="font-semibold">
               {t("orderPage.result.tryAgain")}
             </Button>
           </Link>

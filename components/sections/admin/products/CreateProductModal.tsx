@@ -23,6 +23,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { Switch } from "@/components/ui/switch";
 
 const INITIAL_FORM: ProductFormData = {
   name_vi: "",
@@ -30,6 +31,7 @@ const INITIAL_FORM: ProductFormData = {
   name_en: "",
   description_en: "",
   price: 0,
+  is_bestseller: false,
   category_id: "",
   ingredient_ids: [],
 };
@@ -109,7 +111,9 @@ export default function CreateProductModal({
           fetch(
             "/api/admin/categories?is_active=true&sort_by=name&order=asc&limit=100",
           ),
-          fetch("/api/admin/ingredients?is_active=true&sort_by=name&order=asc&limit=100"),
+          fetch(
+            "/api/admin/ingredients?is_active=true&sort_by=name&order=asc&limit=100",
+          ),
         ]);
         const catJson = await catRes.json();
         const ingJson = await ingRes.json();
@@ -225,7 +229,7 @@ export default function CreateProductModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={"accent"} size="sm" className="gap-2">
+        <Button variant={"default"} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           {t("admin.productsPage.createModal.trigger")}
         </Button>
@@ -252,7 +256,7 @@ export default function CreateProductModal({
               />
               <div
                 onClick={handleImageClick}
-                className="relative h-44 w-full cursor-pointer rounded-md border-2 border-dashed border-muted-foreground/40 bg-muted/30 flex items-center justify-center overflow-hidden transition-colors hover:border-primary/60 hover:bg-muted/50"
+                className="relative aspect-[4/3] w-full cursor-pointer rounded-md border-2 border-dashed border-muted-foreground/40 bg-muted/30 flex items-center justify-center overflow-hidden transition-colors hover:border-primary/60 hover:bg-muted/50"
               >
                 {imagePreview ? (
                   <>
@@ -310,20 +314,46 @@ export default function CreateProductModal({
             </div>
 
             {/* Price */}
-            <Field
-              label={t("admin.productsPage.createModal.fields.price")}
-              required
-              error={errors.price?.message}
-            >
-              <input
-                type="number"
-                min={0}
-                placeholder="0"
-                disabled={isSubmitting}
-                className={inputCls}
-                {...register("price", { valueAsNumber: true })}
-              />
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Price */}
+              <Field
+                label={t("admin.productsPage.createModal.fields.price")}
+                required
+                error={errors.price?.message}
+              >
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  disabled={isSubmitting}
+                  className={inputCls}
+                  {...register("price", { valueAsNumber: true })}
+                />
+              </Field>
+
+              {/* Bestseller */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">
+                  {t("admin.productsPage.createModal.fields.bestseller")}
+                </label>
+
+                <div className="flex h-10 items-center justify-between rounded-md border px-3">
+                  <span className="text-sm text-muted-foreground">
+                    {t(
+                      "admin.productsPage.createModal.fields.markAsBestseller",
+                    )}
+                  </span>
+
+                  <Switch
+                    checked={watch("is_bestseller")}
+                    disabled={isSubmitting}
+                    onCheckedChange={(checked) => {
+                      setValue("is_bestseller", checked);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Description VI / EN */}
             <Field
@@ -406,7 +436,7 @@ export default function CreateProductModal({
                         disabled={isSubmitting}
                         className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors disabled:opacity-50 ${
                           selected
-                            ? "border-primary bg-primary text-primary-foreground"
+                            ? "border-primary bg-primary text-white"
                             : "border-border bg-background text-foreground hover:bg-muted"
                         }`}
                       >
@@ -435,7 +465,7 @@ export default function CreateProductModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting}
               className="min-w-24"
             >

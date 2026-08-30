@@ -25,7 +25,7 @@ export function getSearchParams(req: NextRequest) {
   return {
     is_active: params.get("is_active"),
     status: params.get("status"),
-    is_daily_bake: params.get("is_daily_bake"),
+    is_bestseller: params.get("is_bestseller"),
     category_id: params.get("category_id"),
     store_id: params.get("store_id"),
     city: params.get("city"),

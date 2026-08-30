@@ -73,6 +73,7 @@ export async function GET(req: NextRequest) {
         is_active: product.is_active,
         created_at: product.created_at,
         updated_at: product.updated_at,
+        is_bestseller:product.is_bestseller,
         category: product.categories,
         name: translation.name ?? null,
         description: translation.description ?? null,
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
       category_id,
       ingredient_ids,
       price,
+      is_bestseller,
     } = body;
 
     if (!name_vi || !name_en) {
@@ -142,6 +144,7 @@ export async function POST(req: NextRequest) {
         price: price,
         category_id: category_id,
         image_url: image_url,
+        is_bestseller,
       })
       .select("id")
       .single();

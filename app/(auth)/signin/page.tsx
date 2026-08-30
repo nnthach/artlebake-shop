@@ -199,7 +199,7 @@ export default function SignInPage() {
 
             <Button
               type="submit"
-              variant="accent"
+              variant="default"
               disabled={isSubmitting}
               className="w-full font-semibold"
             >

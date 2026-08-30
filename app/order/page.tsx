@@ -133,7 +133,7 @@ export default function OrderPage() {
               {t("orderPage.signInRequired.message")}
             </p>
             <Link href="/signin" className="mt-2">
-              <Button variant="accent" className="font-semibold">
+              <Button variant="default" className="font-semibold">
                 {t("headerButton.signin")}
               </Button>
             </Link>
@@ -189,7 +189,7 @@ export default function OrderPage() {
                         </Button> */}
                         <Button
                           type="button"
-                          variant="accent"
+                          variant="default"
                           size="lg"
                           disabled={isSubmitting || items.length === 0}
                           className="w-full font-semibold"

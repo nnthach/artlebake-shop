@@ -385,7 +385,7 @@ export default function AdminStorePage() {
                   </div>
 
                   <PopoverClose asChild>
-                    <Button variant={"accent"} size="sm" onClick={handleApply}>
+                    <Button variant={"default"} size="sm" onClick={handleApply}>
                       {t("button.apply")}
                     </Button>
                   </PopoverClose>

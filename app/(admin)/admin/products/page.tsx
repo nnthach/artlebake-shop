@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Filter, Search, X, Trash2, LayoutGrid, Loader2 } from "lucide-react";
+import {
+  Filter,
+  Search,
+  X,
+  Trash2,
+  LayoutGrid,
+  Loader2,
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -273,7 +281,7 @@ export default function AdminProductPage() {
                   </div>
 
                   <PopoverClose asChild>
-                    <Button variant={"accent"} size="sm" onClick={handleApply}>
+                    <Button variant={"default"} size="sm" onClick={handleApply}>
                       {t("button.apply")}
                     </Button>
                   </PopoverClose>
@@ -335,6 +343,9 @@ export default function AdminProductPage() {
               <TableHead>
                 {t("admin.productsPage.table.columns.category")}
               </TableHead>
+              <TableHead>
+                {t("admin.productsPage.table.columns.bestseller")}
+              </TableHead>
               <TableHead>{t("admin.table.columns.status")}</TableHead>
               <TableHead>{t("admin.table.columns.createdAt")}</TableHead>
               <TableHead className="text-right">
@@ -346,7 +357,7 @@ export default function AdminProductPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
@@ -355,7 +366,7 @@ export default function AdminProductPage() {
             ) : products.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -386,6 +397,13 @@ export default function AdminProductPage() {
                   </TableCell>
                   <TableCell className="">
                     {product.category.name[locale]}
+                  </TableCell>
+                  <TableCell>
+                    {product.is_bestseller ? (
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-500" />
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant={product.is_active ? "success" : "warning"}>

@@ -127,8 +127,8 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                   className="flex items-center gap-2 rounded-full transition"
                   aria-label="Account menu"
                 >
-                  <Avatar className="h-8 w-8 border border-amber/40">
-                    <AvatarFallback className="bg-amber text-xs font-semibold text-white">
+                  <Avatar className="h-8 w-8 border border-primary/40">
+                    <AvatarFallback className="bg-primary text-xs font-semibold text-white">
                       {getInitials(user.full_name)}
                     </AvatarFallback>
                   </Avatar>
@@ -157,7 +157,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
+                  className="cursor-pointer text-destructive focus:text-white"
                 >
                   {t("headerDropdown.signOut")}
                 </DropdownMenuItem>
@@ -221,8 +221,8 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                 {user ? (
                   <div className="flex flex-col gap-3 border-t border-charcoal/10 pt-6">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9 border border-amber/40">
-                        <AvatarFallback className="bg-amber text-xs font-semibold text-white">
+                      <Avatar className="h-9 w-9 border border-primary/40">
+                        <AvatarFallback className="bg-primary text-xs font-semibold text-white">
                           {getInitials(user.full_name)}
                         </AvatarFallback>
                       </Avatar>
@@ -266,7 +266,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                 ) : (
                   <SheetClose asChild>
                     <Link href={"/signin"}>
-                      <Button variant="accent" className="font-semibold">
+                      <Button variant="default" className="font-semibold">
                         {t("headerButton.signin")}
                       </Button>
                     </Link>

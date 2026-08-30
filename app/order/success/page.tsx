@@ -191,7 +191,7 @@ function OrderSuccessContent() {
 
         <div className="mt-4 flex shrink-0 justify-center">
           <Link href="/menu">
-            <Button variant="accent" className="font-semibold">
+            <Button variant="default" className="font-semibold">
               {t("orderPage.result.backToMenu")}
             </Button>
           </Link>

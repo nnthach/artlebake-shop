@@ -150,7 +150,7 @@ export default function RegisterPassword() {
 
           <Button
             type="submit"
-            variant="accent"
+            variant="default"
             disabled={isSubmitting}
             className="w-full font-semibold"
           >

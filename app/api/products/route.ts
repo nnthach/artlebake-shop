@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       locale,
       page,
       limit,
-      is_daily_bake,
+      is_bestseller,
       search,
     } = getSearchParams(req);
 
@@ -77,9 +77,9 @@ export async function GET(req: NextRequest) {
       ascending ? "asc" : "desc",
       locale,
       is_active === "true" ? true : is_active === "false" ? false : null,
-      is_daily_bake === "true"
+      is_bestseller === "true"
         ? true
-        : is_daily_bake === "false"
+        : is_bestseller === "false"
           ? false
           : null,
       category_id || null,
@@ -122,8 +122,8 @@ export async function GET(req: NextRequest) {
       query = query.eq("is_active", is_active === "true");
     }
 
-    if (is_daily_bake !== null && is_daily_bake !== "") {
-      query = query.eq("is_daily_bake", is_daily_bake === "true");
+    if (is_bestseller !== null && is_bestseller !== "") {
+      query = query.eq("is_bestseller", is_bestseller === "true");
     }
 
     if (category_id !== null && category_id !== "") {

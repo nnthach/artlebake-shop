@@ -223,7 +223,7 @@ export default function SignUpPage() {
 
             <Button
               type="submit"
-              variant="accent"
+              variant="default"
               disabled={isSubmitting}
               className="w-full font-semibold"
             >

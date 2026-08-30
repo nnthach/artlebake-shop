@@ -71,14 +71,18 @@ export default function UpdateCategoryModal({
       if (!res.ok) throw new Error("Failed to update category");
 
       toast.success(
-        locale === "vi" ? "Cập nhật danh mục thành công!" : "Category updated successfully!",
+        locale === "vi"
+          ? "Cập nhật danh mục thành công!"
+          : "Category updated successfully!",
       );
       setOpen(false);
       onUpdated?.();
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể cập nhật danh mục." : "Failed to update category.",
+        locale === "vi"
+          ? "Không thể cập nhật danh mục."
+          : "Failed to update category.",
       );
     }
   };
@@ -159,7 +163,7 @@ export default function UpdateCategoryModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting}
               className="min-w-24"
             >

@@ -103,7 +103,9 @@ export default function CreateStaffModal({ onCreated }: CreateStaffModalProps) {
       if (!res.ok) throw new Error("Failed to create staff");
 
       toast.success(
-        locale === "vi" ? "Tạo nhân viên thành công!" : "Staff created successfully!",
+        locale === "vi"
+          ? "Tạo nhân viên thành công!"
+          : "Staff created successfully!",
       );
       reset();
       setOpen(false);
@@ -124,7 +126,7 @@ export default function CreateStaffModal({ onCreated }: CreateStaffModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="accent" size="sm" className="gap-2">
+        <Button variant="default" size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           {t("admin.staffsPage.createModal.trigger")}
         </Button>
@@ -216,7 +218,7 @@ export default function CreateStaffModal({ onCreated }: CreateStaffModalProps) {
             </DialogClose>
             <Button
               type="submit"
-              variant="accent"
+              variant="default"
               disabled={isSubmitting}
               className="min-w-24"
             >

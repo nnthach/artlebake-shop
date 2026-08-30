@@ -205,7 +205,7 @@ export default function CreateStoreInventoryModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={"accent"} size="sm" className="gap-2">
+        <Button variant={"default"} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           {t("staff.storeInventoriesPage.createModal.trigger")}
         </Button>
@@ -350,7 +350,7 @@ export default function CreateStoreInventoryModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting || isLoadingProducts}
               className="min-w-24"
             >

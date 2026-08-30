@@ -62,6 +62,7 @@ export interface RawProduct {
   image_url: string[];
   is_active: boolean;
   created_at: string;
+  is_bestseller: boolean;
   updated_at: string | null;
   categories: { id: string; name: string } | null;
   product_translations: ProductTranslation[];
@@ -129,6 +130,7 @@ export interface ProductItem {
   product_ingredients: ProductIngredientRow[];
   ingredients: IngredientItem[];
   is_active: boolean;
+  is_bestseller: boolean;
   created_at: string;
   updated_at: string | null;
   status?: StoreInventoryItemStatusEnum;

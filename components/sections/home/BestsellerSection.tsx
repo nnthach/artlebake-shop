@@ -29,9 +29,9 @@ export default function BestsellerSection() {
       const params = new URLSearchParams({
         is_active: "true",
         limit: "6",
-        pageNumber: "1",
+        page: "1",
         locale,
-        is_daily_bake: "true",
+        is_bestseller: "true",
       });
       const res = await fetch(`/api/products?${params.toString()}`);
       if (!res.ok) return;

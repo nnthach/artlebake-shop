@@ -18,6 +18,7 @@ export const createProductSchema = (
       .string()
       .min(1, t(`admin.productsPage.${namespace}.errors.categoryRequired`)),
     ingredient_ids: z.array(z.string()),
+    is_bestseller: z.boolean(),
   });
 
 export type ProductFormData = z.infer<ReturnType<typeof createProductSchema>>;

@@ -46,7 +46,7 @@ export default function ComingSoon() {
         </p>
 
         <Button
-          variant="accent"
+          variant="default"
           className="mt-8 gap-2 font-semibold"
           onClick={() => router.back()}
         >

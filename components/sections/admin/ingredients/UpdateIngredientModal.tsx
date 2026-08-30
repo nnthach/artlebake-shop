@@ -71,14 +71,18 @@ export default function UpdateIngredientModal({
       if (!res.ok) throw new Error("Failed to update ingredient");
 
       toast.success(
-        locale === "vi" ? "Cập nhật nguyên liệu thành công!" : "Ingredient updated successfully!",
+        locale === "vi"
+          ? "Cập nhật nguyên liệu thành công!"
+          : "Ingredient updated successfully!",
       );
       setOpen(false);
       onUpdated?.();
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể cập nhật nguyên liệu." : "Failed to update ingredient.",
+        locale === "vi"
+          ? "Không thể cập nhật nguyên liệu."
+          : "Failed to update ingredient.",
       );
     }
   };
@@ -136,7 +140,7 @@ export default function UpdateIngredientModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting}
               className="min-w-24"
             >

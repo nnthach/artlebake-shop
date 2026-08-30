@@ -213,7 +213,7 @@ export default function UpdateStaffModal({
             </DialogClose>
             <Button
               type="submit"
-              variant="accent"
+              variant="default"
               disabled={isSubmitting}
               className="min-w-24"
             >

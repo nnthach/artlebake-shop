@@ -33,10 +33,7 @@ export default function CartSheet() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent
-        side="right"
-        className="flex w-3/4 flex-col sm:max-w-md"
-      >
+      <SheetContent side="right" className="flex w-3/4 flex-col sm:max-w-md">
         <SheetHeader>
           <SheetTitle>{t("cart.title")}</SheetTitle>
         </SheetHeader>
@@ -47,7 +44,7 @@ export default function CartSheet() {
             <p className="text-sm">{t("cart.signInRequired")}</p>
             <SheetClose asChild>
               <Link href="/signin">
-                <Button variant="accent">{t("headerButton.signin")}</Button>
+                <Button variant="default">{t("headerButton.signin")}</Button>
               </Link>
             </SheetClose>
           </div>
@@ -89,7 +86,10 @@ export default function CartSheet() {
                         size="icon"
                         className="h-7 w-7"
                         onClick={() =>
-                          updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                          updateQuantity(
+                            item.id,
+                            Math.max(1, item.quantity - 1),
+                          )
                         }
                         disabled={item.quantity <= 1}
                       >
@@ -103,7 +103,9 @@ export default function CartSheet() {
                         variant="outline"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -130,7 +132,7 @@ export default function CartSheet() {
               <SheetClose asChild>
                 <Link href="/order">
                   <Button
-                    variant="accent"
+                    variant="default"
                     className="mt-3 w-full font-semibold"
                   >
                     {t("cart.checkout")}

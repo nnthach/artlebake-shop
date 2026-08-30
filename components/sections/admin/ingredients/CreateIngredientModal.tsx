@@ -72,7 +72,9 @@ export default function CreateIngredientModal({
       if (!res.ok) throw new Error("Failed to create ingredient");
 
       toast.success(
-        locale === "vi" ? "Tạo nguyên liệu thành công!" : "Ingredient created successfully!",
+        locale === "vi"
+          ? "Tạo nguyên liệu thành công!"
+          : "Ingredient created successfully!",
       );
       reset();
       setOpen(false);
@@ -80,7 +82,9 @@ export default function CreateIngredientModal({
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể tạo nguyên liệu." : "Failed to create ingredient.",
+        locale === "vi"
+          ? "Không thể tạo nguyên liệu."
+          : "Failed to create ingredient.",
       );
     }
   };
@@ -93,7 +97,7 @@ export default function CreateIngredientModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={"accent"} size="sm" className="gap-2">
+        <Button variant={"default"} size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
           {t("admin.ingredientsPage.createModal.trigger")}
         </Button>
@@ -139,7 +143,7 @@ export default function CreateIngredientModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting}
               className="min-w-24"
             >

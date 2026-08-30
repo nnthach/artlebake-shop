@@ -115,6 +115,7 @@ export async function PUT(
       category_id,
       ingredient_ids,
       price,
+      is_bestseller,
     } = body;
 
     if (!name_vi) {
@@ -127,7 +128,7 @@ export async function PUT(
     // Step 1: Update products table
     const { error: productError } = await supabaseAdmin
       .from("products")
-      .update({ price, category_id, image_url })
+      .update({ price, category_id, image_url, is_bestseller })
       .eq("id", id);
     if (productError) throw productError;
 

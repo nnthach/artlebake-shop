@@ -51,14 +51,8 @@ export async function POST(req: NextRequest) {
       .select(
         `
           id,
-          full_name,
           role,
-          status,
-          staffs(
-            id,
-            store_id,
-            is_active
-          )
+          status
         `,
       )
       .eq("id", data.user.id)
@@ -87,17 +81,14 @@ export async function POST(req: NextRequest) {
     }
 
     // step 4: return
-    const isStaff = userProfile?.role === "staff";
     return NextResponse.json(
       {
         success: true,
         data: {
           user: {
             id: userProfile.id,
-            full_name: userProfile.full_name,
             role: userProfile.role,
             status: userProfile.status,
-            ...(isStaff && { staff: userProfile.staffs?.[0] ?? null }),
           },
         },
       },

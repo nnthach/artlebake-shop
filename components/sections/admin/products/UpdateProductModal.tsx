@@ -23,6 +23,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { Switch } from "@/components/ui/switch";
 
 const EMPTY_FORM: ProductFormData = {
   name_vi: "",
@@ -32,6 +33,7 @@ const EMPTY_FORM: ProductFormData = {
   price: 0,
   category_id: "",
   ingredient_ids: [],
+  is_bestseller: false,
 };
 
 const inputCls =
@@ -285,7 +287,7 @@ export default function UpdateProductModal({
               />
               <div
                 onClick={handleImageClick}
-                className="relative h-44 w-full cursor-pointer rounded-md border-2 border-dashed border-muted-foreground/40 bg-muted/30 flex items-center justify-center overflow-hidden transition-colors hover:border-primary/60 hover:bg-muted/50"
+                className="relative aspect-[4/3] w-full cursor-pointer rounded-md border-2 border-dashed border-muted-foreground/40 bg-muted/30 flex items-center justify-center overflow-hidden transition-colors hover:border-primary/60 hover:bg-muted/50"
               >
                 {imagePreview ? (
                   <>
@@ -342,20 +344,44 @@ export default function UpdateProductModal({
             </div>
 
             {/* Price */}
-            <Field
-              label={t("admin.productsPage.updateModal.fields.price")}
-              required
-              error={errors.price?.message}
-            >
-              <input
-                type="number"
-                min={0}
-                placeholder="0"
-                disabled={isSubmitting || loadingMeta}
-                className={inputCls}
-                {...register("price", { valueAsNumber: true })}
-              />
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Price */}
+              <Field
+                label={t("admin.productsPage.createModal.fields.price")}
+                required
+                error={errors.price?.message}
+              >
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  disabled={isSubmitting}
+                  className={inputCls}
+                  {...register("price", { valueAsNumber: true })}
+                />
+              </Field>
+
+              {/* Bestseller */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">
+                  {t("admin.productsPage.updateModal.fields.bestseller")}
+                </label>
+
+                <div className="flex h-10 items-center justify-between rounded-md border px-3">
+                  <span className="text-sm text-muted-foreground">
+                    {t("admin.productsPage.updateModal.fields.markAsBestseller")}
+                  </span>
+
+                  <Switch
+                    checked={watch("is_bestseller")}
+                    disabled={isSubmitting}
+                    onCheckedChange={(checked) => {
+                      setValue("is_bestseller", checked);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Description VI / EN */}
             <Field
@@ -437,7 +463,7 @@ export default function UpdateProductModal({
                         disabled={isSubmitting}
                         className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors disabled:opacity-50 ${
                           selected
-                            ? "border-primary bg-primary text-primary-foreground"
+                            ? "border-primary bg-primary text-white"
                             : "border-border bg-background text-foreground hover:bg-muted"
                         }`}
                       >
@@ -466,7 +492,7 @@ export default function UpdateProductModal({
             </DialogClose>
             <Button
               type="submit"
-              variant={"accent"}
+              variant={"default"}
               disabled={isSubmitting || loadingMeta}
               className="min-w-24"
             >
