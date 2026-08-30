@@ -171,13 +171,13 @@ export default function CreateStoreInventoryModal({
         quantity: Number(row.quantity),
       }));
 
-      const res = await fetch("/api/staff/store-inventories", {
+      const res = await fetch("/api/admin/store-inventories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items }),
       });
 
-      if (!res.ok) throw new Error("Failed to create store inventory");
+      if (!res.ok) throw new Error("Failed to create daily inventory");
 
       setRows([createEmptyRow()]);
       setErrors({});

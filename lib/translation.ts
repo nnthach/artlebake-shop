@@ -368,7 +368,7 @@ export const translations = {
         settings: "Settings",
         staffs: "Staffs",
         stores: "Stores",
-        storeInventories: "Store Inventory",
+        storeInventories: "Daily Inventory",
       },
       headerDropdown: {
         notifications: "Notifications",
@@ -396,7 +396,7 @@ export const translations = {
           customers: "Customers",
           settings: "Settings",
           stores: "Stores",
-          storeInventories: "Store Inventory",
+          storeInventories: "Daily Inventory",
         },
         user: {
           profile: "Profile",
@@ -632,8 +632,8 @@ export const translations = {
       },
       storeInventoriesPage: {
         headerTitle: {
-          title: "Store Inventory",
-          subtitle: "Manage product stock levels for your store",
+          title: "Daily Inventory",
+          subtitle: "Manage product stock levels daily",
         },
         table: {
           columns: {
@@ -859,7 +859,7 @@ export const translations = {
         orders: "Orders",
         reviews: "Reviews",
         staffs: "Staffs",
-        storeInventories: "Store Inventory",
+        storeInventories: "Daily Inventory",
       },
       headerDropdown: {
         profile: "Profile",
@@ -877,7 +877,7 @@ export const translations = {
           orders: "Orders",
           reviews: "Reviews",
           customers: "Customers",
-          storeInventories: "Store Inventory",
+          storeInventories: "Daily Inventory",
         },
         user: {
           profile: "Profile",
@@ -1291,7 +1291,7 @@ export const translations = {
         settings: "Cài đặt",
         staffs: "Nhân viên",
         stores: "Cửa hàng",
-        storeInventories: "Tồn kho cửa hàng",
+        storeInventories: "Bánh mỗi ngày",
       },
       headerDropdown: {
         notifications: "Thông báo",
@@ -1319,7 +1319,7 @@ export const translations = {
           customers: "Khách hàng",
           settings: "Cài đặt",
           staffs: "Nhân viên",
-          storeInventories: "Tồn kho cửa hàng",
+          storeInventories: "Bánh mỗi ngày",
         },
         user: {
           profile: "Hồ sơ",
@@ -1556,8 +1556,8 @@ export const translations = {
       },
       storeInventoriesPage: {
         headerTitle: {
-          title: "Tồn kho cửa hàng",
-          subtitle: "Quản lý số lượng tồn kho sản phẩm của cửa hàng",
+          title: "Bánh mỗi ngày",
+          subtitle: "Quản lý số lượng sản phẩm bán mỗi ngày",
         },
         table: {
           columns: {
@@ -1581,7 +1581,7 @@ export const translations = {
           loading: "Đang tải cửa hàng...",
           empty: "Không có cửa hàng nào",
         },
-        empty: "Không tìm thấy sản phẩm tồn kho nào",
+        empty: "Không tìm thấy sản phẩm bán nào",
         showing: "Hiển thị",
         item: "sản phẩm",
       },
@@ -1766,7 +1766,7 @@ export const translations = {
         orders: "Đơn hàng",
         staffs: "Nhân viên",
         reviews: "Đánh giá",
-        storeInventories: "Tồn kho cửa hàng",
+        storeInventories: "Bánh mỗi ngày",
       },
       headerDropdown: {
         profile: "Hồ sơ",
@@ -1784,7 +1784,7 @@ export const translations = {
           orders: "Đơn hàng",
           reviews: "Đánh giá",
           customers: "Khách hàng",
-          storeInventories: "Tồn kho cửa hàng",
+          storeInventories: "Bánh mỗi ngày",
         },
         user: {
           profile: "Hồ sơ",

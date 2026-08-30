@@ -216,7 +216,7 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Fetch menu store inventories error:", error);
+    console.error("Fetch menu daily inventories error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 },

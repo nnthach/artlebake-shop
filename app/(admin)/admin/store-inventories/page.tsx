@@ -18,12 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StoreInventoryRaw, StoreItem } from "@/types";
+import { StoreInventoryRaw } from "@/types";
 import { useI18n } from "@/context/I18nContext";
 import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
-import { getToday } from "@/lib/utils";
+import CreateStoreInventoryModal from "@/components/sections/staff/store-inventory/CreateStoreInventoryModal";
 
 const STATUS_OPTIONS = [
   { label: "Tất cả", value: "" },
@@ -70,7 +70,7 @@ const DEFAULT_FILTER: FilterState = {
 
 export default function AdminStoreInventoryPage() {
   const [stores, setStoreInventories] = useState<StoreInventoryRaw[]>([]);
-  const [selectedDate, setSelectedDate] = useState(getToday());
+  const [selectedDate, setSelectedDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
@@ -78,52 +78,16 @@ export default function AdminStoreInventoryPage() {
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
 
-  const [storeOptions, setStoreOptions] = useState<StoreItem[]>([]);
-  const [selectedStoreId, setSelectedStoreId] = useState("");
-  const [isLoadingStores, setIsLoadingStores] = useState(true);
-
   const { t, locale } = useI18n();
 
-  // fetch all stores once, then default-select the first one
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        setIsLoadingStores(true);
-        const res = await fetch("/api/admin/stores?is_active=true&limit=100");
-        if (!res.ok) throw new Error("Failed to fetch stores");
-        const data = await res.json();
-        if (data.success && data.data) {
-          setStoreOptions(data.data);
-          if (data.data.length > 0) {
-            setSelectedStoreId(data.data[0].id);
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoadingStores(false);
-      }
-    };
-
-    fetchStores();
-  }, []);
-
   const fetchStoreInventory = useCallback(
-    async (
-      storeId: string,
-      date: string,
-      filter: FilterState = appliedFilter,
-      pageNum: number = page,
-    ) => {
-      if (!storeId || !date) return;
-
+    async (filter: FilterState = appliedFilter, pageNum: number = page) => {
       try {
         setIsLoading(true);
 
         const params = new URLSearchParams();
 
-        params.set("store_id", storeId);
-        params.set("date", date);
+        params.set("date", selectedDate);
 
         if (filter.status) {
           params.set("status", filter.status);
@@ -137,7 +101,7 @@ export default function AdminStoreInventoryPage() {
         );
 
         if (!res.ok) {
-          throw new Error("Failed to fetch store inventories");
+          throw new Error("Failed to fetch daily inventories");
         }
 
         const data = await res.json();
@@ -152,39 +116,40 @@ export default function AdminStoreInventoryPage() {
         setIsLoading(false);
       }
     },
-    [appliedFilter, page, setPagination],
+    [appliedFilter, page, setPagination, selectedDate],
   );
 
   // only fetch inventory once a store_id is available; refetch when it changes
   useEffect(() => {
-    if (!selectedStoreId) return;
-    fetchStoreInventory(selectedStoreId, selectedDate);
-  }, [selectedStoreId, selectedDate, fetchStoreInventory]);
+    fetchStoreInventory();
+  }, [selectedDate, fetchStoreInventory]);
 
   // reset to page 1 whenever the selected store changes
   useEffect(() => {
     resetPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStoreId, selectedDate]);
+  }, [selectedDate]);
 
   // apply filter
   const handleApply = () => {
     setAppliedFilter(tempFilter);
     resetPage();
-    fetchStoreInventory(selectedStoreId, selectedDate, tempFilter, 1);
+    fetchStoreInventory(tempFilter, 1);
   };
 
   // clear filter
   const handleClearFilter = () => {
     setAppliedFilter(DEFAULT_FILTER);
     setTempFilter(DEFAULT_FILTER);
+    setSelectedDate("");
     resetPage();
-    fetchStoreInventory(selectedStoreId, selectedDate, DEFAULT_FILTER, 1);
+    fetchStoreInventory(DEFAULT_FILTER, 1);
   };
 
   //check filter
   const isFilterActive =
     appliedFilter.status !== "" ||
+    selectedDate !== "" ||
     appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
     appliedFilter.order !== DEFAULT_FILTER.order ||
     appliedFilter.limit !== DEFAULT_FILTER.limit;
@@ -333,30 +298,6 @@ export default function AdminStoreInventoryPage() {
               </PopoverContent>
             </Popover>
 
-            {/** Store select */}
-            <select
-              className="border rounded-md h-9 px-2 w-48 text-sm bg-card"
-              value={selectedStoreId}
-              onChange={(e) => setSelectedStoreId(e.target.value)}
-              disabled={isLoadingStores || storeOptions.length === 0}
-            >
-              {isLoadingStores ? (
-                <option value="">
-                  {t("admin.storeInventoriesPage.storeSelect.loading")}
-                </option>
-              ) : storeOptions.length === 0 ? (
-                <option value="">
-                  {t("admin.storeInventoriesPage.storeSelect.empty")}
-                </option>
-              ) : (
-                storeOptions.map((store) => (
-                  <option key={store.id} value={store.id}>
-                    {store.name}
-                  </option>
-                ))
-              )}
-            </select>
-
             {/* Date filter */}
             <input
               type="date"
@@ -377,6 +318,10 @@ export default function AdminStoreInventoryPage() {
               </button>
             )}
           </div>
+
+          <CreateStoreInventoryModal
+            onCreated={() => fetchStoreInventory(DEFAULT_FILTER, 1)}
+          />
         </div>
 
         {/* Table */}
@@ -399,9 +344,6 @@ export default function AdminStoreInventoryPage() {
                 {t("admin.storeInventoriesPage.table.columns.remainQuantity")}
               </TableHead>
               <TableHead>
-                {t("admin.storeInventoriesPage.table.columns.updatedBy")}
-              </TableHead>
-              <TableHead>
                 {t("admin.storeInventoriesPage.table.columns.status")}
               </TableHead>
               <TableHead>
@@ -416,7 +358,7 @@ export default function AdminStoreInventoryPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={8}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
@@ -425,7 +367,7 @@ export default function AdminStoreInventoryPage() {
             ) : stores.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={8}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -476,9 +418,6 @@ export default function AdminStoreInventoryPage() {
                     </TableCell>
                     <TableCell className="font-medium">
                       {storeInventory.remaining_quantity}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {storeInventory.staffs?.users?.full_name ?? "-"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={statusVariant[statusKey] ?? "secondary"}>

@@ -11,14 +11,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { store_id, status, page, limit, date } = getSearchParams(req);
-
-    if (!store_id) {
-      return NextResponse.json(
-        { success: false, error: "store_id is required" },
-        { status: 400 },
-      );
-    }
+    const { status, page, limit, date } = getSearchParams(req);
 
     // parse page/limit & pagination
     const pageNum = Math.max(1, parseInt(page) || 1);
@@ -38,15 +31,10 @@ export async function GET(req: NextRequest) {
           is_active,
           product_translations(locale, name, slug),
           categories(id, name)
-        ),
-        staffs(
-          id,
-          users(id, full_name)
         )
       `,
         { count: "exact" },
       )
-      .eq("store_id", store_id)
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -78,9 +66,58 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Fetch store inventory error:", error);
+    console.error("Fetch daily inventory error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { success: false, error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
+    // check body
+    const body = await req.json();
+    const { items } = body;
+
+    if (!items?.length) {
+      return NextResponse.json(
+        { success: false, error: "Items is required" },
+        { status: 400 },
+      );
+    }
+
+    // map items thành rows để upsert 1 lần
+    const rows = items.map(
+      (item: { product_id: string; quantity: number }) => ({
+        product_id: item.product_id,
+        planned_quantity: item.quantity,
+        updated_at: new Date().toISOString(),
+        business_date: new Date().toISOString().split("T")[0],
+        status: "draft",
+      }),
+    );
+
+    const { error } = await supabaseAdmin
+      .from("daily_inventories")
+      .upsert(rows, {
+        onConflict: "product_id,business_date",
+      });
+
+    if (error) throw error;
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Update inventory error:", error);
+    return NextResponse.json(
+      { success: false, error: "Internal Server Error" },
       { status: 500 },
     );
   }
