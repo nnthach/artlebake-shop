@@ -317,3 +317,34 @@ export interface PreorderSchedule {
   created_at: string;
   updated_at: string;
 }
+
+export interface PreorderItem {
+  id: string;
+  schedule_id: string;
+  product_id: string;
+  planned_quantity: number;
+  remaining_quantity: number;
+  created_at: string;
+  updated_at: string | null;
+
+  products: {
+    id: string;
+    price: number;
+    image_url: string[];
+    is_active: boolean;
+    product_translations: {
+      locale: string;
+      name: string;
+      slug: string;
+    }[];
+    categories: {
+      id: string;
+      name: string;
+    } | null;
+  };
+  preorder_schedules: {
+    id: string;
+    date: string;
+    status: boolean;
+  };
+}

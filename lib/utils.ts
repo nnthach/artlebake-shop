@@ -38,6 +38,7 @@ export function getSearchParams(req: NextRequest) {
     limit: params.get("limit") ?? "10",
     search: params.get("search")?.trim() ?? "",
     date: params.get("date") ?? "",
+    schedule_id: params.get("schedule_id") ?? "",
   };
 }
 export function generateOrderCode() {

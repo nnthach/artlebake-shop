@@ -28,6 +28,7 @@ import {
   FlaskConical,
   LayoutDashboard,
   Package,
+  ShoppingBag,
   ShoppingCart,
   Tag,
   Users,
@@ -50,6 +51,11 @@ const NAV_STORE_MANAGEMENT = [
     key: "preorderSchedules",
     href: "/admin/preorder-schedules",
     icon: Calendar,
+  },
+  {
+    key: "preorderItems",
+    href: "/admin/preorder-items",
+    icon: ShoppingBag,
   },
 ];
 
