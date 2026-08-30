@@ -199,7 +199,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                     <p className="font-semibold">{order.phone}</p>
                   </div>
                   {order.stores && (
-                    <div className="col-span-2 space-y-1 border-t border-slate-200 pt-3">
+                    <div className="col-span-2 space-y-1 border-t border-zinc-200 pt-3">
                       <p className="text-sm text-slate-500">
                         {t("admin.orderDetailSheet.customer.store")}
                       </p>

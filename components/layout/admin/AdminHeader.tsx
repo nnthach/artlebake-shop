@@ -39,6 +39,7 @@ const BREADCRUMB_MAP: Record<string, string> = {
   staffs: "staffs",
   stores: "stores",
   "store-inventories": "storeInventories",
+  "preorder-schedules": "preorderSchedules",
 };
 
 function useBreadcrumbs() {
@@ -59,7 +60,7 @@ export function AdminHeader() {
   const { logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background px-6 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-zinc-200 bg-white px-6 backdrop-blur-sm">
       {/* Sidebar toggle */}
       <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground" />
 

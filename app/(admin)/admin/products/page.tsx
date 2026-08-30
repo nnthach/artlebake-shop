@@ -184,7 +184,7 @@ export default function AdminProductPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border bg-card shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
         {/* Card header */}
         <div className="flex items-center justify-between border-b px-4 py-4">
           <div className="flex items-center gap-3">

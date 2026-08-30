@@ -12,7 +12,7 @@ export default function AdminLayoutClient({
       <AdminSidebar />
       <SidebarInset>
         <AdminHeader />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 bg-[#FAFAFA] p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -309,3 +309,11 @@ export interface KnowledgeSearchResult {
   metadata: Record<string, unknown> | null;
   similarity: number;
 }
+
+export interface PreorderSchedule {
+  id?: string;
+  date: string;
+  status: boolean;
+  created_at: string;
+  updated_at: string;
+}

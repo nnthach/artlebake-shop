@@ -23,14 +23,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Boxes,
+  Calendar,
   ChevronUp,
-  Croissant,
   FlaskConical,
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Star,
-  Store,
   Tag,
   Users,
 } from "lucide-react";
@@ -38,18 +36,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
+import Image from "next/image";
 
 const NAV_MANAGEMENT = [
   { key: "dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { key: "staffs", href: "/admin/staffs", icon: Users },
   { key: "orders", href: "/admin/orders", icon: ShoppingCart },
-  { key: "reviews", href: "/admin/reviews", icon: Star },
   { key: "customers", href: "/admin/customers", icon: Users },
 ];
 
 const NAV_STORE_MANAGEMENT = [
-  { key: "stores", href: "/admin/stores", icon: Store },
   { key: "storeInventories", href: "/admin/store-inventories", icon: Boxes },
+  {
+    key: "preorderSchedules",
+    href: "/admin/preorder-schedules",
+    icon: Calendar,
+  },
 ];
 
 const NAV_PRODUCTS = [
@@ -111,7 +112,7 @@ export function AdminSidebar() {
   const { t } = useI18n();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r border-zinc-200 bg-white">
       {/* Header - Logo */}
       <SidebarHeader className="border-b border-sidebar-border pb-3">
         <SidebarMenu>
@@ -123,7 +124,13 @@ export function AdminSidebar() {
             >
               <Link href="/admin/dashboard">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber flex-shrink-0">
-                  <Croissant className="h-5 w-5 text-white" />
+                  <Image
+                    src="/images/logo.jpg"
+                    alt="Artle Bakeshop"
+                    width={32}
+                    height={32}
+                    className="h-full w-full rounded-full object-cover"
+                  />{" "}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-bold text-sidebar-foreground">
@@ -152,7 +159,7 @@ export function AdminSidebar() {
 
         <NavGroup
           items={NAV_STORE_MANAGEMENT}
-          label={t("admin.sidebar.groups.storeManagement")}
+          label={t("admin.sidebar.groups.productSellManagement")}
           pathname={pathname}
           t={t}
         />

@@ -369,6 +369,7 @@ export const translations = {
         staffs: "Staffs",
         stores: "Stores",
         storeInventories: "Daily Inventory",
+        preorderSchedules: "Pre-order Schedule",
       },
       headerDropdown: {
         notifications: "Notifications",
@@ -381,7 +382,7 @@ export const translations = {
       sidebar: {
         groups: {
           management: "Management",
-          storeManagement: "Store Management",
+          productSellManagement: "Product Sales Management",
           products: "Products",
           system: "System",
         },
@@ -397,6 +398,7 @@ export const translations = {
           settings: "Settings",
           stores: "Stores",
           storeInventories: "Daily Inventory",
+          preorderSchedules: "Pre Order Schedule",
         },
         user: {
           profile: "Profile",
@@ -409,6 +411,53 @@ export const translations = {
         headerTitle: {
           title: "Dashboard",
           subtitle: "Overview of Artle Bakeshop's activity",
+        },
+      },
+      preorderSchedulePage: {
+        headerTitle: {
+          title: "Pre-order Schedule",
+          subtitle: "Manage upcoming pre-order schedules and slots",
+        },
+        calendar: {
+          today: "Today",
+          weekdays: {
+            mon: "Mon",
+            tue: "Tue",
+            wed: "Wed",
+            thu: "Thu",
+            fri: "Fri",
+            sat: "Sat",
+            sun: "Sun",
+          },
+          legend: {
+            open: "Open",
+            closed: "Closed",
+            noSchedule: "No schedule",
+          },
+        },
+        detail: {
+          selectedDate: "Selected date",
+          title: "Pre-order availability",
+          description: "Customers can place pre-order orders for this date.",
+          status: {
+            open: {
+              label: "Open",
+              description: "Accepting pre-orders",
+            },
+            closed: {
+              label: "Closed",
+              description: "Not accepting pre-orders",
+            },
+          },
+          metadata: {
+            date: "Date",
+            createdAt: "Created at",
+            lastUpdated: "Last updated",
+          },
+          actions: {
+            save: "Save Changes",
+            saving: "Saving...",
+          },
         },
       },
       // shared table
@@ -878,6 +927,7 @@ export const translations = {
           reviews: "Reviews",
           customers: "Customers",
           storeInventories: "Daily Inventory",
+          preorderSchedules: "Pre-order Schedule",
         },
         user: {
           profile: "Profile",
@@ -1292,6 +1342,7 @@ export const translations = {
         staffs: "Nhân viên",
         stores: "Cửa hàng",
         storeInventories: "Bánh mỗi ngày",
+        preorderSchedules: "Lịch đặt trước",
       },
       headerDropdown: {
         notifications: "Thông báo",
@@ -1304,7 +1355,7 @@ export const translations = {
       sidebar: {
         groups: {
           management: "Quản lý",
-          storeManagement: "Quản lý cửa hàng",
+          productSellManagement: "Quản lý hàng bán",
           products: "Sản phẩm",
           system: "Hệ thống",
         },
@@ -1320,6 +1371,7 @@ export const translations = {
           settings: "Cài đặt",
           staffs: "Nhân viên",
           storeInventories: "Bánh mỗi ngày",
+          preorderSchedules: "Lịch đặt trước",
         },
         user: {
           profile: "Hồ sơ",
@@ -1332,6 +1384,53 @@ export const translations = {
         headerTitle: {
           title: "Tổng quan",
           subtitle: "Tổng quan hoạt động của Artle Bakeshop",
+        },
+      },
+      preorderSchedulePage: {
+        headerTitle: {
+          title: "Lịch đặt trước",
+          subtitle: "Quản lý lịch đặt trước và khung thời gian sắp tới",
+        },
+        calendar: {
+          today: "Hôm nay",
+          weekdays: {
+            mon: "T2",
+            tue: "T3",
+            wed: "T4",
+            thu: "T5",
+            fri: "T6",
+            sat: "T7",
+            sun: "CN",
+          },
+          legend: {
+            open: "Mở",
+            closed: "Đóng",
+            noSchedule: "Không có lịch",
+          },
+        },
+        detail: {
+          selectedDate: "Ngày đang chọn",
+          title: "Tình trạng đặt trước",
+          description: "Khách hàng có thể đặt hàng trước cho ngày này.",
+          status: {
+            open: {
+              label: "Mở",
+              description: "Đang nhận đặt trước",
+            },
+            closed: {
+              label: "Đóng",
+              description: "Không nhận đặt trước",
+            },
+          },
+          metadata: {
+            date: "Ngày",
+            createdAt: "Ngày tạo",
+            lastUpdated: "Cập nhật lần cuối",
+          },
+          actions: {
+            save: "Lưu thay đổi",
+            saving: "Đang lưu...",
+          },
         },
       },
       // shared table
