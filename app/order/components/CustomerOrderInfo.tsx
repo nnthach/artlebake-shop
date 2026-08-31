@@ -24,8 +24,8 @@ export default function CustomerOrderInfo({
   const { t } = useI18n();
 
   return (
-    <section className="rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-charcoal/50">
+    <section className="">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
         {t("orderPage.info.title")}
       </h2>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone, Store } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 
 import { useI18n } from "@/context/I18nContext";
 
@@ -8,17 +8,13 @@ export default function StoreAddress() {
   const { locale } = useI18n();
 
   return (
-    <section className="rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-charcoal/50">
+    <section className="">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
         {locale === "vi" ? "Địa chỉ nhận hàng" : "Pickup location"}
       </h2>
 
       <div className="mt-4 rounded-xl bg-charcoal/5 p-4">
         <div className="flex gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Store className="h-5 w-5" />
-          </div>
-
           <div className="min-w-0">
             <p className="font-semibold text-charcoal">Duotech Bakery</p>
 

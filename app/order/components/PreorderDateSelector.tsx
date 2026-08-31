@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
 import { useEffect, useState } from "react";
@@ -100,24 +100,15 @@ export default function PreorderDateSelector({
   };
 
   return (
-    <section className="rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
-      <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <CalendarDays className="h-5 w-5" />
-        </div>
-
-        <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-charcoal/50">
-            {locale === "vi" ? "Ngày nhận bánh" : "Pickup date"}
-          </h2>
-
-          <p className="mt-1 text-xs text-charcoal/50">
-            {locale === "vi"
-              ? "Chọn ngày bạn muốn nhận đơn đặt trước."
-              : "Choose when you would like to receive your pre-order."}
-          </p>
-        </div>
-      </div>
+    <section className="">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
+        {locale === "vi" ? "Ngày nhận bánh" : "Pickup date"}
+      </h2>
+      <p className="mt-1 text-xs text-charcoal/50">
+        {locale === "vi"
+          ? "Một số sản phẩm trong giỏ hiện chưa có sẵn. Vui lòng chọn ngày đặt trước để nhận đầy đủ đơn hàng."
+          : "Some items in your cart are currently unavailable. Please choose a pre-order date to receive your complete order."}
+      </p>
 
       {isLoading ? (
         <div className="mt-4 flex items-center justify-center py-6 text-sm text-charcoal/50">
@@ -148,19 +139,19 @@ export default function PreorderDateSelector({
                 className={cn(
                   "flex flex-col items-center rounded-xl border px-2 py-3 transition",
                   selected
-                    ? "border-primary bg-primary text-white ring-1 ring-primary"
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
                     : "border-charcoal/10 bg-white text-charcoal hover:border-primary/40 hover:bg-primary/5",
                 )}
               >
-                <span className="text-[11px] font-medium uppercase opacity-60">
+                <span className="text-[11px] font-medium uppercase text-black">
                   {getDayName(date)}
                 </span>
 
-                <span className="mt-1 text-xl font-bold">
+                <span className="mt-1 text-xl font-bold text-black">
                   {getDayNumber(date)}
                 </span>
 
-                <span className="text-[11px] opacity-60">{getMonth(date)}</span>
+                <span className="text-[11px] text-black">{getMonth(date)}</span>
               </button>
             );
           })}

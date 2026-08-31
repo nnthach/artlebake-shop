@@ -27,7 +27,7 @@ export default function OrderSummary({
     <div className="lg:col-span-2 lg:h-full">
       <div className="flex h-full flex-col rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-charcoal">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-primary">
             {t("orderPage.summary.title")}
           </h2>
           {items.length > 0 && (
@@ -139,9 +139,7 @@ export default function OrderSummary({
               </div>
               <div className="flex items-center justify-between border-t border-dashed border-charcoal/15 pt-3 text-base font-bold text-charcoal">
                 <span>{t("orderPage.summary.total")}</span>
-                <span className="text-amber-600">
-                  {formatPrice(grandTotal)}
-                </span>
+                <span className="text-primary">{formatPrice(grandTotal)}</span>
               </div>
             </div>
           </>

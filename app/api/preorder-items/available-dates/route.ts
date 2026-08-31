@@ -19,9 +19,11 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
 
-    const productIds = [...new Set(searchParams.getAll("product_ids"))].filter(
-      Boolean,
-    );
+    const productIds = searchParams
+      .getAll("product_ids")
+      .filter(
+        (value, index, values) => value && values.indexOf(value) === index,
+      );
 
     if (productIds.length === 0) {
       return NextResponse.json(
@@ -58,9 +60,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Get unique schedule IDs
-    const scheduleIds = [
-      ...new Set(preorderItems.map((item) => item.schedule_id)),
-    ];
+    const scheduleIds = preorderItems
+      .map((item) => item.schedule_id)
+      .filter(
+        (value, index, values) => value && values.indexOf(value) === index,
+      );
 
     // Get schedules
     const { data: schedulesData, error: schedulesError } = await supabase
@@ -127,13 +131,19 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const availableDates = [...firstProductDates]
-      .filter((date) =>
-        productIds.every((productId) =>
-          datesByProduct.get(productId)?.has(date),
-        ),
-      )
-      .sort();
+    const availableDates: string[] = [];
+
+    firstProductDates.forEach((date) => {
+      const isAvailableForAllProducts = productIds.every((productId) =>
+        datesByProduct.get(productId)?.has(date),
+      );
+
+      if (isAvailableForAllProducts) {
+        availableDates.push(date);
+      }
+    });
+
+    availableDates.sort();
 
     return NextResponse.json({
       data: availableDates,
