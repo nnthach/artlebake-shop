@@ -7,6 +7,8 @@ import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
   product: BakeryProduct;
@@ -22,10 +24,26 @@ export default function ProductCard({
   animation,
 }: ProductCardProps) {
   const { t, locale } = useI18n();
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
   const hasDaily = (product.daily?.remaining_quantity ?? 0) > 0;
   const hasPreorder = product.preorder?.available ?? false;
   const isAvailable = hasDaily || hasPreorder;
+
+  const addToCartButton = async (product: BakeryProduct) => {
+    setIsAdding(true);
+    await addItem({
+      id: product.id,
+      name: product?.name || "",
+      slug: product.slug || "",
+      price: product.price,
+      image_url: product.image,
+      available: product.daily.available,
+      preorder: product.preorder.available,
+    });
+    setIsAdding(false);
+  };
 
   return (
     <div
@@ -41,7 +59,7 @@ export default function ProductCard({
       <Link href={`/menu/${product.id}`}>
         <div className="relative h-72 w-full overflow-hidden">
           <Image
-            src={product.image}
+            src={product?.image}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -86,12 +104,13 @@ export default function ProductCard({
 
         <div className="mt-4 flex items-center justify-between">
           <span className="text-lg font-bold text-charcoal">
-            {product.price}
+            {product.price.toLocaleString("vi-VN")} đ
           </span>
 
           <Button
             type="button"
-            disabled={!isAvailable}
+            disabled={!isAvailable || isAdding}
+            onClick={() => addToCartButton(product)}
             size={"sm"}
             className="rounded-2xl"
           >

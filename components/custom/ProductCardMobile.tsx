@@ -66,7 +66,7 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
         {/* Bottom */}
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <span className="text-sm font-bold text-charcoal">
-            {product.price}
+            {product.price.toLocaleString("vi-VN")} đ
           </span>
 
           <button

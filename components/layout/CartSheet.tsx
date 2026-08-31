@@ -62,10 +62,10 @@ export default function CartSheet() {
             <div className="custom-scrollbar flex-1 space-y-4 overflow-y-auto py-2 pr-1">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3">
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
+                  <div className="relative aspect-square w-20 shrink-0 overflow-hidden rounded-md bg-muted">
                     {item.product.image_url?.[0] && (
                       <Image
-                        src={item.product.image_url[0]}
+                        src={item.product.image_url}
                         alt={item.product.name}
                         fill
                         className="object-cover"

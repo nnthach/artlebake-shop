@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import ProductCard from "@/components/custom/ProductCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BakeryProduct, ProductDetailPage } from "@/types";
+import { FetchedProductMenu, ProductDetailPage } from "@/types";
 import { ChevronLeft, ShoppingCart, Wheat } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,6 @@ import { notFound } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -23,13 +22,14 @@ export default function ProductDetailClient({
   params: { slug: string };
 }) {
   const { t, locale } = useI18n();
-  const { user } = useAuth();
   const { addItem } = useCart();
 
   const router = useRouter();
 
   const [product, setProduct] = useState<ProductDetailPage | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<BakeryProduct[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<FetchedProductMenu[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [notFoundError, setNotFoundError] = useState(false);
@@ -62,28 +62,13 @@ export default function ProductDetailClient({
           locale,
           category_id: categoryId,
         });
-        const res = await fetch(`/api/admin/products?${query.toString()}`);
+        const res = await fetch(`/api/products/menu?${query.toString()}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
-          const related: BakeryProduct[] = data.data
+          const related: FetchedProductMenu[] = data.data
             .filter((p: { id: string }) => p.id !== currentId)
-            .slice(0, 3)
-            .map(
-              (p: {
-                slug: string;
-                image_url: string[];
-                name: string;
-                description: string;
-                price: number;
-              }) => ({
-                id: p.slug,
-                image: p.image_url?.[0] ?? "/images/placeholder.webp",
-                name: p.name,
-                description: p.description,
-                price: p.price.toLocaleString("vi-VN") + " đ",
-              }),
-            );
+            .slice(0, 3);
           setRelatedProducts(related);
         }
       } catch (error) {
@@ -133,16 +118,16 @@ export default function ProductDetailClient({
   }
 
   const addToCartButton = async () => {
-    if (!user) {
-      toast.error(
-        locale === "en"
-          ? "Please log in to add items to cart"
-          : "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
-      );
-      return;
-    }
     setIsAdding(true);
-    await addItem(product.id);
+    await addItem({
+      id: product.id,
+      name: product?.name || "",
+      slug: product.slug || "",
+      price: product.price,
+      image_url: product.image_url[0],
+      available: product.daily.available,
+      preorder: product.preorder.available,
+    });
     setIsAdding(false);
   };
 
@@ -272,7 +257,20 @@ export default function ProductDetailClient({
             </p>
             <div className="mt-10 grid gap-8 text-left sm:grid-cols-2 lg:grid-cols-3">
               {relatedProducts.map((item) => (
-                <ProductCard key={item.id} product={item} animation={false} />
+                <ProductCard
+                  key={item.id}
+                  product={{
+                    id: item.slug,
+                    image: item.image_url?.[0] ?? "/images/placeholder.webp",
+                    name: item.name,
+                    description: item.description,
+                    slug: item.slug,
+                    price: item.price,
+                    daily: item.daily,
+                    preorder: item.preorder,
+                  }}
+                  animation={false}
+                />
               ))}
             </div>
           </div>

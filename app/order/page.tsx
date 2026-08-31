@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Loader2, QrCode, ShoppingBag } from "lucide-react";
+import { Loader2, QrCode, ShoppingBag } from "lucide-react";
 
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ import {
 } from "@/lib/validations/order";
 import toast from "react-hot-toast";
 
-const SHIPPING_FEE = 1000;
+const SHIPPING_FEE = 0;
 const FREE_SHIPPING_THRESHOLD = 300000;
 
 export default function OrderPage() {
@@ -55,15 +54,6 @@ export default function OrderPage() {
     },
   });
 
-  const [isQrOpen, setIsQrOpen] = useState(false);
-
-  // qr
-  const handleQrOpenChange = (open: boolean) => {
-    setIsQrOpen(open);
-    if (open) setValue("paymentMethod", "qr", { shouldValidate: false });
-  };
-  // end qr
-
   const shippingFee =
     totalPrice === 0 || totalPrice >= FREE_SHIPPING_THRESHOLD
       ? 0
@@ -83,7 +73,7 @@ export default function OrderPage() {
     shipping_fee: shippingFee,
     total: grandTotal,
     items: items.map((item) => ({
-      product_id: item.product_id,
+      product_id: item.product.id,
       product_name: item.product.name,
       unit_price: item.product.price,
       quantity: item.quantity,
@@ -162,8 +152,8 @@ export default function OrderPage() {
                   <div className="mt-4 space-y-3">
                     {/* QR code / PayOS payment */}
                     <Collapsible
-                      open={isQrOpen}
-                      onOpenChange={handleQrOpenChange}
+                      open={true}
+                      // onOpenChange={handleQrOpenChange}
                       className="rounded-xl border border-charcoal/10"
                     >
                       <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 p-4 text-left">
@@ -178,15 +168,8 @@ export default function OrderPage() {
                             </p>
                           </div>
                         </div>
-                        <ChevronDown
-                          className={`h-4 w-4 shrink-0 text-charcoal/40 transition-transform ${
-                            isQrOpen ? "rotate-180" : ""
-                          }`}
-                        />
                       </CollapsibleTrigger>
                       <CollapsibleContent className="border-t border-charcoal/10 p-4">
-                        {/* <Button onClick={handleSubmit(onSubmit)}>
-                        </Button> */}
                         <Button
                           type="button"
                           variant="default"

@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FieldErrors,
-  UseFormRegister,
-  UseFormSetValue,
-} from "react-hook-form";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 import InputFormField from "@/components/custom/InputFormField";
 import { useI18n } from "@/context/I18nContext";
@@ -100,18 +96,17 @@ export default function CustomerOrderInfo({
         {t("orderPage.info.title")}
       </h2>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <InputFormField
-            label={t("orderPage.info.fullName")}
-            type="text"
-            placeholder={t("orderPage.info.fullNamePlaceholder")}
-            required
-            disabled={isSubmitting}
-            error={errors.name?.message}
-            className={fieldClassName}
-            {...register("name")}
-          />
-        </div>
+        <InputFormField
+          label={t("orderPage.info.fullName")}
+          type="text"
+          placeholder={t("orderPage.info.fullNamePlaceholder")}
+          required
+          disabled={isSubmitting}
+          error={errors.name?.message}
+          className={fieldClassName}
+          {...register("name")}
+        />
+
         <InputFormField
           label={t("orderPage.info.phone")}
           type="text"
@@ -122,6 +117,7 @@ export default function CustomerOrderInfo({
           className={fieldClassName}
           {...register("phone")}
         />
+
         <InputFormField
           label={t("orderPage.info.city")}
           type="select"
@@ -158,18 +154,16 @@ export default function CustomerOrderInfo({
           error={errors.ward?.message}
           className={fieldClassName}
         />
-        <div className="sm:col-span-2">
-          <InputFormField
-            label={t("orderPage.info.address")}
-            type="text"
-            placeholder={t("orderPage.info.addressPlaceholder")}
-            required
-            disabled={isSubmitting}
-            error={errors.address?.message}
-            className={fieldClassName}
-            {...register("address")}
-          />
-        </div>
+        <InputFormField
+          label={t("orderPage.info.address")}
+          type="text"
+          placeholder={t("orderPage.info.addressPlaceholder")}
+          required
+          disabled={isSubmitting}
+          error={errors.address?.message}
+          className={fieldClassName}
+          {...register("address")}
+        />
         <div className="sm:col-span-2">
           <InputFormField
             label={t("orderPage.info.note")}

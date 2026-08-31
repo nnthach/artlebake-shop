@@ -21,12 +21,14 @@ export interface BakeryProduct {
   image: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
+  slug: string;
 
   daily: {
     planned_quantity: number;
     remaining_quantity: number;
     status: StoreInventoryItemStatusEnum;
+    available: boolean;
   };
 
   preorder: {
@@ -151,6 +153,41 @@ export interface ProductItem {
   status?: StoreInventoryItemStatusEnum;
 }
 
+export interface FetchedProductMenu {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  slug: string;
+  image_url: string[];
+  is_active: boolean;
+
+  category: {
+    id: string;
+    name: {
+      en: string;
+      vi: string;
+    };
+  } | null;
+
+  daily: {
+    planned_quantity: number;
+    remaining_quantity: number;
+    status: StoreInventoryItemStatusEnum;
+    available: boolean;
+  };
+
+  preorder: {
+    available: boolean;
+    schedules: {
+      schedule_id: string;
+      date: string;
+      planned_quantity: number;
+      remaining_quantity: number;
+    }[];
+  };
+}
+
 export interface ProductDetailPage {
   id: string;
   price: number;
@@ -257,12 +294,13 @@ export interface CartItemProduct {
   name: string;
   slug: string;
   price: number;
-  image_url: string[];
+  image_url: string;
+  available: boolean;
+  preorder: boolean;
 }
 
 export interface CartItem {
   id: string;
-  product_id: string;
   quantity: number;
   product: CartItemProduct;
 }

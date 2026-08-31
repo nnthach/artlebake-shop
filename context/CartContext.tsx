@@ -9,8 +9,6 @@ import React, {
   useState,
 } from "react";
 import toast from "react-hot-toast";
-import { useAuth } from "./AuthContext";
-import { useI18n } from "./I18nContext";
 
 interface CartContextType {
   items: CartItem[];
@@ -19,7 +17,7 @@ interface CartContextType {
   totalPrice: number;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  addItem: (productId: string, quantity?: number) => Promise<void>;
+  addItem: (product: CartItem["product"], quantity?: number) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   refreshCart: () => Promise<void>;
@@ -28,103 +26,111 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
+const CART_STORAGE_KEY = "bakery_cart";
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  const { locale } = useI18n();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const refreshCart = useCallback(async () => {
-    if (!user) {
-      setItems([]);
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/cart?locale=${locale}`);
-      const data = await res.json();
-      if (data.success && data.data) {
-        setItems(data.data.items ?? []);
+
+      const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+
+      if (!storedCart) {
+        setItems([]);
+        return;
       }
+
+      const parsedCart: CartItem[] = JSON.parse(storedCart);
+
+      setItems(Array.isArray(parsedCart) ? parsedCart : []);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load cart:", error);
+      setItems([]);
     } finally {
       setIsLoading(false);
     }
-  }, [user, locale]);
+  }, []);
 
   useEffect(() => {
     refreshCart();
   }, [refreshCart]);
 
-  const addItem = async (productId: string, quantity = 1) => {
+  const addItem = async (
+    product: CartItem["product"],
+    quantity = 1,
+  ): Promise<void> => {
     try {
-      const res = await fetch("/api/cart/items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_id: productId, quantity }),
-      });
-      if (!res.ok) throw new Error("Failed to add item");
-      await refreshCart();
-      toast.success(
-        locale === "vi" ? "Đã thêm vào giỏ hàng!" : "Added to cart!",
-      );
+      const existingItem = items.find((item) => item.product.id === product.id);
+
+      let newItems: CartItem[];
+
+      if (existingItem) {
+        newItems = items.map((item) =>
+          item.product.id === product.id
+            ? {
+                ...item,
+                quantity: item.quantity + quantity,
+              }
+            : item,
+        );
+      } else {
+        newItems = [
+          ...items,
+          {
+            id: crypto.randomUUID(),
+            quantity,
+            product,
+          },
+        ];
+      }
+
+      setItems(newItems);
+
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
+
+      toast.success("Đã thêm vào giỏ hàng!");
     } catch (error) {
-      console.error(error);
-      toast.error(
-        locale === "vi"
-          ? "Không thể thêm vào giỏ hàng."
-          : "Failed to add to cart.",
-      );
+      console.error("Failed to add item:", error);
+
+      toast.error("Không thể thêm sản phẩm vào giỏ hàng.");
     }
   };
 
-  const updateQuantity = async (itemId: string, quantity: number) => {
-    const prevItems = items;
-    setItems((curr) =>
-      curr.map((item) => (item.id === itemId ? { ...item, quantity } : item)),
+  const updateQuantity = async (
+    itemId: string,
+    quantity: number,
+  ): Promise<void> => {
+    if (quantity <= 0) {
+      await removeItem(itemId);
+      return;
+    }
+
+    const newItems = items.map((item) =>
+      item.id === itemId ? { ...item, quantity } : item,
     );
 
-    try {
-      const res = await fetch(`/api/cart/items/${itemId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity }),
-      });
-      if (!res.ok) throw new Error("Failed to update quantity");
-    } catch (error) {
-      console.error(error);
-      setItems(prevItems);
-      toast.error(
-        locale === "vi"
-          ? "Không thể cập nhật số lượng."
-          : "Failed to update quantity.",
-      );
-    }
+    setItems(newItems);
+
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
   };
 
-  const removeItem = async (itemId: string) => {
-    const prevItems = items;
-    setItems((curr) => curr.filter((item) => item.id !== itemId));
+  const removeItem = async (itemId: string): Promise<void> => {
+    const newItems = items.filter((item) => item.id !== itemId);
 
-    try {
-      const res = await fetch(`/api/cart/items/${itemId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to remove item");
-    } catch (error) {
-      console.error(error);
-      setItems(prevItems);
-      toast.error(
-        locale === "vi" ? "Không thể xóa sản phẩm." : "Failed to remove item.",
-      );
-    }
+    setItems(newItems);
+
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
+
+    toast.success("Đã xóa sản phẩm khỏi giỏ hàng.");
   };
 
   const clearCart = useCallback(() => {
     setItems([]);
+    localStorage.removeItem(CART_STORAGE_KEY);
   }, []);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

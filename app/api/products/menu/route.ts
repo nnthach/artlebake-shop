@@ -184,8 +184,6 @@ export async function GET(req: NextRequest) {
       (inventories ?? []).map((item) => [item.product_id, item]),
     );
 
-    console.log("inventoryMap map", inventoryMap);
-
     // 9. map preorder item
     const preorderMap = new Map<string, PreorderItemRow[]>();
     for (const item of preorderItems ?? []) {
@@ -194,7 +192,6 @@ export async function GET(req: NextRequest) {
       preorderMap.set(item.product_id, existing);
     }
 
-    console.log("preorder map", preorderMap);
     // 10. product format
     const formatted = (products ?? []).map((product) => {
       const translation = product.product_translations[0];
@@ -226,6 +223,7 @@ export async function GET(req: NextRequest) {
             inventory?.remaining_quantity && inventory.remaining_quantity > 0
               ? inventory.status
               : "out_of_stock",
+          available: (inventory?.remaining_quantity ?? 0) > 0,
         },
         // ------------------------------
         // Preorder availability

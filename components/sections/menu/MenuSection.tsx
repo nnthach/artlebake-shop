@@ -2,7 +2,10 @@
 
 import ProductCard from "@/components/custom/ProductCard";
 import { cn } from "@/lib/utils";
-import { CategoryItem, StoreInventoryItemStatusEnum } from "@/types";
+import {
+  CategoryItem,
+  FetchedProductMenu,
+} from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,40 +14,6 @@ import { useIsMobile } from "@/hooks/useMobile";
 import MenuSectionFilter from "@/components/sections/menu/MenuSectionFilter";
 import ProductCardMobile from "@/components/custom/ProductCardMobile";
 
-interface FetchedProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  slug: string;
-  image_url: string[];
-  is_active: boolean;
-
-  category: {
-    id: string;
-    name: {
-      en: string;
-      vi: string;
-    };
-  } | null;
-
-  daily: {
-    planned_quantity: number;
-    remaining_quantity: number;
-    status: StoreInventoryItemStatusEnum;
-  };
-
-  preorder: {
-    available: boolean;
-    schedules: {
-      schedule_id: string;
-      date: string;
-      planned_quantity: number;
-      remaining_quantity: number;
-    }[];
-  };
-}
-
 const PRODUCTS_PER_PAGE = 12;
 
 export default function MenuSection() {
@@ -52,7 +21,7 @@ export default function MenuSection() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
-  const [products, setProducts] = useState<FetchedProduct[]>([]);
+  const [products, setProducts] = useState<FetchedProductMenu[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -150,8 +119,6 @@ export default function MenuSection() {
   };
   // end pagination
 
-  const formatPrice = (price: number) => price.toLocaleString("vi-VN") + " đ";
-
   return (
     <section className="relative z-10 bg-sand sm:px-6 sm:py-16 px-4 py-8">
       <div className="mx-auto max-w-7xl">
@@ -193,7 +160,8 @@ export default function MenuSection() {
                         product.image_url?.[0] ?? "/images/placeholder.webp",
                       name: product.name,
                       description: product.description,
-                      price: formatPrice(product.price),
+                      slug: product.slug,
+                      price: product.price,
                       daily: product.daily,
                       preorder: product.preorder,
                     }}
@@ -213,7 +181,8 @@ export default function MenuSection() {
                         product.image_url?.[0] ?? "/images/placeholder.webp",
                       name: product.name,
                       description: product.description,
-                      price: formatPrice(product.price),
+                      slug: product.slug,
+                      price: product.price,
                       daily: product.daily,
                       preorder: product.preorder,
                     }}

@@ -61,10 +61,10 @@ export default function OrderSummary({
             <div className="custom-scrollbar mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3">
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-charcoal/5">
-                    {item.product.image_url?.[0] && (
+                  <div className="relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg bg-charcoal/5">
+                    {item.product.image_url && (
                       <Image
-                        src={item.product.image_url[0]}
+                        src={item.product.image_url}
                         alt={item.product.name}
                         fill
                         className="object-cover"
@@ -132,8 +132,9 @@ export default function OrderSummary({
                 <span>{t("orderPage.summary.shippingFee")}</span>
                 <span>
                   {shippingFee === 0
-                    ? t("orderPage.summary.free")
-                    : formatPrice(shippingFee)}
+                    ? "-"
+                    : // ? t("orderPage.summary.free")
+                      formatPrice(shippingFee)}
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-dashed border-charcoal/15 pt-3 text-base font-bold text-charcoal">
