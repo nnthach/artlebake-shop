@@ -324,6 +324,7 @@ export interface PreorderItem {
   product_id: string;
   planned_quantity: number;
   remaining_quantity: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string | null;
 

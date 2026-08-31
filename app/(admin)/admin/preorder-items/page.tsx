@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, LayoutGrid, Loader2, Eye, ImageOff } from "lucide-react";
+import {
+  Filter,
+  LayoutGrid,
+  Loader2,
+  Eye,
+  ImageOff,
+  Lock,
+  Unlock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -74,6 +82,8 @@ export default function AdminPreOrderItemPage() {
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
   const [tempFilter, setTempFilter] = useState<FilterState>(DEFAULT_FILTER);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
 
@@ -160,6 +170,35 @@ export default function AdminPreOrderItemPage() {
       ? 1
       : 0) +
     (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
+
+  const handleToggleActive = async (item: PreorderItem) => {
+    try {
+      setUpdatingId(item.id);
+
+      const response = await fetch(`/api/admin/preorder-items/${item.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          is_active: !item.is_active,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to update preorder item");
+      }
+
+      // Cách đơn giản nhất: reload lại list
+      await fetchPreOrderItem();
+    } catch (error) {
+      console.error("Toggle preorder item error:", error);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -351,6 +390,10 @@ export default function AdminPreOrderItemPage() {
                 {t("admin.preorderItemPage.table.columns.scheduleDate")}
               </TableHead>
 
+              <TableHead>
+                {t("admin.preorderItemPage.table.columns.status")}
+              </TableHead>
+
               <TableHead className="text-right">
                 {t("admin.table.columns.actions")}
               </TableHead>
@@ -361,7 +404,7 @@ export default function AdminPreOrderItemPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <Loader2 className="mx-auto h-6 w-6 animate-spin" />
@@ -370,7 +413,7 @@ export default function AdminPreOrderItemPage() {
             ) : preOrderItems.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -449,15 +492,52 @@ export default function AdminPreOrderItemPage() {
                       {scheduleDate}
                     </TableCell>
 
+                    {/* Status */}
+                    <TableCell>
+                      <span
+                        className={
+                          preOrderItem.is_active
+                            ? "inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700"
+                            : "inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
+                        }
+                      >
+                        {preOrderItem.is_active
+                          ? t("admin.preorderItemPage.status.active")
+                          : t("admin.preorderItemPage.status.blocked")}
+                      </span>
+                    </TableCell>
+
                     {/* Actions */}
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
+                        {/* View */}
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                          className="h-8 w-8 text-muted-foreground hover:bg-yellow-50 hover:text-yellow-600"
                         >
                           <Eye className="h-3.5 w-3.5" />
+                        </Button>
+
+                        {/* Toggle active */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={updatingId === preOrderItem.id}
+                          onClick={() => handleToggleActive(preOrderItem)}
+                          className={
+                            preOrderItem.is_active
+                              ? "h-8 w-8 text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                              : "h-8 w-8 text-muted-foreground hover:bg-green-50 hover:text-green-600"
+                          }
+                        >
+                          {updatingId === preOrderItem.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : preOrderItem.is_active ? (
+                            <Lock className="h-3.5 w-3.5" />
+                          ) : (
+                            <Unlock className="h-3.5 w-3.5" />
+                          )}
                         </Button>
                       </div>
                     </TableCell>

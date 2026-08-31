@@ -473,6 +473,7 @@ export const translations = {
             plannedQuantity: "Planned Qty",
             remainQuantity: "Remaining Qty",
             scheduleDate: "Schedule Date",
+            status: "Status",
           },
         },
         empty: "No pre-order items found.",
@@ -522,6 +523,10 @@ export const translations = {
           messages: {
             createFailed: "Failed to create preorder items",
           },
+        },
+        status: {
+          active: "Active",
+          blocked: "Blocked",
         },
       },
       // shared table
@@ -1511,6 +1516,7 @@ export const translations = {
             plannedQuantity: "SL dự kiến",
             remainQuantity: "SL còn lại",
             scheduleDate: "Ngày được đặt",
+            status: "Trạng thái",
           },
         },
         empty: "Chưa có sản phẩm đặt trước nào.",
@@ -1560,6 +1566,10 @@ export const translations = {
           messages: {
             createFailed: "Không thể tạo sản phẩm đặt trước",
           },
+        },
+        status: {
+          active: "Đang hoạt động",
+          blocked: "Bị khóa",
         },
       },
       // shared table
