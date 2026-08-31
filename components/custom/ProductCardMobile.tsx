@@ -1,21 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useI18n } from "@/context/I18nContext";
+import { BakeryProduct } from "@/types";
 
 type ProductCardMobileProps = {
-  product: {
-    id: string;
-    image: string;
-    name: string;
-    description: string;
-    price: string;
-    status: string;
-  };
+  product: BakeryProduct;
 };
 
 export default function ProductCardMobile({ product }: ProductCardMobileProps) {
   const { t, locale } = useI18n();
+
+  const hasDaily = (product.daily?.remaining_quantity ?? 0) > 0;
+  const hasPreorder = product.preorder?.available ?? false;
+  const isAvailable = hasDaily || hasPreorder;
 
   return (
     <div className="group flex gap-4 rounded-2xl bg-white p-3 shadow-sm transition-all duration-300 active:scale-[0.99]">
@@ -31,19 +31,30 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {product.status === "out_of_stock" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-charcoal/40">
-            <span className="text-xs font-medium text-white">
-              {t("menuPage.productStatus.out_of_stock")}
+        {/* Status */}
+        <div className="absolute left-2 top-0">
+          {hasDaily ? (
+            <span className="rounded-full bg-primary/90 px-2 py-0.5 text-[10px] font-medium text-white">
+              {t("menuPage.productStatus.available")}
             </span>
-          </div>
-        )}
+          ) : hasPreorder ? (
+            <span className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-medium text-white">
+              {t("menuPage.productStatus.preorder")}
+            </span>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-charcoal/40">
+              <span className="text-xs font-medium text-white">
+                {t("menuPage.productStatus.out_of_stock")}
+              </span>
+            </div>
+          )}
+        </div>
       </Link>
 
       {/* Product Info */}
       <div className="flex min-w-0 flex-1 flex-col py-0.5">
         <Link href={`/menu/${product.id}`}>
-          <h3 className="truncate font-serif text-lg italic text-charcoal">
+          <h3 className="truncate font-serif text-base text-charcoal">
             {product.name}
           </h3>
         </Link>
@@ -54,13 +65,13 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
 
         {/* Bottom */}
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-          <span className="text-base font-bold text-charcoal">
+          <span className="text-sm font-bold text-charcoal">
             {product.price}
           </span>
 
           <button
             type="button"
-            disabled={product.status === "out_of_stock"}
+            disabled={!isAvailable}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ShoppingCart className="h-3.5 w-3.5" />

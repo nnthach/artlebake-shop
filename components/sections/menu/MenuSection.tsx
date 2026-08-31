@@ -19,8 +19,30 @@ interface FetchedProduct {
   slug: string;
   image_url: string[];
   is_active: boolean;
-  category: { id: string; name: { en: string; vi: string } } | null;
-  status: StoreInventoryItemStatusEnum;
+
+  category: {
+    id: string;
+    name: {
+      en: string;
+      vi: string;
+    };
+  } | null;
+
+  daily: {
+    planned_quantity: number;
+    remaining_quantity: number;
+    status: StoreInventoryItemStatusEnum;
+  };
+
+  preorder: {
+    available: boolean;
+    schedules: {
+      schedule_id: string;
+      date: string;
+      planned_quantity: number;
+      remaining_quantity: number;
+    }[];
+  };
 }
 
 const PRODUCTS_PER_PAGE = 12;
@@ -172,7 +194,8 @@ export default function MenuSection() {
                       name: product.name,
                       description: product.description,
                       price: formatPrice(product.price),
-                      status: product.status,
+                      daily: product.daily,
+                      preorder: product.preorder,
                     }}
                     animation={false}
                   />
@@ -191,7 +214,8 @@ export default function MenuSection() {
                       name: product.name,
                       description: product.description,
                       price: formatPrice(product.price),
-                      status: product.status,
+                      daily: product.daily,
+                      preorder: product.preorder,
                     }}
                   />
                 ))}

@@ -22,6 +22,11 @@ export default function ProductCard({
   animation,
 }: ProductCardProps) {
   const { t, locale } = useI18n();
+
+  const hasDaily = (product.daily?.remaining_quantity ?? 0) > 0;
+  const hasPreorder = product.preorder?.available ?? false;
+  const isAvailable = hasDaily || hasPreorder;
+
   return (
     <div
       style={animation ? { animationDelay: `${index * 80}ms` } : undefined}
@@ -29,45 +34,68 @@ export default function ProductCard({
         animation
           ? inView
             ? "animate-fadeUp opacity-100"
-            : "opacity-0 translate-y-6"
+            : "translate-y-6 opacity-0"
           : ""
       }`}
     >
       <Link href={`/menu/${product.id}`}>
-        <div className="relative h-64 w-full overflow-hidden">
+        <div className="relative h-72 w-full overflow-hidden">
           <Image
             src={product.image}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          {product.status === "out_of_stock" && (
-            <Badge
-              variant="outline"
-              className="absolute left-3 top-3 border-transparent bg-charcoal/40 text-white"
-            >
-              {t("menuPage.productStatus.out_of_stock")}
-            </Badge>
-          )}
+
+          {/* Product status */}
+          <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+            {hasDaily ? (
+              <Badge
+                variant="outline"
+                className="border-transparent bg-primary/90 text-white"
+              >
+                {t("menuPage.productStatus.available")}
+              </Badge>
+            ) : hasPreorder ? (
+              <Badge
+                variant="outline"
+                className="border-transparent bg-amber-500/90 text-white"
+              >
+                {t("menuPage.productStatus.preorder")}
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="border-transparent bg-charcoal/40 text-white"
+              >
+                {t("menuPage.productStatus.out_of_stock")}
+              </Badge>
+            )}
+          </div>
         </div>
       </Link>
-      <div className="p-6">
+
+      <div className="p-4">
         <Link href={`/menu/${product.id}`}>
-          <h3 className="font-serif text-xl italic text-charcoal">
-            {product.name}
-          </h3>
+          <h3 className="font-serif text-xl text-charcoal">{product.name}</h3>
         </Link>
-        <p className="mt-2 text-sm text-charcoal/55">{product.description}</p>
+
+        <p className="mt-2 line-clamp-2 text-sm text-charcoal/55">
+          {product.description}
+        </p>
+
         <div className="mt-4 flex items-center justify-between">
           <span className="text-lg font-bold text-charcoal">
             {product.price}
           </span>
+
           <Button
             type="button"
-            disabled={product.status === "out_of_stock"}
+            disabled={!isAvailable}
+            size={"sm"}
             className="rounded-2xl"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-4 w-4" />
             <span>{locale === "en" ? "Add" : "Thêm"}</span>
           </Button>
         </div>

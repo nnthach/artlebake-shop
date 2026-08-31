@@ -6,7 +6,7 @@ import ProductCard from "@/components/custom/ProductCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BakeryProduct, ProductDetailPage } from "@/types";
-import { ChevronLeft, Wheat } from "lucide-react";
+import { ChevronLeft, ShoppingCart, Wheat } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -146,11 +146,15 @@ export default function ProductDetailClient({
     setIsAdding(false);
   };
 
+  // format
   const image = product.image_url?.[0] ?? "/images/placeholder.webp";
   const categoryName = product.category?.name?.[locale as "en" | "vi"] ?? "";
   const formattedPrice = product.price.toLocaleString("vi-VN") + " đ";
-  const isOutOfStock = product.status === "out_of_stock";
 
+  // Status
+  const hasDaily = product.daily?.available ?? false;
+  const hasPreorder = product.preorder?.available ?? false;
+  const isOutOfStock = !hasDaily && !hasPreorder;
   return (
     <div className="bg-sand">
       <Header />
@@ -159,7 +163,7 @@ export default function ProductDetailClient({
       <section className="relative overflow-hidden bg-charcoal-900 px-6 pb-8 pt-28">
         <Image
           src={image}
-          alt={product.name}
+          alt={product?.name || ""}
           fill
           priority
           className="object-cover object-center"
@@ -187,10 +191,10 @@ export default function ProductDetailClient({
       {/* Product detail */}
       <section className="relative z-10 px-6 py-14">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="relative mx-auto h-72 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-md sm:h-96">
+          <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-md sm:h-96">
             <Image
               src={image}
-              alt={product.name}
+              alt={product?.name || ""}
               fill
               priority
               className="object-cover"
@@ -222,34 +226,40 @@ export default function ProductDetailClient({
             </div>
           )}
 
+          {/* Button */}
           <div className="mt-10 flex flex-col items-center gap-3">
+            {/* Product status */}
+            <div className="flex items-center gap-2">
+              {hasDaily && (
+                <span className="rounded-full bg-primary/90 px-3 py-1 text-xs font-medium text-white">
+                  {t("menuPage.productStatus.available")}
+                </span>
+              )}
+
+              {hasPreorder && (
+                <span className="rounded-full bg-charcoal px-3 py-1 text-xs font-medium text-white">
+                  {t("menuPage.productStatus.preorder")}
+                </span>
+              )}
+            </div>
+
+            {/* Add to cart */}
             <Button
               variant={isOutOfStock ? "secondary" : "default"}
               size="lg"
               className={cn(
                 "font-semibold",
                 isOutOfStock &&
-                  "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10",
+                  "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10 rounded-2xl",
               )}
               disabled={isAdding || isOutOfStock}
               onClick={addToCartButton}
             >
+              {!isOutOfStock && <ShoppingCart className="h-10 w-10" />}
               {isOutOfStock
                 ? t("menuPage.productStatus.out_of_stock")
                 : t("button.addToCart")}
             </Button>
-
-            {!isOutOfStock && product?.stores.length > 0 && (
-              <div className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
-
-                <p>
-                  {locale === "en" ? "Available at" : "Còn hàng tại"}{" "}
-                  <span className="font-semibold">{product.stores.length}</span>{" "}
-                  {locale === "en" ? "cities" : "thành phố"}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </section>

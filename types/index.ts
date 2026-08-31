@@ -22,7 +22,22 @@ export interface BakeryProduct {
   name: string;
   description: string;
   price: string;
-  status?: StoreInventoryItemStatusEnum;
+
+  daily: {
+    planned_quantity: number;
+    remaining_quantity: number;
+    status: StoreInventoryItemStatusEnum;
+  };
+
+  preorder: {
+    available: boolean;
+    schedules: {
+      schedule_id: string;
+      date: string;
+      planned_quantity: number;
+      remaining_quantity: number;
+    }[];
+  };
 }
 
 export type MenuCategoryId = "bread" | "cake" | "pastry";
@@ -136,8 +151,45 @@ export interface ProductItem {
   status?: StoreInventoryItemStatusEnum;
 }
 
-export interface ProductDetailPage extends ProductItem {
-  stores: ProductStoreInventory[];
+export interface ProductDetailPage {
+  id: string;
+  price: number;
+  image_url: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category: {
+    id: string;
+    name: {
+      vi: string;
+      en: string;
+    };
+  } | null;
+  name: string | null;
+  description: string | null;
+  slug: string | null;
+  ingredients: {
+    id: string;
+    name: {
+      vi: string;
+      en: string;
+    };
+  }[];
+
+  daily: {
+    planned_quantity: number;
+    remaining_quantity: number;
+    available: boolean;
+  };
+  preorder: {
+    available: boolean;
+    schedules: {
+      schedule_id: string;
+      date: string;
+      planned_quantity: number;
+      remaining_quantity: number;
+    }[];
+  };
 }
 
 export interface ProductSearchVectorItem {

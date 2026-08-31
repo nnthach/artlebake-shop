@@ -180,6 +180,7 @@ export const translations = {
       },
       productStatus: {
         available: "Available",
+        preorder: "Pre-order",
         low_stock: "Low Stock",
         out_of_stock: "Out of Stock",
         draft: "Draft",
@@ -1222,6 +1223,7 @@ export const translations = {
       },
       productStatus: {
         available: "Còn hàng",
+        preorder: "Đặt trước",
         low_stock: "Sắp hết hàng",
         out_of_stock: "Hết hàng",
       },

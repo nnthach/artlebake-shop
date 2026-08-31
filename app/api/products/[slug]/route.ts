@@ -1,10 +1,44 @@
 import { isSupabaseConfigured, supabase, supabaseAdmin } from "@/lib/supabase";
-import {
-  ProductIngredientRow,
-  ProductStoreInventory,
-  RawProduct,
-} from "@/types";
+import { ProductIngredientRow, RawProduct } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
+
+interface PreorderItemRow {
+  product_id: string;
+  planned_quantity: number;
+  remaining_quantity: number;
+  is_active: boolean;
+  preorder_schedules: {
+    id: string;
+    date: string;
+    status: boolean;
+  };
+}
+
+function getPreorderDateRange(businessDate: string) {
+  const date = new Date(`${businessDate}T00:00:00+07:00`);
+  const dayOfWeek = date.getDay();
+
+  // Mon - Wed → Friday this week
+  // Thu - Sun → Friday next week
+  const daysUntilFriday = dayOfWeek <= 3 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
+
+  const firstFriday = new Date(date);
+  firstFriday.setDate(date.getDate() + daysUntilFriday);
+
+  // Friday → following Sunday
+  const lastSunday = new Date(firstFriday);
+  lastSunday.setDate(firstFriday.getDate() + 9);
+
+  const formatDate = (value: Date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(value);
+
+  return {
+    startDate: formatDate(firstFriday),
+    endDate: formatDate(lastSunday),
+  };
+}
 
 export async function GET(
   req: NextRequest,
@@ -28,11 +62,14 @@ export async function GET(
       );
     }
 
-    // Step 1: Tìm product_id từ slug trong product_translations
+    // ----------------------------------------
+    // 1. Find product ID from slug
+    // ----------------------------------------
     const { data: translation, error: translationError } = await supabase
       .from("product_translations")
       .select("product_id")
       .eq("slug", slug)
+      .eq("locale", locale)
       .single();
 
     if (translationError || !translation) {
@@ -42,14 +79,21 @@ export async function GET(
       );
     }
 
-    // Step 2: Query full product bằng product_id vừa lấy được
+    // ----------------------------------------
+    // 2. Get product
+    // ----------------------------------------
     const { data, error } = await supabase
       .from("products")
       .select(
         `
         *,
         categories(id, name),
-        product_translations!inner(locale, name, description, slug),
+        product_translations!inner(
+          locale,
+          name,
+          description,
+          slug
+        ),
         product_ingredients(
           ingredients(id, name)
         )
@@ -69,35 +113,72 @@ export async function GET(
     const product = data as RawProduct;
     const trans = product.product_translations?.[0] ?? {};
 
-    // query các store còn hàng
+    // ----------------------------------------
+    // 3. Business date
+    // ----------------------------------------
     const businessDate = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date());
 
-    const { data: stores } = await supabaseAdmin
+    // ----------------------------------------
+    // 4. Get today's daily inventory
+    // ----------------------------------------
+    const { data: dailyInventory, error: dailyError } = await supabaseAdmin
       .from("daily_inventories")
       .select(
         `
-    remaining_quantity,
-    planned_quantity,
-    status,
-    stores(
-      id,
-      name,
-      city,
-      district,
-      address,
-      phone
-    )
-  `,
+          planned_quantity,
+          remaining_quantity,
+          status
+        `,
       )
       .eq("product_id", product.id)
       .eq("business_date", businessDate)
-      .gt("remaining_quantity", 0);
+      .maybeSingle();
 
-    // format and return
-    const availableStores = (stores ??
-      []) as unknown as ProductStoreInventory[];
+    if (dailyError) {
+      throw dailyError;
+    }
+
+    // ----------------------------------------
+    // 5. Get upcoming preorder
+    // ----------------------------------------
+    const { startDate, endDate } = getPreorderDateRange(businessDate);
+
+    const { data: preorderItems, error: preorderError } = await supabaseAdmin
+      .from("preorder_items")
+      .select(
+        `
+          planned_quantity,
+          remaining_quantity,
+          is_active,
+
+          preorder_schedules!inner(
+            id,
+            date,
+            status
+          )
+        `,
+      )
+      .eq("product_id", product.id)
+      .gte("preorder_schedules.date", startDate)
+      .lte("preorder_schedules.date", endDate)
+      .eq("preorder_schedules.status", true)
+      .eq("is_active", true)
+      .gt("remaining_quantity", 0)
+      .order("date", {
+        foreignTable: "preorder_schedules",
+        ascending: true,
+      })
+      .returns<PreorderItemRow[]>();
+
+    if (preorderError) {
+      throw preorderError;
+    }
+
+    // ----------------------------------------
+    // 6. Format response
+    // ----------------------------------------
 
     const formatted = {
       id: product.id,
@@ -116,31 +197,44 @@ export async function GET(
       ingredients: (product.product_ingredients ?? []).map(
         (pi: ProductIngredientRow) => pi.ingredients,
       ),
+      // --------------------------------------
+      // Daily
+      // --------------------------------------
+      daily: {
+        planned_quantity: dailyInventory?.planned_quantity ?? 0,
+        remaining_quantity: dailyInventory?.remaining_quantity ?? 0,
 
-      status: availableStores.length > 0 ? "available" : "out_of_stock",
-
-      stores: availableStores.map((inventory) => ({
-        id: inventory.stores.id,
-        name: inventory.stores.name,
-        city: inventory.stores.city,
-        district: inventory.stores.district,
-        address: inventory.stores.address,
-        phone: inventory.stores.phone,
-
-        planned_quantity: inventory.planned_quantity,
-        remaining_quantity: inventory.remaining_quantity,
-        status: inventory.status,
-      })),
+        available: (dailyInventory?.remaining_quantity ?? 0) > 0,
+      },
+      // --------------------------------------
+      // Preorder
+      // --------------------------------------
+      preorder: {
+        available: (preorderItems ?? []).length > 0,
+        schedules: (preorderItems ?? []).map((item) => ({
+          schedule_id: item.preorder_schedules.id,
+          date: item.preorder_schedules.date,
+          planned_quantity: item.planned_quantity,
+          remaining_quantity: item.remaining_quantity,
+        })),
+      },
     };
 
     return NextResponse.json(
-      { success: true, data: formatted },
+      {
+        success: true,
+        data: formatted,
+      },
       { status: 200 },
     );
   } catch (error) {
     console.error("Get product by slug error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      {
+        success: false,
+        error: "Internal server error",
+      },
       { status: 500 },
     );
   }

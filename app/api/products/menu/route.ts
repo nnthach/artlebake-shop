@@ -1,4 +1,3 @@
-import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { getSearchParams } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,6 +7,50 @@ interface DailyInventoryRow {
   planned_quantity: number;
   remaining_quantity: number;
   status: string;
+}
+
+interface PreorderItemRow {
+  product_id: string;
+  planned_quantity: number;
+  remaining_quantity: number;
+  is_active: boolean;
+  preorder_schedules: {
+    id: string;
+    date: string;
+    status: boolean;
+  };
+}
+
+function getPreorderDateRange(businessDate: string) {
+  const date = new Date(`${businessDate}T00:00:00+07:00`);
+
+  // lấy ngày hôm nay
+  // JS: Sunday = 0, Monday = 1, ..., Saturday = 6
+  const dayOfWeek = date.getDay();
+
+  // Monday - Wednesday
+  // → upcoming Friday is this week
+  //
+  // Thursday - Sunday
+  // → upcoming Friday is next week
+  const daysUntilFriday = dayOfWeek <= 3 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
+
+  const firstFriday = new Date(date);
+  firstFriday.setDate(date.getDate() + daysUntilFriday);
+
+  // Two preorder weekends = 14 days from first Friday
+  const lastSunday = new Date(firstFriday);
+  lastSunday.setDate(firstFriday.getDate() + 9);
+
+  const formatDate = (value: Date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(value);
+
+  return {
+    startDate: formatDate(firstFriday),
+    endDate: formatDate(lastSunday),
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -20,7 +63,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 1. GET PARAMETERS
-    const { is_active, category_id, order, locale, page, limit, city, search } =
+    const { is_active, category_id, order, locale, page, limit, search } =
       getSearchParams(req);
 
     const ascending = order === "asc";
@@ -31,60 +74,16 @@ export async function GET(req: NextRequest) {
     const from = (pageNum - 1) * limitNum;
     const to = from + limitNum - 1;
 
+    // 3. business date (today)
     const businessDate = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date());
 
-    // 3. generate cache key
-    const cacheKey = generateCacheKey(
-      "products",
-      search || "",
-      limitNum,
-      pageNum,
-      "created_at",
-      ascending ? "asc" : "desc",
-      locale,
-      is_active === "true" ? true : is_active === "false" ? false : null,
-      null,
-      category_id || null,
-      city || "Thành phố Hồ Chí Minh",
-      businessDate,
-    );
+    // 4. PREORDER DATE RANGE
+    const { startDate: preorderStartDate, endDate: preorderEndDate } =
+      getPreorderDateRange(businessDate);
 
-    // 4. GET CACHE
-    const cached = await getCache(cacheKey);
-
-    if (cached) {
-      return NextResponse.json(
-        {
-          success: true,
-          ...cached,
-        },
-        { status: 200 },
-      );
-    }
-
-    // 5. query store by city
-    const { data: store, error: storeError } = await supabaseAdmin
-      .from("stores")
-      .select("id")
-      .eq("type", "online")
-      .eq("city", city ?? "Thành phố Hồ Chí Minh")
-      .single();
-
-    if (storeError || !store) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Store not found",
-        },
-        {
-          status: 404,
-        },
-      );
-    }
-
-    // 6. query product
+    // 5. query product
     let productQuery = supabaseAdmin
       .from("products")
       .select(
@@ -133,7 +132,7 @@ export async function GET(req: NextRequest) {
 
     if (productError) throw productError;
 
-    // 7. query today inventory
+    // 6. query today inventory
     const { data: inventories, error: inventoryError } = await supabaseAdmin
       .from("daily_inventories")
       .select(
@@ -144,28 +143,63 @@ export async function GET(req: NextRequest) {
           status
         `,
       )
-      .eq("store_id", store?.id || "")
       .eq("business_date", businessDate);
 
     if (inventoryError) throw inventoryError;
 
-    // 8. map inventory to product
+    // 7. QUERY UPCOMING PREORDER ITEMS
+    const { data: preorderItems, error: preorderError } = await supabaseAdmin
+      .from("preorder_items")
+      .select(
+        `
+          product_id,
+          planned_quantity,
+          remaining_quantity,
+          is_active,
+
+          preorder_schedules!inner(
+            id,
+            date,
+            status
+          )
+        `,
+      )
+      .gte("preorder_schedules.date", preorderStartDate)
+      .lte("preorder_schedules.date", preorderEndDate)
+      .eq("preorder_schedules.status", true)
+      .eq("is_active", true)
+      .gt("remaining_quantity", 0)
+      .order("date", {
+        foreignTable: "preorder_schedules",
+        ascending: true,
+      })
+      .returns<PreorderItemRow[]>();
+
+    if (preorderError) {
+      throw preorderError;
+    }
+
+    // 8. map daily inventory to product
     const inventoryMap = new Map<string, DailyInventoryRow>(
       (inventories ?? []).map((item) => [item.product_id, item]),
     );
 
-    // 9. product format
+    console.log("inventoryMap map", inventoryMap);
+
+    // 9. map preorder item
+    const preorderMap = new Map<string, PreorderItemRow[]>();
+    for (const item of preorderItems ?? []) {
+      const existing = preorderMap.get(item.product_id) ?? [];
+      existing.push(item);
+      preorderMap.set(item.product_id, existing);
+    }
+
+    console.log("preorder map", preorderMap);
+    // 10. product format
     const formatted = (products ?? []).map((product) => {
       const translation = product.product_translations[0];
-
       const inventory = inventoryMap.get(product.id);
-
-      const remainingQuantity = inventory?.remaining_quantity ?? 0;
-
-      const status =
-        remainingQuantity <= 0
-          ? "out_of_stock"
-          : (inventory?.status ?? "available");
+      const productPreorders = preorderMap.get(product.id) ?? [];
 
       return {
         id: product.id,
@@ -176,18 +210,45 @@ export async function GET(req: NextRequest) {
         updated_at: product.updated_at,
 
         category: product.categories?.[0] ?? null,
-
         name: translation?.name ?? "",
         description: translation?.description ?? "",
         slug: translation?.slug ?? "",
-
         ingredients: product.product_ingredients.map(
           (item) => item.ingredients,
         ),
+        // ------------------------------
+        // Daily availability
+        // ------------------------------
+        daily: {
+          planned_quantity: inventory?.planned_quantity ?? 0,
+          remaining_quantity: inventory?.remaining_quantity ?? 0,
+          status:
+            inventory?.remaining_quantity && inventory.remaining_quantity > 0
+              ? inventory.status
+              : "out_of_stock",
+        },
+        // ------------------------------
+        // Preorder availability
+        // ------------------------------
+        preorder: {
+          available: productPreorders.length > 0,
+          schedules: productPreorders.flatMap((item) => {
+            const schedule = item.preorder_schedules;
 
-        planned_quantity: inventory?.planned_quantity ?? 0,
-        remaining_quantity: inventory?.remaining_quantity ?? 0,
-        status: status,
+            if (!schedule) {
+              return [];
+            }
+
+            return [
+              {
+                schedule_id: schedule.id,
+                date: schedule.date,
+                planned_quantity: item.planned_quantity,
+                remaining_quantity: item.remaining_quantity,
+              },
+            ];
+          }),
+        },
       };
     });
 
@@ -202,10 +263,11 @@ export async function GET(req: NextRequest) {
         total_items: count ?? 0,
         total_pages: totalPages,
       },
+      preorder_range: {
+        start_date: preorderStartDate,
+        end_date: preorderEndDate,
+      },
     };
-
-    // 11. SET CACHE
-    await setCache(cacheKey, responseData, 5 * 60 * 60);
 
     // 12. RESPONSE
     return NextResponse.json(
