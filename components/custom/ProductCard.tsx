@@ -56,7 +56,7 @@ export default function ProductCard({
           : ""
       }`}
     >
-      <Link href={`/menu/${product.id}`}>
+      <Link href={`/menu/${product.slug}`}>
         <div className="relative h-72 w-full overflow-hidden">
           <Image
             src={product?.image}
@@ -94,7 +94,7 @@ export default function ProductCard({
       </Link>
 
       <div className="p-4">
-        <Link href={`/menu/${product.id}`}>
+        <Link href={`/menu/${product.slug}`}>
           <h3 className="font-serif text-xl text-charcoal">{product.name}</h3>
         </Link>
 

@@ -10,11 +10,14 @@ import React, {
 } from "react";
 import toast from "react-hot-toast";
 
+type CartType = "available" | "preorder" | "select";
+
 interface CartContextType {
   items: CartItem[];
   isLoading: boolean;
   totalItems: number;
   totalPrice: number;
+  cartType: CartType | null;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   addItem: (product: CartItem["product"], quantity?: number) => Promise<void>;
@@ -133,11 +136,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(CART_STORAGE_KEY);
   }, []);
 
+  // total
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
     (sum, item) => sum + item.quantity * item.product.price,
     0,
   );
+
+  // cart type
+  const canAvailable =
+    items.length > 0 && items.every((item) => item.product.available);
+
+  const canPreorder =
+    items.length > 0 && items.every((item) => item.product.preorder);
+
+  const cartType: CartType | null =
+    items.length === 0
+      ? null
+      : canAvailable && canPreorder
+        ? "select"
+        : canAvailable
+          ? "available"
+          : canPreorder
+            ? "preorder"
+            : null;
+
+  console.log("cart type", cartType);
 
   return (
     <CartContext.Provider
@@ -153,6 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         refreshCart,
         clearCart,
+        cartType,
       }}
     >
       {children}

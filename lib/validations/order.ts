@@ -7,6 +7,10 @@ export const createShippingSchema = (t: (path: string) => string) =>
       .string()
       .min(1, t("orderPage.errors.phoneRequired"))
       .regex(/^(0|\+84)\d{9,10}$/, t("orderPage.errors.phoneInvalid")),
+    email: z
+      .string()
+      .min(1, t("orderPage.errors.emailRequired"))
+      .email(t("orderPage.errors.emailInvalid")),
     city: z.string().min(1, t("orderPage.errors.cityRequired")),
     district: z.string().min(1, t("orderPage.errors.districtRequired")),
     ward: z.string().min(1, t("orderPage.errors.wardRequired")),

@@ -2,10 +2,7 @@
 
 import ProductCard from "@/components/custom/ProductCard";
 import { cn } from "@/lib/utils";
-import {
-  CategoryItem,
-  FetchedProductMenu,
-} from "@/types";
+import { CategoryItem, FetchedProductMenu } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -155,7 +152,7 @@ export default function MenuSection() {
                   <ProductCard
                     key={product.id}
                     product={{
-                      id: product.slug,
+                      id: product.id,
                       image:
                         product.image_url?.[0] ?? "/images/placeholder.webp",
                       name: product.name,
@@ -176,7 +173,7 @@ export default function MenuSection() {
                   <ProductCardMobile
                     key={product.id}
                     product={{
-                      id: product.slug,
+                      id: product.id,
                       image:
                         product.image_url?.[0] ?? "/images/placeholder.webp",
                       name: product.name,

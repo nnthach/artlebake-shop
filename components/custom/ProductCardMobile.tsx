@@ -21,7 +21,7 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
     <div className="group flex gap-4 rounded-2xl bg-white p-3 shadow-sm transition-all duration-300 active:scale-[0.99]">
       {/* Product Image */}
       <Link
-        href={`/menu/${product.id}`}
+        href={`/menu/${product.slug}`}
         className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl"
       >
         <Image
@@ -53,7 +53,7 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
 
       {/* Product Info */}
       <div className="flex min-w-0 flex-1 flex-col py-0.5">
-        <Link href={`/menu/${product.id}`}>
+        <Link href={`/menu/${product.slug}`}>
           <h3 className="truncate font-serif text-base text-charcoal">
             {product.name}
           </h3>
