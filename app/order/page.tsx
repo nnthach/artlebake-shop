@@ -20,6 +20,7 @@ import OrderTypeSelect from "./components/OrderTypeSelect";
 import StoreAddress from "./components/StoreAddress";
 import PreorderDateSelector from "./components/PreorderDateSelector";
 import OrderTakeNote from "./components/OrderTakeNote";
+import toast from "react-hot-toast";
 
 const SHIPPING_FEE = 0;
 const FREE_SHIPPING_THRESHOLD = 300000;
@@ -27,8 +28,6 @@ const FREE_SHIPPING_THRESHOLD = 300000;
 export default function OrderPage() {
   const { t, locale } = useI18n();
   const { items, totalPrice, cartType } = useCart();
-
-  console.log("item", items);
 
   const [fulfillmentMethod, setFulfillmentMethod] = useState<
     "delivery" | "pickup"
@@ -38,7 +37,7 @@ export default function OrderPage() {
   );
   const [preorderDate, setPreorderDate] = useState("");
 
-  const shippingSchema = createShippingSchema(t);
+  const shippingSchema = createShippingSchema(t, fulfillmentMethod);
 
   const {
     register,
@@ -101,6 +100,15 @@ export default function OrderPage() {
 
   // payos submit
   const onSubmit = async (data: ShippingFormData) => {
+    // Preorder bắt buộc phải chọn ngày nhận
+    if (selectedOrderType === "preorder" && !preorderDate) {
+      toast.error(
+        locale === "vi"
+          ? "Vui lòng chọn ngày nhận bánh."
+          : "Please select a pickup date.",
+      );
+      return;
+    }
     const paymentPayload = {
       ...createOrderPayload(data),
       paymentMethod: "payos",
@@ -160,7 +168,10 @@ export default function OrderPage() {
               <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-5">
                 {/* RIGHT: order summary */}
                 <div className="order-1 lg:order-2 lg:col-span-2">
-                  <OrderSummary shippingFee={shippingFee} grandTotal={grandTotal} />
+                  <OrderSummary
+                    shippingFee={shippingFee}
+                    grandTotal={grandTotal}
+                  />
                 </div>
 
                 {/* LEFT: shipping form */}
@@ -175,7 +186,16 @@ export default function OrderPage() {
 
                     <FulfillmentMethod
                       fulfillmentMethod={fulfillmentMethod}
-                      onChange={setFulfillmentMethod}
+                      onChange={(method) => {
+                        setFulfillmentMethod(method);
+
+                        if (method === "pickup") {
+                          setValue("city", "");
+                          setValue("district", "");
+                          setValue("ward", "");
+                          setValue("address", "");
+                        }
+                      }}
                       isSubmitting={isSubmitting}
                     />
 
@@ -194,7 +214,13 @@ export default function OrderPage() {
                     {cartType === "select" && (
                       <OrderTypeSelect
                         orderType={orderType}
-                        onChange={setOrderType}
+                        onChange={(type) => {
+                          setOrderType(type);
+
+                          if (type === "available") {
+                            setPreorderDate("");
+                          }
+                        }}
                         isSubmitting={isSubmitting}
                       />
                     )}

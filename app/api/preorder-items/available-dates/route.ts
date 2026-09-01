@@ -11,6 +11,10 @@ interface PreorderSchedule {
   date: string;
   status: string;
 }
+interface AvailableDate {
+  schedule_id: string;
+  date: string;
+}
 
 export async function GET(request: NextRequest) {
   const res = new NextResponse();
@@ -95,10 +99,10 @@ export async function GET(request: NextRequest) {
     }
 
     // product_id -> available dates
-    const datesByProduct = new Map<string, Set<string>>();
+    const datesByProduct = new Map<string, Map<string, string>>();
 
     for (const productId of productIds) {
-      datesByProduct.set(productId, new Set());
+      datesByProduct.set(productId, new Map());
     }
 
     for (const item of preorderItems) {
@@ -108,7 +112,7 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      datesByProduct.get(item.product_id)?.add(schedule.date);
+      datesByProduct.get(item.product_id)?.set(schedule.date, schedule.id);
     }
 
     /*
@@ -122,7 +126,6 @@ export async function GET(request: NextRequest) {
      * Result:
      * 04/09
      */
-
     const firstProductDates = datesByProduct.get(productIds[0]);
 
     if (!firstProductDates) {
@@ -131,19 +134,22 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const availableDates: string[] = [];
+    const availableDates: AvailableDate[] = [];
 
-    firstProductDates.forEach((date) => {
+    firstProductDates.forEach((scheduleId, date) => {
       const isAvailableForAllProducts = productIds.every((productId) =>
         datesByProduct.get(productId)?.has(date),
       );
 
       if (isAvailableForAllProducts) {
-        availableDates.push(date);
+        availableDates.push({
+          schedule_id: scheduleId,
+          date,
+        });
       }
     });
 
-    availableDates.sort();
+    availableDates.sort((a, b) => a.date.localeCompare(b.date));
 
     return NextResponse.json({
       data: availableDates,

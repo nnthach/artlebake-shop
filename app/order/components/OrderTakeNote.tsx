@@ -24,8 +24,8 @@ export default function OrderTakeNote() {
             </div>
             <span className="text-xs font-medium text-amber-900">
               {locale === "vi"
-                ? "Lưu ý quan trọng về hình thức đặt hàng (Bánh có sẵn / Đặt trước)"
-                : "Important note about order types (Available / Pre-order)"}
+                ? "Lưu ý quan trọng về hình thức đặt hàng"
+                : "Important note about order types"}
             </span>
           </div>
           <span className="text-xs font-semibold text-amber-700 underline decoration-amber-400 underline-offset-2 group-hover:text-amber-900">

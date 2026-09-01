@@ -12,8 +12,13 @@ interface PreorderDateSelectorProps {
   disabled?: boolean;
 }
 
+interface PreorderDate {
+  schedule_id: string;
+  date: string;
+}
+
 interface PreorderDateResponse {
-  data: string[];
+  data: PreorderDate[];
 }
 
 export default function PreorderDateSelector({
@@ -24,7 +29,7 @@ export default function PreorderDateSelector({
 }: PreorderDateSelectorProps) {
   const { locale } = useI18n();
 
-  const [dates, setDates] = useState<string[]>([]);
+  const [dates, setDates] = useState<PreorderDate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Dùng string để tránh trường hợp parent tạo array mới
@@ -72,7 +77,11 @@ export default function PreorderDateSelector({
   // Chỉ reset value nếu ngày hiện tại không còn hợp lệ.
   // Effect này KHÔNG fetch API.
   useEffect(() => {
-    if (value && dates.length > 0 && !dates.includes(value)) {
+    if (
+      value &&
+      dates.length > 0 &&
+      !dates.some((item) => item.schedule_id === value)
+    ) {
       onChange("");
     }
   }, [dates, value, onChange]);
@@ -126,16 +135,16 @@ export default function PreorderDateSelector({
         </div>
       ) : (
         <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-7">
-          {dates.map((dateValue) => {
-            const date = parseDate(dateValue);
-            const selected = value === dateValue;
+          {dates.map((item) => {
+            const date = parseDate(item.date);
+            const selected = value === item.schedule_id;
 
             return (
               <button
-                key={dateValue}
+                key={item.schedule_id}
                 type="button"
                 disabled={disabled}
-                onClick={() => onChange(dateValue)}
+                onClick={() => onChange(item.schedule_id)}
                 className={cn(
                   "flex flex-col items-center rounded-xl border px-2 py-3 transition",
                   selected
