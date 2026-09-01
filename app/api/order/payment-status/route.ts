@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select("id, payment_status")
-      .eq("order_code", Number(orderCode))
+      .eq("order_code", orderCode)
       .single();
 
     if (error || !order) {

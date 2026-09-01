@@ -14,16 +14,18 @@ export async function POST(req: NextRequest) {
 
     const { code, orderCode, reference } = webhookData;
 
-    // 2. Check order
+    // 2. Find order
     const { data: order, error: orderFetchError } = await supabaseAdmin
       .from("orders")
-      .select("id, user_id, store_id, payment_status")
+      .select("id")
       .eq("order_code", orderCode)
       .maybeSingle();
 
-    if (orderFetchError) throw orderFetchError;
+    if (orderFetchError) {
+      throw orderFetchError;
+    }
 
-    // 3. Order không tồn tại
+    // 3. Order does not exist
     if (!order) {
       return NextResponse.json({
         error: 0,
@@ -31,11 +33,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // =========================================================
-    // 4. PAYMENT FAILED
-    // =========================================================
+    // 4. Payment failed
     if (code !== "00") {
-      // Update order
       const { error: orderError } = await supabaseAdmin
         .from("orders")
         .update({
@@ -45,9 +44,10 @@ export async function POST(req: NextRequest) {
         .eq("id", order.id)
         .neq("payment_status", "paid");
 
-      if (orderError) throw orderError;
+      if (orderError) {
+        throw orderError;
+      }
 
-      // Update payment
       const { error: paymentError } = await supabaseAdmin
         .from("payments")
         .update({
@@ -58,7 +58,9 @@ export async function POST(req: NextRequest) {
         })
         .eq("order_id", order.id);
 
-      if (paymentError) throw paymentError;
+      if (paymentError) {
+        throw paymentError;
+      }
 
       return NextResponse.json({
         error: 0,
@@ -66,14 +68,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // =========================================================
-    // 5. PAYMENT SUCCESS
-    // =========================================================
+    // 5. Payment success
     const businessDate = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date());
 
-    // 5.1 Process payment + inventory inside PostgreSQL transaction
+    // 5.1 Process payment + inventory
+    // inside PostgreSQL transaction
     const { data: result, error: processError } = await supabaseAdmin.rpc(
       "process_successful_payment",
       {
@@ -92,28 +93,16 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to process successful payment");
     }
 
-    if (result?.already_processed) {
+    // 5.2 Webhook duplicated
+    if (result.already_processed) {
       return NextResponse.json({
         error: 0,
         message: "Already processed",
       });
     }
 
-    // 5.2 Delete product cache
+    // 5.3 Clear product cache
     void deleteCacheByResource("products");
-
-    // 5.3 Clear cart
-    const { error: clearCartError } = await supabaseAdmin.rpc(
-      "clear_order_cart",
-      {
-        p_user_id: order.user_id,
-        p_order_id: order.id,
-      },
-    );
-
-    if (clearCartError) {
-      throw clearCartError;
-    }
 
     // 6. PayOS requires HTTP 200
     return NextResponse.json({

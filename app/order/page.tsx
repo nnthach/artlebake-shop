@@ -84,7 +84,7 @@ export default function OrderPage() {
     shipping_fee: shippingFee,
     total: grandTotal,
 
-    preorder_date: selectedOrderType === "preorder" ? preorderDate : null,
+    preorder_date_id: selectedOrderType === "preorder" ? preorderDate : null,
 
     order_type: selectedOrderType,
     fulfillment_method: fulfillmentMethod,
@@ -111,8 +111,9 @@ export default function OrderPage() {
     }
     const paymentPayload = {
       ...createOrderPayload(data),
-      paymentMethod: "payos",
+      payment_method: "payos",
     };
+
     console.log("paymentPayload", paymentPayload);
     // try {
     //   const res = await fetch("/api/order", {

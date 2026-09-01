@@ -1,33 +1,21 @@
-import { createSupabaseServerClient, supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
-// get order detail (joined with order_items, store, user)
+// get order detail by id
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const res = new NextResponse();
-
   try {
-    const supabaseServerClient = createSupabaseServerClient(req, res);
-
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabaseServerClient.auth.getUser();
-
-    if (authError || !authUser) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401, headers: res.headers },
-      );
-    }
-
     const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "Id is required" },
-        { status: 400, headers: res.headers },
+        {
+          success: false,
+          error: "Id is required",
+        },
+        { status: 400 },
       );
     }
 
@@ -45,18 +33,9 @@ export async function GET(
             subtotal,
             created_at
           ),
-          stores(
+          preorder_schedules(
             id,
-            name,
-            address,
-            city,
-            district,
-            phone
-          ),
-          users(
-            id,
-            full_name,
-            role,
+            date,
             status
           )
         `,
@@ -66,28 +45,27 @@ export async function GET(
 
     if (orderError || !order) {
       return NextResponse.json(
-        { success: false, error: "Order not found" },
-        { status: 404, headers: res.headers },
+        {
+          success: false,
+          error: "Order not found",
+        },
+        { status: 404 },
       );
     }
 
-    // only the order's owner can view it
-    if (order.user_id !== authUser.id) {
-      return NextResponse.json(
-        { success: false, error: "Order not found" },
-        { status: 404, headers: res.headers },
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, data: order },
-      { headers: res.headers },
-    );
+    return NextResponse.json({
+      success: true,
+      data: order,
+    });
   } catch (error) {
     console.error("Get order detail error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500, headers: res.headers },
+      {
+        success: false,
+        error: "Internal server error",
+      },
+      { status: 500 },
     );
   }
 }
