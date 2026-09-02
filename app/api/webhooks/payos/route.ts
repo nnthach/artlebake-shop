@@ -4,6 +4,8 @@ import { payosConfig } from "@/lib/payos";
 import { PayOSWebhookBody } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
 import { deleteCacheByResource } from "@/lib/redis-cache";
+import { sendOrderConfirmationEmail } from "@/lib/emails/send-order-confirmation";
+import { OrderConfirmationItemProps } from "@/types/form-type";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +17,26 @@ export async function POST(req: NextRequest) {
     const { code, orderCode, reference } = webhookData;
 
     // 2. Find order
+    // 2. Find order
     const { data: order, error: orderFetchError } = await supabaseAdmin
       .from("orders")
-      .select("id")
+      .select(
+        `
+          *,
+          order_items (
+            product_name,
+            quantity,
+            unit_price,
+            subtotal,
+            products (
+              image_url
+            )
+          ),
+          preorder_schedules (
+            date
+          )
+        `,
+      )
       .eq("order_code", String(orderCode))
       .maybeSingle();
 
@@ -116,6 +135,43 @@ export async function POST(req: NextRequest) {
 
     // 5.3 Clear product cache
     void deleteCacheByResource("products");
+
+    // 6. Send order confirmation email
+    if (order.email) {
+      try {
+        await sendOrderConfirmationEmail({
+          name: order.name,
+          email: order.email,
+          phone: order.phone,
+
+          orderCode: order.order_code,
+          orderType: order.order_type,
+
+          preorderDate: order.preorder_schedules?.date,
+
+          items: order.order_items.map((item: OrderConfirmationItemProps) => ({
+            name: item.product_name,
+            quantity: item.quantity,
+            unitPrice: item.unit_price,
+            subtotal: item.subtotal,
+            imageUrl: item.products?.image_url?.[0],
+          })),
+
+          subtotal: order.subtotal,
+          shippingFee: order.shipping_fee,
+          total: order.total,
+
+          fulfillmentMethod: order.fulfillment_method,
+
+          address: order.address,
+          city: order.city,
+          district: order.district,
+          ward: order.ward,
+        });
+      } catch (emailError) {
+        console.error("Failed to send order confirmation email:", emailError);
+      }
+    }
 
     // 6. PayOS requires HTTP 200
     return NextResponse.json({
