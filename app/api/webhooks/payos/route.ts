@@ -35,58 +35,71 @@ export async function POST(req: NextRequest) {
 
     // 4. Payment failed
     if (code !== "00") {
-      const { error: orderError } = await supabaseAdmin
-        .from("orders")
-        .update({
-          payment_status: "failed",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", order.id)
-        .neq("payment_status", "paid");
+      const businessDate = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Ho_Chi_Minh",
+      }).format(new Date());
 
-      if (orderError) {
-        throw orderError;
+      const { data: result, error: cancelError } = await supabaseAdmin.rpc(
+        "cancel_order_and_release_stock",
+        {
+          p_order_id: order.id,
+          p_business_date: businessDate,
+          p_reason: "Payment failed",
+          p_gateway_response: webhookData,
+        },
+      );
+
+      if (cancelError) {
+        throw cancelError;
       }
 
-      const { error: paymentError } = await supabaseAdmin
-        .from("payments")
-        .update({
-          status: "failed",
-          transaction_id: reference,
-          gateway_response: webhookData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("order_id", order.id);
-
-      if (paymentError) {
-        throw paymentError;
+      if (result?.already_paid) {
+        return NextResponse.json({
+          error: 0,
+          message: "Order already paid",
+        });
       }
+
+      if (result?.already_cancelled) {
+        return NextResponse.json({
+          error: 0,
+          message: "Already cancelled",
+        });
+      }
+
+      void deleteCacheByResource("products");
 
       return NextResponse.json({
         error: 0,
-        message: "Payment failed",
+        message: "Payment failed and stock released",
       });
     }
 
     // 5. Payment success
-    const businessDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(new Date());
-
     // 5.1 Process payment + inventory
     // inside PostgreSQL transaction
     const { data: result, error: processError } = await supabaseAdmin.rpc(
-      "process_successful_payment",
+      "confirm_successful_payment",
       {
         p_order_id: order.id,
         p_reference: reference,
         p_gateway_response: webhookData,
-        p_business_date: businessDate,
       },
     );
 
     if (processError) {
       throw processError;
+    }
+
+    if (result?.order_cancelled) {
+      console.error(
+        `Order ${order.id} was cancelled before payment confirmation.`,
+      );
+
+      return NextResponse.json({
+        error: 0,
+        message: "Order already cancelled",
+      });
     }
 
     if (!result?.success) {

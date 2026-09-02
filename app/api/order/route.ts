@@ -109,239 +109,58 @@ export async function POST(req: NextRequest) {
     }
     // end 1.6 check order type
 
-    // 2. Check order availability product
-    const productIds = items.map((item) => item.product_id);
-
-    if (order_type === "available") {
-      // ================================
-      // 2.1 AVAILABLE ORDER
-      // ================================
-
-      const businessDate = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Ho_Chi_Minh",
-      }).format(new Date());
-
-      const { data: inventories, error: inventoryError } = await supabaseAdmin
-        .from("daily_inventories")
-        .select(
-          `
-      product_id,
-      remaining_quantity,
-      status
-    `,
-        )
-        .eq("business_date", businessDate)
-        .in("product_id", productIds);
-
-      if (inventoryError) {
-        throw inventoryError;
-      }
-
-      for (const item of items) {
-        const inventory = inventories?.find(
-          (inv) => inv.product_id === item.product_id,
-        );
-        if (!inventory) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Product is not available today",
-              product_id: item.product_id,
-            },
-            {
-              status: 400,
-              headers: res.headers,
-            },
-          );
-        }
-        if (inventory.remaining_quantity < item.quantity) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Insufficient stock",
-              product_id: item.product_id,
-              available_quantity: inventory.remaining_quantity,
-              requested_quantity: item.quantity,
-            },
-            {
-              status: 400,
-              headers: res.headers,
-            },
-          );
-        }
-      }
-    } else {
-      // ================================
-      // 2.2 PREORDER
-      // ================================
-
-      // 2.2.1 Check preorder schedule
-      const { data: schedule, error: scheduleError } = await supabaseAdmin
-        .from("preorder_schedules")
-        .select("id, date, status")
-        .eq("id", preorder_date_id)
-        .single();
-
-      if (scheduleError || !schedule) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Invalid preorder date",
-          },
-          {
-            status: 400,
-            headers: res.headers,
-          },
-        );
-      }
-
-      // 2.2.2 Schedule phải đang active
-      if (schedule.status !== true) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Preorder date is not available",
-          },
-          {
-            status: 400,
-            headers: res.headers,
-          },
-        );
-      }
-
-      // 2.2.3 Check preorder items
-      const { data: preorderItems, error: preorderItemsError } =
-        await supabaseAdmin
-          .from("preorder_items")
-          .select(
-            `
-        product_id,
-        schedule_id,
-        remaining_quantity
-      `,
-          )
-          .eq("schedule_id", preorder_date_id)
-          .in("product_id", productIds);
-
-      if (preorderItemsError) {
-        throw preorderItemsError;
-      }
-
-      // 2.2.4 Every product in cart must exist in the selected preorder schedule
-      for (const item of items) {
-        const preorderItem = preorderItems?.find(
-          (preorderItem) => preorderItem.product_id === item.product_id,
-        );
-
-        if (!preorderItem) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Product is not available for this preorder date",
-              product_id: item.product_id,
-              preorder_date_id,
-            },
-            {
-              status: 400,
-              headers: res.headers,
-            },
-          );
-        }
-
-        // Không đủ quantity
-        if (preorderItem.remaining_quantity < item.quantity) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "Insufficient preorder quantity",
-              product_id: item.product_id,
-              available_quantity: preorderItem.remaining_quantity,
-              requested_quantity: item.quantity,
-              preorder_date_id,
-            },
-            {
-              status: 400,
-              headers: res.headers,
-            },
-          );
-        }
-      }
-    }
-
-    // 3. INSERT DB ORDER
+    // 2. Create order + lock stock atomically
     const orderCode = generateOrderCode();
 
-    const { data: order, error: orderError } = await supabaseAdmin
-      .from("orders")
-      .insert({
-        order_code: orderCode,
-        status: "pending",
-        payment_status: "unpaid",
-        order_type,
-        fulfillment_method,
-        preorder_date_id: order_type === "preorder" ? preorder_date_id : null,
+    const businessDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(new Date());
 
-        name,
-        phone,
-        email,
+    const { data: result, error: orderError } = await supabaseAdmin.rpc(
+      "create_order_with_stock_lock",
+      {
+        p_order_code: String(orderCode),
+        p_order_type: order_type,
+        p_preorder_date_id: order_type === "preorder" ? preorder_date_id : null,
+        p_fulfillment_method: fulfillment_method,
+        p_name: name,
+        p_phone: phone,
+        p_email: email,
+        p_address: fulfillment_method === "delivery" ? address : null,
+        p_city: fulfillment_method === "delivery" ? city : null,
+        p_district: fulfillment_method === "delivery" ? district : null,
+        p_ward: fulfillment_method === "delivery" ? ward : null,
+        p_note: note || null,
+        p_subtotal: subtotal,
+        p_shipping_fee: shipping_fee,
+        p_total: total,
+        p_payment_method: payment_method,
+        p_items: items,
+        p_business_date: order_type === "available" ? businessDate : null,
+      },
+    );
 
-        address: fulfillment_method === "delivery" ? address : null,
-        city: fulfillment_method === "delivery" ? city : null,
-        district: fulfillment_method === "delivery" ? district : null,
-        ward: fulfillment_method === "delivery" ? ward : null,
-
-        note: note || null,
-
-        subtotal,
-        shipping_fee,
-        total,
-
-        payment_method,
-      })
-      .select("id, order_code")
-      .single();
-
-    if (orderError) throw orderError;
-
-    // 4. Create order items
-    const { error: orderItemsError } = await supabaseAdmin
-      .from("order_items")
-      .insert(
-        items.map(
-          (item: {
-            product_id: string;
-            product_name: string;
-            unit_price: number;
-            quantity: number;
-            subtotal: number;
-          }) => ({
-            order_id: order.id,
-            product_id: item.product_id,
-            product_name: item.product_name,
-            unit_price: item.unit_price,
-            quantity: item.quantity,
-            subtotal: item.subtotal,
-          }),
-        ),
+    if (orderError) {
+      console.error("Create order error:", orderError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: orderError.message,
+        },
+        {
+          status: 400,
+          headers: res.headers,
+        },
       );
+    }
 
-    if (orderItemsError) throw orderItemsError;
+    const order = result.order;
 
-    // 5. INSERT payment table
-    const { error: paymentError } = await supabaseAdmin
-      .from("payments")
-      .insert({
-        order_id: order.id,
-        method: payment_method,
-        amount: total,
-      });
-    if (paymentError) throw paymentError;
-
-    // 6. CREATE DB Payment PAYLOAD
+    // 3. CREATE PAYOS PAYMENT PAYLOAD
     const paymentData = {
-      orderCode: Number(orderCode),
+      orderCode: Number(order.order_code),
       amount: total,
-      description: "#" + orderCode,
+      description: "#" + order.order_code,
       items: items.map(
         (item: {
           product_name: string;
@@ -355,11 +174,10 @@ export async function POST(req: NextRequest) {
       ),
       cancelUrl: `${appUrl}/payment`,
       returnUrl: `${appUrl}/payment`,
-
       expiredAt: Math.floor(Date.now() / 1000) + 5 * 60,
     };
 
-    // 7. Create payos link
+    // 4. CREATE PAYOS LINK
     const paymentLink = await payosConfig.paymentRequests.create(paymentData);
 
     return NextResponse.json(
@@ -370,7 +188,10 @@ export async function POST(req: NextRequest) {
           payment_link: paymentLink.checkoutUrl,
         },
       },
-      { status: 201, headers: res.headers },
+      {
+        status: 201,
+        headers: res.headers,
+      },
     );
   } catch (error) {
     console.error("Create order error:", error);
