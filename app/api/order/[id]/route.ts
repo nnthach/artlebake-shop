@@ -31,7 +31,10 @@ export async function GET(
             unit_price,
             quantity,
             subtotal,
-            created_at
+            created_at,
+            products(
+              image_url
+            )
           ),
           preorder_schedules(
             id,

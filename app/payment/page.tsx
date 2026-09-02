@@ -10,6 +10,8 @@ export default function PaymentPage() {
   const { locale } = useI18n();
 
   const orderCode = searchParams.get("orderCode");
+  const cancel = searchParams.get("cancel");
+  const status = searchParams.get("status");
 
   useEffect(() => {
     if (!orderCode) {
@@ -17,41 +19,73 @@ export default function PaymentPage() {
       return;
     }
 
-    const checkPayment = async () => {
-      try {
-        const res = await fetch(
-          `/api/order/payment-status?orderCode=${orderCode}`,
-        );
+    const handlePayment = async () => {
+      // PayOS user cancelled payment
+      if (cancel === "true" || status === "CANCELLED") {
+        try {
+          const res = await fetch("/api/order/cancel-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              orderCode,
+            }),
+          });
 
-        const data = await res.json();
+          const data = await res.json();
 
-        if (!data.success) {
-          router.replace("/order/fail");
-          return;
+          if (!data.success) {
+            console.error("Cancel payment failed:", data.error);
+          }
+        } catch (error) {
+          console.error("Cancel payment error:", error);
+        } finally {
+          router.replace(`/order/fail?orderCode=${orderCode}`);
         }
 
-        switch (data.data.status) {
-          case "paid":
-            router.replace(`/order/success?orderId=${data.data.order_id}`);
-            break;
-
-          case "failed":
-          case "cancelled":
-            router.replace(`/order/fail?orderId=${data.data.order_id}`);
-            break;
-
-          default:
-            // pending -> check lại sau 2s
-            setTimeout(checkPayment, 2000);
-        }
-      } catch (error) {
-        console.error(error);
-        router.replace("/order/fail");
+        return;
       }
+
+      // Check payment status
+      const checkPayment = async () => {
+        try {
+          const res = await fetch(
+            `/api/order/payment-status?orderCode=${orderCode}`,
+          );
+
+          const data = await res.json();
+
+          if (!data.success) {
+            router.replace("/order/fail");
+            return;
+          }
+
+          switch (data.data.status) {
+            case "paid":
+              router.replace(`/order/success?orderId=${data.data.order_id}`);
+              break;
+
+            case "failed":
+            case "cancelled":
+              router.replace(`/order/fail?orderId=${data.data.order_id}`);
+              break;
+
+            default:
+              // pending → check again after 2 seconds
+              setTimeout(checkPayment, 2000);
+          }
+        } catch (error) {
+          console.error("Check payment error:", error);
+          router.replace("/order/fail");
+        }
+      };
+
+      checkPayment();
     };
 
-    checkPayment();
-  }, [orderCode, router]);
+    handlePayment();
+  }, [orderCode, cancel, status, router]);
 
   return (
     <div className="flex h-screen items-center justify-center">

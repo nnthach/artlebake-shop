@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const { data: order, error: orderFetchError } = await supabaseAdmin
       .from("orders")
       .select("id")
-      .eq("order_code", orderCode)
+      .eq("order_code", String(orderCode))
       .maybeSingle();
 
     if (orderFetchError) {

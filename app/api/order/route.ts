@@ -355,6 +355,8 @@ export async function POST(req: NextRequest) {
       ),
       cancelUrl: `${appUrl}/payment`,
       returnUrl: `${appUrl}/payment`,
+
+      expiredAt: Math.floor(Date.now() / 1000) + 5 * 60,
     };
 
     // 7. Create payos link
