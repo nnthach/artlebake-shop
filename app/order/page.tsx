@@ -115,29 +115,26 @@ export default function OrderPage() {
     };
 
     console.log("paymentPayload", paymentPayload);
-    // try {
-    //   const res = await fetch("/api/order", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       ...createOrderPayload(data),
-    //       paymentMethod: "payos",
-    //     }),
-    //   });
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentPayload),
+      });
 
-    //   const resData = await res.json();
+      const resData = await res.json();
 
-    //   if (!res.ok) {
-    //     throw new Error(resData.error);
-    //   }
+      if (!res.ok) {
+        throw new Error(resData.error);
+      }
 
-    //   window.location.href = resData.data.payment_link;
-    // } catch (error) {
-    //   console.error(error);
-    //   toast.error(t("orderPage.toastError"));
-    // }
+      window.location.href = resData.data.payment_link;
+    } catch (error) {
+      console.error(error);
+      toast.error(t("orderPage.toastError"));
+    }
   };
 
   return (

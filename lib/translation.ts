@@ -4,7 +4,7 @@ export const translations = {
     headerNav: {
       ourStory: "Our Story",
       menu: "Menu",
-      bakedDaily: "Baked Daily",
+      bakedDaily: "Best Sellers",
     },
     headerButton: {
       orderNow: "Order Now",
@@ -122,7 +122,7 @@ export const translations = {
           "We believe a loaf isn't finished when it leaves the oven —it's finished when someone breaks it open at their table. That's why every batch, big or small, gets the same care, the same patience, and the same hands.\n\nWhether we're baking one loaf or one hundred, every batch receives the same care and attention. To us, bread is more than food—it's a way to bring people together, creating moments of warmth, comfort, and connection around the table.\n\nFrom our hands to yours, every loaf is baked with passion, crafted with tradition, and made to be shared.",
       },
       bestSellerSection: {
-        badge: "Baked Daily",
+        badge: "Best Sellers",
         title: "Customer Favorites, Baked Fresh",
         description: "Handcrafted favorites, loved by generations.",
       },
@@ -1051,7 +1051,7 @@ export const translations = {
   vi: {
     // Navbar header
     headerNav: {
-      ourStory: "Câu truyện",
+      ourStory: "Về chúng tôi",
       menu: "Thực đơn",
       bakedDaily: "Bánh Bán Chạy",
     },
@@ -1165,7 +1165,7 @@ export const translations = {
         },
       },
       storySection: {
-        badge: "Câu Chuyện Của Chúng Tôi",
+        badge: "Câu Truyện Của Chúng Tôi",
         title: "Mỗi chiếc bánh là một phần trái tim",
         description:
           "Với chúng tôi, một chiếc bánh chưa thực sự hoàn thành khi vừa ra lò, nó chỉ thật sự hoàn thành khi ai đó bẻ bánh ra trên bàn ăn của họ. Đó là lý do mỗi mẻ bánh, dù lớn hay nhỏ, đều nhận được sự chăm chút, kiên nhẫn và đôi tay tận tâm như nhau.\n\nDù làm một chiếc bánh hay một trăm chiếc, mỗi mẻ đều được chăm sóc kỹ lưỡng như nhau. Với chúng tôi, bánh mì không chỉ là thức ăn, đó là cách để mọi người xích lại gần nhau, cùng tạo nên những khoảnh khắc ấm áp, thân thuộc và gắn kết quanh bàn ăn.\n\nTừ tay chúng tôi đến tay bạn, mỗi chiếc bánh được làm bằng đam mê, giữ trọn nét truyền thống và luôn sẵn sàng để sẻ chia.",
@@ -1307,7 +1307,7 @@ export const translations = {
       about: {
         title: "Về Chúng Tôi",
         links: {
-          ourStory: "Câu Truyện",
+          ourStory: "Về Chúng Tôi",
           ourBakery: "Tiệm Bánh Của Chúng Tôi",
           getInTouch: "Liên Hệ Ngay",
         },

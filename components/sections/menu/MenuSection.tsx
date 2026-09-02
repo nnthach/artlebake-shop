@@ -10,6 +10,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { useIsMobile } from "@/hooks/useMobile";
 import MenuSectionFilter from "@/components/sections/menu/MenuSectionFilter";
 import ProductCardMobile from "@/components/custom/ProductCardMobile";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -21,8 +22,11 @@ export default function MenuSection() {
   const [products, setProducts] = useState<FetchedProductMenu[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+
   const isMobile = useIsMobile();
 
   const fetchCategories = useCallback(async () => {
@@ -49,7 +53,7 @@ export default function MenuSection() {
           limit: String(PRODUCTS_PER_PAGE),
           page: String(pageNum),
           locale,
-          search: search.trim(),
+          search: debouncedSearch.trim(),
         });
         if (categoryId !== "all") {
           params.set("category_id", categoryId);
@@ -67,7 +71,7 @@ export default function MenuSection() {
         setIsLoading(false);
       }
     },
-    [locale, search, setPagination],
+    [locale, debouncedSearch, setPagination],
   );
 
   useEffect(() => {
@@ -77,6 +81,10 @@ export default function MenuSection() {
   useEffect(() => {
     fetchProducts(activeCategory, page);
   }, [fetchProducts, activeCategory, page]);
+
+  useEffect(() => {
+    resetPage();
+  }, [debouncedSearch, resetPage]);
 
   const handleSelectCategory = (id: string) => {
     setActiveCategory(id);
@@ -126,10 +134,7 @@ export default function MenuSection() {
           search={search}
           isFilterOpen={isFilterOpen}
           onSelectCategory={handleSelectCategory}
-          onSearchChange={(value) => {
-            setSearch(value);
-            resetPage();
-          }}
+          onSearchChange={setSearch}
           onFilterOpenChange={setIsFilterOpen}
         />
 
@@ -190,7 +195,9 @@ export default function MenuSection() {
 
             {products.length === 0 && (
               <p className="mt-12 text-center text-charcoal/50">
-                {t("menuPage.menuFilter.empty")}
+                {locale === "en"
+                  ? "No products found."
+                  : "Không tìm thấy sản phẩm."}
               </p>
             )}
 

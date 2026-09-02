@@ -22,11 +22,13 @@ interface PreorderItemRow {
 }
 
 function getPreorderDateRange(businessDate: string) {
-  const date = new Date(`${businessDate}T00:00:00+07:00`);
+  const [year, month, day] = businessDate.split("-").map(Number);
 
-  // lấy ngày hôm nay
-  // JS: Sunday = 0, Monday = 1, ..., Saturday = 6
-  const dayOfWeek = date.getDay();
+  // Dùng UTC để xử lý calendar date, tránh phụ thuộc timezone của server
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  // Sunday = 0, Monday = 1, ..., Saturday = 6
+  const dayOfWeek = date.getUTCDay();
 
   // Monday - Wednesday
   // → upcoming Friday is this week
@@ -36,16 +38,13 @@ function getPreorderDateRange(businessDate: string) {
   const daysUntilFriday = dayOfWeek <= 3 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
 
   const firstFriday = new Date(date);
-  firstFriday.setDate(date.getDate() + daysUntilFriday);
+  firstFriday.setUTCDate(firstFriday.getUTCDate() + daysUntilFriday);
 
-  // Two preorder weekends = 14 days from first Friday
+  // Friday → Sunday of next week = 10 days inclusive
   const lastSunday = new Date(firstFriday);
-  lastSunday.setDate(firstFriday.getDate() + 9);
+  lastSunday.setUTCDate(lastSunday.getUTCDate() + 9);
 
-  const formatDate = (value: Date) =>
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(value);
+  const formatDate = (value: Date) => value.toISOString().slice(0, 10);
 
   return {
     startDate: formatDate(firstFriday),

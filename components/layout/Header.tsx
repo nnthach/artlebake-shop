@@ -119,7 +119,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
 
           <LanguageToggle scrolled={isScrolled} />
 
-          {user ? (
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -163,16 +163,6 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Link href={"/signin"}>
-              <Button
-                variant="default"
-                className="font-semibold py-1"
-                size="sm"
-              >
-                {t("headerButton.signin")}
-              </Button>
-            </Link>
           )}
         </div>
 
@@ -218,7 +208,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                   </SheetClose>
                 ))}
 
-                {user ? (
+                {user && (
                   <div className="flex flex-col gap-3 border-t border-charcoal/10 pt-6">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9 border border-primary/40">
@@ -263,14 +253,6 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                       </Button>
                     </SheetClose>
                   </div>
-                ) : (
-                  <SheetClose asChild>
-                    <Link href={"/signin"}>
-                      <Button variant="default" className="font-semibold">
-                        {t("headerButton.signin")}
-                      </Button>
-                    </Link>
-                  </SheetClose>
                 )}
               </nav>
             </SheetContent>

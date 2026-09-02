@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { useI18n } from "@/context/I18nContext";
-import { useAuth } from "@/context/AuthContext";
 
 export default function CartSheet() {
   const {
@@ -26,7 +25,6 @@ export default function CartSheet() {
     updateQuantity,
     removeItem,
   } = useCart();
-  const { user } = useAuth();
   const { t } = useI18n();
 
   const formatPrice = (price: number) => price.toLocaleString("vi-VN") + " đ";
@@ -38,17 +36,7 @@ export default function CartSheet() {
           <SheetTitle>{t("cart.title")}</SheetTitle>
         </SheetHeader>
 
-        {!user ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center text-muted-foreground">
-            <ShoppingBag className="h-10 w-10 opacity-30" />
-            <p className="text-sm">{t("cart.signInRequired")}</p>
-            <SheetClose asChild>
-              <Link href="/signin">
-                <Button variant="default">{t("headerButton.signin")}</Button>
-              </Link>
-            </SheetClose>
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
             {t("cart.loading")}
           </div>

@@ -112,7 +112,7 @@ export default function ProductCard({
             disabled={!isAvailable || isAdding}
             onClick={() => addToCartButton(product)}
             size={"sm"}
-            className="rounded-2xl"
+            className="rounded-full"
           >
             <ShoppingCart className="h-4 w-4" />
             <span>{locale === "en" ? "Add" : "Thêm"}</span>

@@ -38,9 +38,17 @@ export function useFetchCity(
     const fetchProvinces = async () => {
       try {
         setIsCitiesLoading(true);
-        const res = await fetch("https://provinces.open-api.vn/api/v1/p/");
-        const data = await res.json();
-        setCities(data);
+        const res = await fetch(
+          "https://provinces.open-api.vn/api/v1/p/79?depth=2",
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch Ho Chi Minh City");
+        }
+
+        const data: Province = await res.json();
+
+        setCities([data]);
       } catch (error) {
         console.error("Failed to fetch provinces:", error);
       } finally {
@@ -90,7 +98,7 @@ export function useFetchCity(
     ? [{ value: "", label: t("orderPage.info.loading") }]
     : [
         { value: "", label: t("orderPage.info.cityPlaceholder") },
-        ...cities.map((city) => ({
+        ...cities?.map((city) => ({
           value: String(city.code),
           label: city.name,
         })),

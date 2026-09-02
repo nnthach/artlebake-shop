@@ -2,10 +2,12 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useI18n } from "@/context/I18nContext";
 
 export default function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { locale } = useI18n();
 
   const orderCode = searchParams.get("orderCode");
 
@@ -54,10 +56,16 @@ export default function PaymentPage() {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="text-center">
-        <h2 className="text-lg font-semibold">Đang xác nhận thanh toán...</h2>
+        <h2 className="text-lg font-semibold">
+          {locale === "en"
+            ? "Confirming Payment..."
+            : "Đang xác nhận thanh toán..."}
+        </h2>
 
         <p className="mt-2 text-sm text-gray-500">
-          Vui lòng đợi trong giây lát.
+          {locale === "en"
+            ? "Please wait a moment."
+            : "Vui lòng đợi trong giây lát."}
         </p>
       </div>
     </div>

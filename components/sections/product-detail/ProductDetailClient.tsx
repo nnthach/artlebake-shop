@@ -222,7 +222,7 @@ export default function ProductDetailClient({
               )}
 
               {hasPreorder && (
-                <span className="rounded-full bg-charcoal px-3 py-1 text-xs font-medium text-white">
+                <span className="rounded-full bg-amber-500/90 px-3 py-1 text-xs font-medium text-white">
                   {t("menuPage.productStatus.preorder")}
                 </span>
               )}
@@ -231,11 +231,10 @@ export default function ProductDetailClient({
             {/* Add to cart */}
             <Button
               variant={isOutOfStock ? "secondary" : "default"}
-              size="lg"
               className={cn(
-                "font-semibold",
+                "h-11 rounded-full px-8 font-semibold",
                 isOutOfStock &&
-                  "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10 rounded-2xl",
+                  "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10",
               )}
               disabled={isAdding || isOutOfStock}
               onClick={addToCartButton}
