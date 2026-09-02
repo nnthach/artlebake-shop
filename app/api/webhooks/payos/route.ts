@@ -5,8 +5,15 @@ import { PayOSWebhookBody } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
 import { deleteCacheByResource } from "@/lib/redis-cache";
 import { sendOrderConfirmationEmail } from "@/lib/emails/send-order-confirmation";
-import { OrderConfirmationItemProps } from "@/types/form-type";
-
+type OrderItemRow = {
+  product_name: string;
+  quantity: number | string;
+  unit_price: number | string;
+  subtotal: number | string;
+  products: {
+    image_url?: string[];
+  } | null;
+};
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as PayOSWebhookBody;
@@ -149,17 +156,19 @@ export async function POST(req: NextRequest) {
 
           preorderDate: order.preorder_schedules?.date,
 
-          items: order.order_items.map((item: OrderConfirmationItemProps) => ({
-            name: item.product_name,
-            quantity: item.quantity,
-            unitPrice: item.unit_price,
-            subtotal: item.subtotal,
-            imageUrl: item.products?.image_url?.[0],
+          items: order.order_items.map((item: OrderItemRow) => ({
+            product_name: item.product_name,
+            quantity: Number(item.quantity),
+            unit_price: Number(item.unit_price),
+            subtotal: Number(item.subtotal),
+            products: {
+              image_url: item.products?.image_url ?? [],
+            },
           })),
 
-          subtotal: order.subtotal,
-          shippingFee: order.shipping_fee,
-          total: order.total,
+          subtotal: Number(order.subtotal),
+          shippingFee: Number(order.shipping_fee),
+          total: Number(order.total),
 
           fulfillmentMethod: order.fulfillment_method,
 

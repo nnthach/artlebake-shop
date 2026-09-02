@@ -94,7 +94,10 @@ export function OrderConfirmationEmail({
               </Heading>
 
               {items.map((item, index) => (
-                <Section key={`${item.product_name}-${index}`} className="py-2.5">
+                <Section
+                  key={`${item.product_name}-${index}`}
+                  className="py-2.5"
+                >
                   <table width="100%" cellPadding="0" cellSpacing="0">
                     <tbody>
                       <tr>
