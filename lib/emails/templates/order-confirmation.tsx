@@ -1,3 +1,4 @@
+import { formatDateReverse } from "@/lib/utils";
 import { OrderConfirmationEmailProps } from "@/types/form-type";
 import {
   Body,
@@ -36,15 +37,17 @@ export function OrderConfirmationEmail({
     <Html>
       <Head />
 
-      <Preview>Your Artlebake order #{orderCode} has been confirmed</Preview>
+      <Preview>
+        Your Artle Bakeshop order #{orderCode} has been confirmed
+      </Preview>
 
       <Tailwind>
-        <Body className="m-0 bg-[#f7f4ef] py-10 font-sans">
+        <Body className="m-0 bg-[#AF2D35] py-10 font-sans">
           <Container className="mx-auto max-w-[600px] bg-white px-10 py-10">
             {/* Logo / Brand */}
             <Section className="text-center">
               <Heading className="m-0 text-[24px] font-bold tracking-[4px]">
-                ARTLEBAKE
+                ARTLE BAKESHOP
               </Heading>
 
               <Text className="mt-2 text-[13px] text-[#777777]">
@@ -76,13 +79,13 @@ export function OrderConfirmationEmail({
 
             {/* Preorder */}
             {orderType === "preorder" && preorderDate && (
-              <Section className="my-6 rounded-lg bg-[#f7f4ef] px-5 py-4">
+              <Section className="my-6 rounded-lg bg-[#AF2D35] px-5 py-4">
                 <Text className="m-0 text-[14px] font-semibold">
-                  📅 Preorder Date
+                  Pre-order Date
                 </Text>
 
                 <Text className="m-0 mt-2 text-[14px] leading-[22px] text-[#222222]">
-                  {preorderDate}
+                  {formatDateReverse(preorderDate)}
                 </Text>
               </Section>
             )}
@@ -215,22 +218,34 @@ export function OrderConfirmationEmail({
                   : "Pickup Information"}
               </Heading>
 
-              <Text className="mb-1 mt-3 text-[13px] text-[#777777]">
-                Method
-              </Text>
-
-              <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
-                {fulfillmentMethod === "delivery" ? "Delivery" : "Pickup"}
-              </Text>
-
               {fulfillmentMethod === "delivery" && deliveryAddress && (
                 <>
                   <Text className="mb-1 mt-3 text-[13px] text-[#777777]">
-                    Address
+                    Delivery Address
                   </Text>
 
                   <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
                     {deliveryAddress}
+                  </Text>
+                </>
+              )}
+
+              {fulfillmentMethod === "pickup" && (
+                <>
+                  <Text className="mb-1 mt-3 text-[13px] text-[#777777]">
+                    Pickup Location
+                  </Text>
+
+                  <Text className="m-0 text-[14px] font-semibold leading-[22px] text-[#222222]">
+                    Artle Bakeshop
+                  </Text>
+
+                  <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
+                    1243 ABC Street, XYZ District, Ho Chi Minh City
+                  </Text>
+
+                  <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
+                    Phone: 0909 123 456
                   </Text>
                 </>
               )}
@@ -241,7 +256,7 @@ export function OrderConfirmationEmail({
             {/* Footer */}
             <Section className="text-center">
               <Text className="text-[13px] leading-5 text-[#666666]">
-                Thank you for choosing Artlebake ❤️
+                Thank you for choosing Artle Bakeshop ❤️
               </Text>
 
               <Text className="text-[13px] leading-5 text-[#666666]">
@@ -249,7 +264,7 @@ export function OrderConfirmationEmail({
               </Text>
 
               <Text className="mt-6 text-[12px] text-[#aaaaaa]">
-                © {new Date().getFullYear()} Artlebake
+                © {new Date().getFullYear()} Artle Bakeshop
               </Text>
             </Section>
           </Container>

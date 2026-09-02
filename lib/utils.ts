@@ -73,6 +73,11 @@ export function formatDateTime(date: Date | string) {
   };
 }
 
+export function formatDateReverse(date: string): string {
+  const [year, month, day] = date.split("-");
+  return `${day}-${month}-${year}`;
+}
+
 export const getToday = () => {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Ho_Chi_Minh",
