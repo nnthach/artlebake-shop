@@ -80,7 +80,7 @@ export default function SignInPage() {
 
       <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-charcoal-900/40 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
         <Link href="/" className="mb-6 flex items-center justify-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary">
             <Croissant className="h-5 w-5 text-white" />
           </span>
           <span className="font-serif text-xl font-bold text-white">
@@ -89,7 +89,7 @@ export default function SignInPage() {
         </Link>
 
         <div className="mb-6 text-center">
-          <p className="font-script text-3xl text-amber">
+          <p className="font-script text-3xl text-primary">
             {t("authPage.signinPage.badge")}
           </p>
           <h1 className="mt-1 text-2xl font-bold text-white">
@@ -120,7 +120,7 @@ export default function SignInPage() {
                 autoComplete="email"
                 placeholder={t("authPage.signinPage.emailPlaceholder")}
                 disabled={isSubmitting}
-                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-amber/40 focus-visible:border-amber focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 {...register("email")}
               />
             </div>
@@ -146,7 +146,7 @@ export default function SignInPage() {
                 autoComplete="current-password"
                 placeholder={t("authPage.signinPage.passwordPlaceholder")}
                 disabled={isSubmitting}
-                className="border-white/15 bg-white/5 pl-10 pr-10 text-white placeholder:text-white/35 hover:border-amber/40 focus-visible:border-amber focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border-white/15 bg-white/5 pl-10 pr-10 text-white placeholder:text-white/35 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 {...register("password")}
               />
               <button
@@ -216,7 +216,7 @@ export default function SignInPage() {
           {t("authPage.signinPage.noAccount")}{" "}
           <Link
             href="/signup"
-            className="font-semibold text-amber hover:underline"
+            className="font-semibold text-primary hover:underline"
           >
             {t("authPage.signinPage.signUpLink")}
           </Link>
