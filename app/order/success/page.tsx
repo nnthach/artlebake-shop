@@ -9,6 +9,7 @@ import { CheckCircle2, Calendar, Mail, Phone, User } from "lucide-react";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/context/I18nContext";
+import { useCart } from "@/context/CartContext";
 
 interface OrderItemDetail {
   id: string;
@@ -51,6 +52,8 @@ const formatPrice = (price: number) => price.toLocaleString("vi-VN") + " đ";
 
 function OrderSuccessContent() {
   const { t, locale } = useI18n();
+  const { clearCart } = useCart();
+
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -67,7 +70,7 @@ function OrderSuccessContent() {
         const data = await res.json();
         if (data.success && data.data) {
           setOrder(data.data);
-          localStorage.removeItem("bakery_cart");
+          clearCart();
         }
       } catch (error) {
         console.error("Fetch order detail error:", error);
