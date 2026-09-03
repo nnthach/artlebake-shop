@@ -1,11 +1,22 @@
 "use client";
 
-import { Calendar, CreditCard, Eye, Package, User } from "lucide-react";
+import {
+  Check,
+  CreditCard,
+  Eye,
+  Package,
+  Store,
+  Tag,
+  Truck,
+  User,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -16,9 +27,22 @@ import {
   formatOrderPaymentStatusColor,
   formatOrderStatus,
   formatOrderStatusColor,
+  formatOrderTypeColor,
 } from "@/utils/format-status";
 import { useI18n } from "@/context/I18nContext";
-import { formatDateTime } from "@/utils/format-date";
+import { formatDateReverse, formatDateTime } from "@/utils/format-date";
+
+interface ProductTranslation {
+  locale: string;
+  name: string;
+}
+
+interface ProductDetail {
+  id: string;
+  image_url: string[] | null;
+  is_active: boolean;
+  product_translations: ProductTranslation[];
+}
 
 interface OrderItemDetail {
   id: string;
@@ -27,63 +51,69 @@ interface OrderItemDetail {
   unit_price: number;
   quantity: number;
   subtotal: number;
-  products?: {
-    id: string;
-    image_url: string[] | null;
-    product_translations: ProductTranslation[];
-  } | null;
-}
-
-interface ProductTranslation {
-  locale: string;
-  name: string;
-}
-
-interface OrderStoreDetail {
-  id: string;
-  name: string;
-  address: { en: string; vi: string } | null;
-  city: string;
-  district: string;
-  phone: string;
+  created_at: string;
+  products: ProductDetail | null;
 }
 
 interface Payment {
   id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
   transaction_id: string | null;
+}
+
+interface PreorderSchedule {
+  id: string;
+  date: string;
+  status: boolean;
 }
 
 interface OrderDetail {
   id: string;
   order_code: string;
+
+  // Order
+  status: string;
+  payment_status: string;
+  order_type: string;
+  fulfillment_method: string;
+  preorder_date_id: string | null;
+
+  // Customer
   name: string;
   phone: string;
-  address: string;
+  email: string | null;
+
+  // Shipping
+  address: string | null;
+  city: string | null;
+  district: string | null;
+  ward: string | null;
   note: string | null;
-  city: string;
-  district: string;
-  ward: string;
+
+  // Total
   subtotal: number;
   shipping_fee: number;
   total: number;
-  status: string;
-  payment_status: string;
-  payment_method: string;
+  payment_method: string | null;
+
+  // Timestamps
+  confirmed_at: string | null;
+  delivered_at: string | null;
+  cancelled_at: string | null;
   created_at: string;
+  updated_at: string;
+
+  // Relations
   order_items: OrderItemDetail[];
-  stores: OrderStoreDetail | null;
   payments: Payment | null;
+  preorder_schedule: PreorderSchedule | null;
 }
 
 const formatPrice = (price: number) =>
   `${(price ?? 0).toLocaleString("vi-VN")} đ`;
-
-const formatPaymentMethod = (method: string) => {
-  const normalizedMethod = method.trim().toLowerCase();
-  return normalizedMethod
-    ? normalizedMethod.charAt(0).toUpperCase() + normalizedMethod.slice(1)
-    : "-";
-};
 
 const getProductName = (item: OrderItemDetail, locale: string) =>
   item.products?.product_translations.find(
@@ -148,10 +178,9 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
       </SheetTrigger>
 
       <SheetContent className="flex h-full w-full flex-col p-0 sm:max-w-[550px] bg-white">
-        <SheetHeader className="border-b bg-slate-50/50 p-6">
+        <SheetHeader className="border-b bg-[#FAFAFA] p-6">
           <div className="flex items-start justify-between gap-4 pr-8">
-            <SheetTitle className="flex items-center gap-2 text-xl">
-              <Package className="text-blue-600" size={24} />
+            <SheetTitle className="flex items-center gap-2 text-lg">
               {t("admin.orderDetailSheet.header.title").replace(
                 "{orderCode}",
                 order?.order_code || "-",
@@ -179,49 +208,37 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
           </div>
         ) : order ? (
           <>
-            <div className="flex-1 space-y-8 overflow-y-auto p-6">
+            <div className="flex-1 space-y-6 overflow-y-auto p-6 pt-2">
+              {/** Customer Information Section */}
               <section className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-600">
-                  <User size={14} />{" "}
+                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary">
+                  <User size={16} />{" "}
                   {t("admin.orderDetailSheet.customer.title")}
                 </h3>
-                <div className="grid grid-cols-2 gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-slate-500">
+                <div className="grid grid-cols-2 gap-4 rounded-xl border border-grey-100 bg-[#FAFAFA] p-4">
+                  <div className="space-y-1 text-sm">
+                    <p className="text-sm text-grey-100">
                       {t("admin.orderDetailSheet.customer.name")}
                     </p>
                     <p className="font-semibold">{order.name}</p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-slate-500">
+                  <div className="space-y-1 text-sm">
+                    <p className="text-sm text-grey-100">
                       {t("admin.orderDetailSheet.customer.phone")}
                     </p>
                     <p className="font-semibold">{order.phone}</p>
                   </div>
-                  {order.stores && (
-                    <div className="col-span-2 space-y-1 border-t border-zinc-200 pt-3">
-                      <p className="text-sm text-slate-500">
-                        {t("admin.orderDetailSheet.customer.store")}
-                      </p>
-                      <p className="font-semibold">{order.stores.name}</p>
-                      <p className="text-sm text-slate-600">
-                        {order.stores.phone}
-                      </p>
-                    </div>
-                  )}
-                  <div className="col-span-2 space-y-1">
-                    <p className="text-sm text-slate-500">
-                      {t("admin.orderDetailSheet.customer.deliveryAddress")}
+
+                  <div className="space-y-1 text-sm">
+                    <p className="text-sm text-grey-100">
+                      {t("admin.orderDetailSheet.customer.email")}
                     </p>
-                    <p className="font-semibold">
-                      {[order.address, order.ward, order.district, order.city]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
+                    <p className="font-semibold">{order.email}</p>
                   </div>
+
                   {order.note && (
-                    <div className="col-span-2 space-y-1">
-                      <p className="text-sm text-slate-500">
+                    <div className="col-span-2 space-y-1 text-sm">
+                      <p className="text-sm text-grey-100">
                         {t("admin.orderDetailSheet.customer.note")}
                       </p>
                       <p className="font-semibold">{order.note}</p>
@@ -230,9 +247,10 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                 </div>
               </section>
 
+              {/** Item List Section */}
               <section className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-600">
-                  <Package size={14} />{" "}
+                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary">
+                  <Package size={16} />{" "}
                   {t("admin.orderDetailSheet.items.title").replace(
                     "{count}",
                     String(order.order_items?.length || 0),
@@ -247,9 +265,9 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                       return (
                         <div
                           key={item.id}
-                          className="flex gap-4 rounded-xl border p-3 transition-colors hover:bg-slate-50"
+                          className="flex gap-4 rounded-xl border p-3 transition-colors hover:bg-[#FAFAFA]"
                         >
-                          <div className="relative flex aspect-[4/3] w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-gray-50">
+                          <div className="relative flex aspect-square w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-gray-50">
                             {productImage ? (
                               <Image
                                 src={productImage}
@@ -258,18 +276,18 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                                 className="object-cover"
                               />
                             ) : (
-                              <Package size={24} className="text-slate-300" />
+                              <Package size={24} className="text-grey-300" />
                             )}
                           </div>
                           <div className="flex min-w-0 flex-1 flex-col justify-between">
-                            <h4 className="truncate font-bold text-slate-800">
+                            <h4 className="truncate font-bold text-grey-800 text-sm">
                               {productName}
                             </h4>
                             <div className="flex items-end justify-between gap-3">
-                              <p className="text-sm text-slate-600">
+                              <p className="text-sm text-grey-600">
                                 {formatPrice(item.unit_price)} × {item.quantity}
                               </p>
-                              <p className="text-sm font-bold text-slate-900">
+                              <p className="text-sm font-bold text-grey-900">
                                 {formatPrice(item.subtotal)}
                               </p>
                             </div>
@@ -281,75 +299,171 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                 </div>
               </section>
 
-              <section className="grid grid-cols-2 gap-4 border-t pt-6">
-                <div className="flex items-start gap-3">
-                  <div className="shrink-0 rounded-lg bg-orange-50 p-2 text-orange-600">
-                    <CreditCard size={20} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase text-slate-500">
-                      {t("admin.orderDetailSheet.payment.title")}
-                    </p>
-                    <p className="text-sm font-semibold text-slate-900">
-                      {formatPaymentMethod(order.payment_method)}
-                    </p>
-                    {order.payments?.transaction_id && (
-                      <p className="break-all text-sm font-semibold text-slate-900">
-                        {t("admin.orderDetailSheet.payment.transactionId")}:{" "}
-                        {order.payments.transaction_id}
-                      </p>
-                    )}
+              {/* Fulfillment Method Section */}
+              <section className="space-y-4">
+                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary">
+                  <Truck size={16} />
+                  {t("admin.orderDetailSheet.fulfillment.title")}
+                </h3>
+
+                <div className="space-y-3 rounded-xl border border-grey-100 bg-[#FAFAFA] p-4">
+                  {/* Order Type & Fulfillment Method Badges */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Order Type */}
                     <span
-                      className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold ${formatOrderPaymentStatusColor(order.payment_status)}`}
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${formatOrderTypeColor(
+                        order.order_type,
+                      )}`}
                     >
+                      <Tag size={13} />
+                      {t(`admin.orderPage.type.${order.order_type}`)}
+                    </span>
+
+                    {/* Fulfillment Method */}
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-grey-200 bg-white px-2.5 py-1 text-xs font-semibold text-grey-700 shadow-sm">
+                      {order.fulfillment_method === "delivery" ? (
+                        <Truck size={13} className="text-blue-600" />
+                      ) : (
+                        <Store size={13} className="text-emerald-600" />
+                      )}
                       {t(
-                        `admin.orderPage.status.payment.${formatOrderPaymentStatus(order.payment_status)}`,
+                        `admin.orderDetailSheet.fulfillment.${order.fulfillment_method}`,
                       )}
                     </span>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="shrink-0 rounded-lg bg-blue-50 p-2 text-blue-600">
-                    <Calendar size={20} />
+
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Preorder Schedule Date (Hiển thị nếu là đơn preorder và có ngày giao/nhận) */}
+                    {order.order_type === "preorder" &&
+                      order.preorder_schedule?.date && (
+                        <div className="space-y-1 text-sm">
+                          <p className="text-sm text-grey-100">
+                            {t(
+                              "admin.orderDetailSheet.fulfillment.preorderDate",
+                            )}
+                          </p>
+                          <p className="font-semibold">
+                            {formatDateReverse(order.preorder_schedule.date)}
+                          </p>
+                        </div>
+                      )}
+
+                    {/* Delivery Address (Chỉ hiển thị khi fulfillment_method === 'delivery') */}
+                    {order.fulfillment_method === "delivery" && (
+                      <div className="space-y-1 text-sm">
+                        <p className="text-sm text-grey-100">
+                          {t("admin.orderDetailSheet.fulfillment.addressTitle")}
+                        </p>
+                        <p className="font-semibold">
+                          {[
+                            order.address,
+                            order.ward,
+                            order.district,
+                            order.city,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase text-slate-500">
-                      {t("admin.orderDetailSheet.date")}
-                    </p>
-                    <p className="text-sm font-semibold text-slate-900">
-                      {formatDateTime(order.created_at).full}
-                    </p>
+                </div>
+              </section>
+
+              {/* Payment & Summary Section */}
+              <section className="space-y-4">
+                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary">
+                  <CreditCard size={16} />
+                  {t("admin.orderDetailSheet.payment.title")}
+                </h3>
+
+                <div className="rounded-xl border border-grey-200/80 bg-[#FAFAFA]/50 p-4 space-y-4">
+                  {/* Chi tiết thanh toán & Ngày tạo */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Phương thức & Trạng thái thanh toán */}
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] font-bold uppercase text-grey-100">
+                        {t("admin.orderDetailSheet.payment.method")}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold uppercase text-grey-900">
+                          {order.payment_method}
+                        </span>
+                        <span
+                          className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${formatOrderPaymentStatusColor(
+                            order.payment_status,
+                          )}`}
+                        >
+                          {t(
+                            `admin.orderPage.status.payment.${formatOrderPaymentStatus(
+                              order.payment_status,
+                            )}`,
+                          )}
+                        </span>
+                      </div>
+                      {order.payments?.transaction_id && (
+                        <p className="break-all text-xs text-grey-100">
+                          {t("admin.orderDetailSheet.payment.transactionId")}:{" "}
+                          <span className="font-mono text-grey-700">
+                            {order.payments.transaction_id}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Ngày đặt hàng */}
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] font-bold uppercase text-grey-100">
+                        {t("admin.orderDetailSheet.date")}
+                      </p>
+                      <p className="text-sm font-semibold text-grey-900">
+                        {formatDateTime(order.created_at).full}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bảng tính tổng tiền */}
+                  <div className="space-y-2 border-t border-grey-200/80 pt-3 text-sm">
+                    <div className="flex items-center justify-between text-grey-600">
+                      <span>
+                        {t("admin.orderDetailSheet.summary.subtotal")}
+                      </span>
+                      <span className="font-medium text-grey-900">
+                        {formatPrice(order.subtotal)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-grey-600">
+                      <span>
+                        {t("admin.orderDetailSheet.summary.shippingFee")}
+                      </span>
+                      <span className="font-medium text-grey-900">
+                        {formatPrice(order.shipping_fee)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-dashed border-grey-300 pt-2.5">
+                      <span className="font-bold text-grey-800">
+                        {t("admin.orderDetailSheet.summary.total")}
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        {formatPrice(order.total)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </section>
             </div>
 
-            <div className="space-y-4 border-t bg-slate-50 p-6">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-600">
-                  {t("admin.orderDetailSheet.summary.subtotal")}
-                </span>
-                <span className="font-semibold text-slate-900">
-                  {formatPrice(order.subtotal)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-600">
-                  {t("admin.orderDetailSheet.summary.shippingFee")}
-                </span>
-                <span className="font-semibold text-slate-900">
-                  {formatPrice(order.shipping_fee)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-dashed border-slate-300 pt-3">
-                <span className="text-sm font-bold text-slate-600">
-                  {t("admin.orderDetailSheet.summary.total")}
-                </span>
-                <span className="text-xl font-bold text-slate-900">
-                  {formatPrice(order.total)}
-                </span>
-              </div>
-            </div>
+            <SheetFooter className="flex w-full flex-row items-center justify-between border-t px-6 py-4">
+              <Button type="button" variant="outline" className="gap-2">
+                <X className="h-4 w-4" />
+                Hủy đơn
+              </Button>
+
+              <Button type="button" className="gap-2">
+                <Check className="h-4 w-4" />
+                Đã giao hàng
+              </Button>
+            </SheetFooter>
           </>
         ) : (
           <div className="p-6 text-sm text-muted-foreground">

@@ -8,17 +8,24 @@ export async function GET(
   try {
     if (!isSupabaseConfigured) {
       return NextResponse.json(
-        { success: false, error: "Database not configured" },
+        {
+          success: false,
+          error: "Database not configured",
+        },
         { status: 500 },
       );
     }
 
     const { id } = await params;
+
     const locale = req.nextUrl.searchParams.get("locale") ?? "vi";
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "Id is required" },
+        {
+          success: false,
+          error: "Id is required",
+        },
         { status: 400 },
       );
     }
@@ -28,6 +35,7 @@ export async function GET(
       .select(
         `
         *,
+        
         order_items(
           id,
           product_id,
@@ -36,30 +44,31 @@ export async function GET(
           quantity,
           subtotal,
           created_at,
+
           products(
             id,
             image_url,
-            product_translations!inner(
-                locale,
-                name
-                )
+            is_active,
+
+            product_translations(
+              locale,
+              name
             )
+          )
         ),
+
         payments(
-            id, transaction_id, payment_intent_id
-        ),
-        stores(
           id,
-          name,
-          address,
-          city,
-          district,
-          phone
+          transaction_id,
+          amount,
+          status,
+          created_at,
+          updated_at
         ),
-        users(
+
+        preorder_schedules(
           id,
-          full_name,
-          role,
+          date,
           status
         )
       `,
@@ -68,25 +77,56 @@ export async function GET(
       .eq("order_items.products.product_translations.locale", locale)
       .single();
 
-    if (error || !data) {
+    if (error) {
+      console.error("Get admin order detail error:", error);
+
       return NextResponse.json(
-        { success: false, error: "Order not found" },
+        {
+          success: false,
+          error: error.message,
+        },
+        { status: 500 },
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Order not found",
+        },
         { status: 404 },
       );
     }
 
     const normalizedData = {
       ...data,
+
+      // payments chỉ lấy payment đầu tiên
       payments: Array.isArray(data.payments)
         ? (data.payments[0] ?? null)
         : (data.payments ?? null),
+
+      // preorder schedule chỉ có khi order_type = preorder
+      preorder_schedule: Array.isArray(data.preorder_schedules)
+        ? (data.preorder_schedules[0] ?? null)
+        : (data.preorder_schedules ?? null),
     };
 
-    return NextResponse.json({ success: true, data: normalizedData });
+    delete normalizedData.preorder_schedules;
+
+    return NextResponse.json({
+      success: true,
+      data: normalizedData,
+    });
   } catch (error) {
     console.error("Get admin order detail error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      {
+        success: false,
+        error: "Internal server error",
+      },
       { status: 500 },
     );
   }

@@ -184,11 +184,11 @@ export default function PreOrderSchedule() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl font-bold text-primary">
             {t("admin.preorderSchedulePage.headerTitle.title")}
           </h1>
 
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t("admin.preorderSchedulePage.headerTitle.subtitle")}
           </p>
         </div>

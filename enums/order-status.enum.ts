@@ -1,8 +1,6 @@
 export enum OrderEnum {
   Pending = "pending",
   Confirmed = "confirmed",
-  Preparing = "preparing",
-  Shipping = "shipping",
   Delivered = "delivered",
   Cancelled = "cancelled",
 }

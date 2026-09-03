@@ -330,10 +330,15 @@ export interface OrderItem {
   id: string;
   user_id: string;
   store_id: string;
-  status: string;
-  payment_status: string;
+  order_code: string;
+  status: OrderStatusEnum;
+  payment_status: PaymentStatusEnum;
+  order_type: OrderTypeEnum;
+  fulfillment_method: FulfillmentMethodEnum;
+  preorder_date_id: string | null;
   name: string;
   phone: string;
+  email: string;
   address: string;
   note: string | null;
   subtotal: number;
@@ -347,10 +352,12 @@ export interface OrderItem {
   district: string;
   ward: string;
   city: string;
-  payment_method: string;
-  order_code: string;
+  payment_method: PaymentMethodEnum;
   store: StoreItem;
 }
+
+export type OrderTypeEnum = "available" | "preorder";
+export type FulfillmentMethodEnum = "delivery" | "pickup";
 
 export type OrderStatusEnum =
   | "pending"

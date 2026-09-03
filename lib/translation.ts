@@ -378,6 +378,7 @@ export const translations = {
         stores: "Stores",
         storeInventories: "Daily Inventory",
         preorderSchedules: "Pre-order Schedule",
+        "preorder-items": "Pre-order Items",
       },
       headerDropdown: {
         notifications: "Notifications",
@@ -492,6 +493,8 @@ export const translations = {
           limit: "Rows per page",
           options: {
             all: "All",
+            active: "Active",
+            inactive: "Inactive",
             available: "Available",
             outOfStock: "Out of stock",
             lowStock: "Low stock",
@@ -506,7 +509,7 @@ export const translations = {
         showing: "Showing",
         createModal: {
           trigger: "Add Product",
-          title: "Add Pre-order Item",
+          title: "Add Pre-order Product",
           submit: "Create",
           fields: {
             scheduleDate: "Pre-order date",
@@ -534,6 +537,7 @@ export const translations = {
         },
         status: {
           active: "Active",
+          inactive: "Inactive",
           blocked: "Blocked",
         },
       },
@@ -566,6 +570,18 @@ export const translations = {
         headerTitle: {
           title: "Products",
           subtitle: "Manage your product catalog",
+        },
+        filter: {
+          status: "Status",
+          order: "Order",
+          limit: "Rows per page",
+          options: {
+            all: "All",
+            active: "Active",
+            inactive: "Inactive",
+            dateDesc: "Newest first",
+            dateAsc: "Oldest first",
+          },
         },
         table: {
           columns: {
@@ -627,6 +643,21 @@ export const translations = {
           title: "Categories",
           subtitle: "Manage product categories",
         },
+        filter: {
+          status: "Status",
+          sortBy: "Sort by",
+          order: "Order",
+          limit: "Rows per page",
+          options: {
+            all: "All",
+            active: "Active",
+            inactive: "Inactive",
+            createdAt: "Created date",
+            name: "Name",
+            desc: "Descending",
+            asc: "Ascending",
+          },
+        },
         table: {
           columns: {
             name: "Category Name",
@@ -667,6 +698,21 @@ export const translations = {
         headerTitle: {
           title: "Ingredients",
           subtitle: "Manage product ingredients",
+        },
+        filter: {
+          status: "Status",
+          sortBy: "Sort by",
+          order: "Order",
+          limit: "Rows per page",
+          options: {
+            all: "All",
+            active: "Active",
+            inactive: "Inactive",
+            createdAt: "Created date",
+            name: "Name",
+            desc: "Descending",
+            asc: "Ascending",
+          },
         },
         table: {
           columns: {
@@ -807,8 +853,6 @@ export const translations = {
           orderLabel: "Order",
           statusOptions: {
             all: "All",
-            active: "Active",
-            inactive: "Inactive",
           },
           sortByOptions: {
             createdAt: "Created At",
@@ -818,6 +862,7 @@ export const translations = {
             desc: "Descending",
             asc: "Ascending",
           },
+          limitPerPage: "Rows per page",
         },
         gender: {
           male: "Male",
@@ -891,8 +936,8 @@ export const translations = {
       },
       orderPage: {
         headerTitle: {
-          title: "Orders",
-          subtitle: "Manage orders",
+          title: "Order Management",
+          subtitle: "Manage and track all orders in one place",
         },
         filter: {
           statusLabel: "Status",
@@ -911,6 +956,7 @@ export const translations = {
             desc: "Descending",
             asc: "Ascending",
           },
+          limitPerPage: "Rows per page",
         },
         status: {
           order: {
@@ -927,6 +973,14 @@ export const translations = {
             failed: "Failed",
             refunded: "Refunded",
           },
+          orderType: {
+            available: "Available",
+            preorder: "Pre-order",
+          },
+        },
+        type: {
+          available: "Available",
+          preorder: "Pre-order",
         },
         searchPlaceholder: "Search by customer or order code...",
         showing: "Showing",
@@ -935,6 +989,7 @@ export const translations = {
           columns: {
             customer: "Customer",
             orderCode: "Order Code",
+            orderType: "Order Type",
             store: "Store",
             orderStatus: "Order Status",
             paymentStatus: "Payment Status",
@@ -952,6 +1007,7 @@ export const translations = {
           title: "Customer information",
           name: "Customer name",
           phone: "Phone number",
+          email: "Email",
           store: "Store",
           deliveryAddress: "Delivery address",
           note: "Note",
@@ -962,7 +1018,15 @@ export const translations = {
         },
         payment: {
           title: "Payment",
+          method: "Payment method",
           transactionId: "Transaction ID",
+        },
+        fulfillment: {
+          title: "Fulfillment",
+          delivery: "Delivery",
+          pickup: "Pickup",
+          preorderDate: "Pre-order date:",
+          addressTitle: "Delivery address",
         },
         date: "Created at",
         summary: {
@@ -1428,6 +1492,7 @@ export const translations = {
         stores: "Cửa hàng",
         storeInventories: "Bánh mỗi ngày",
         preorderSchedules: "Lịch đặt trước",
+        "preorder-items": "Sản phẩm đặt trước",
       },
       headerDropdown: {
         notifications: "Thông báo",
@@ -1543,6 +1608,8 @@ export const translations = {
           limit: "Số dòng mỗi trang",
           options: {
             all: "Tất cả",
+            active: "Hoạt động",
+            inactive: "Không hoạt động",
             available: "Còn hàng",
             outOfStock: "Không còn hàng",
             lowStock: "Ít hàng",
@@ -1585,6 +1652,7 @@ export const translations = {
         },
         status: {
           active: "Đang hoạt động",
+          inactive: "Không hoạt động",
           blocked: "Bị khóa",
         },
       },
@@ -1617,6 +1685,18 @@ export const translations = {
         headerTitle: {
           title: "Sản phẩm",
           subtitle: "Tổng quan danh sách sản phẩm",
+        },
+        filter: {
+          status: "Trạng thái",
+          order: "Thứ tự",
+          limit: "Số dòng mỗi trang",
+          options: {
+            all: "Tất cả",
+            active: "Đang hoạt động",
+            inactive: "Không hoạt động",
+            dateDesc: "Ngày mới nhất",
+            dateAsc: "Ngày cũ nhất",
+          },
         },
         table: {
           columns: {
@@ -1678,6 +1758,21 @@ export const translations = {
           title: "Danh mục",
           subtitle: "Tổng quan danh mục sản phẩm",
         },
+        filter: {
+          status: "Trạng thái",
+          sortBy: "Sắp xếp theo",
+          order: "Thứ tự",
+          limit: "Số dòng mỗi trang",
+          options: {
+            all: "Tất cả",
+            active: "Đang hoạt động",
+            inactive: "Không hoạt động",
+            createdAt: "Ngày tạo",
+            name: "Tên",
+            desc: "Giảm dần",
+            asc: "Tăng dần",
+          },
+        },
         table: {
           columns: {
             name: "Tên danh mục",
@@ -1718,6 +1813,21 @@ export const translations = {
         headerTitle: {
           title: "Nguyên liệu",
           subtitle: "Tổng quan nguyên liệu sản phẩm",
+        },
+        filter: {
+          status: "Trạng thái",
+          sortBy: "Sắp xếp theo",
+          order: "Thứ tự",
+          limit: "Số dòng mỗi trang",
+          options: {
+            all: "Tất cả",
+            active: "Đang hoạt động",
+            inactive: "Không hoạt động",
+            createdAt: "Ngày tạo",
+            name: "Tên",
+            desc: "Giảm dần",
+            asc: "Tăng dần",
+          },
         },
         table: {
           columns: {
@@ -1943,10 +2053,17 @@ export const translations = {
       },
       orderPage: {
         headerTitle: {
-          title: "Đơn hàng",
-          subtitle: "Quản lý đơn hàng",
+          title: "Quản lý đơn hàng",
+          subtitle: "Quản lý và theo dõi tất cả đơn hàng của hệ thống",
         },
-        searchPlaceholder: "Tìm theo khách hàng hoặc mã đơn hàng...",
+        filter: {
+          limitPerPage: "Số dòng mỗi trang",
+          statusLabel: "Trạng thái",
+          statusOptions: {
+            all: "Tất cả",
+          },
+        },
+        searchPlaceholder: "Tên khách hàng hoặc mã đơn hàng...",
         empty: "Không tìm thấy đơn hàng nào",
         showing: "Hiển thị",
         order: "đơn hàng",
@@ -1965,11 +2082,20 @@ export const translations = {
             failed: "Thanh toán thất bại",
             refunded: "Đã hoàn tiền",
           },
+          orderType: {
+            available: "Có sẵn",
+            preorder: "Đặt trước",
+          },
+        },
+        type: {
+          available: "Có sẵn",
+          preorder: "Đặt trước",
         },
         table: {
           columns: {
             customer: "Khách hàng",
             orderCode: "Mã đơn hàng",
+            orderType: "Loại đơn hàng",
             store: "Cửa hàng",
             orderStatus: "Trạng thái đơn hàng",
             paymentStatus: "Trạng thái thanh toán",
@@ -1987,6 +2113,7 @@ export const translations = {
           title: "Thông tin khách hàng",
           name: "Tên khách hàng",
           phone: "Số điện thoại",
+          email: "Email",
           store: "Cửa hàng",
           deliveryAddress: "Địa chỉ giao hàng",
           note: "Ghi chú",
@@ -1997,7 +2124,15 @@ export const translations = {
         },
         payment: {
           title: "Thanh toán",
+          method: "Phương thức thanh toán",
           transactionId: "Mã giao dịch",
+        },
+        fulfillment: {
+          title: "Hình thức nhận hàng",
+          delivery: "Giao hàng",
+          pickup: "Nhận tại cửa hàng",
+          preorderDate: "Ngày đặt trước",
+          addressTitle: "Địa chỉ giao hàng",
         },
         date: "Ngày tạo",
         summary: {
@@ -2058,10 +2193,10 @@ export const translations = {
       },
       storeInventoriesPage: {
         createModal: {
-          trigger: "Cập nhật sản phẩm",
-          title: "Cập nhật số lượng sản phẩm",
-          submit: "Lưu thay đổi",
-          addRow: "Thêm dòng",
+          trigger: "Thêm sản phẩm",
+          title: "Thêm sản phẩm bán trong ngày",
+          submit: "Xác nhận",
+          addRow: "Thêm sản phẩm",
           fields: {
             product: "Sản phẩm",
             quantity: "Số lượng",

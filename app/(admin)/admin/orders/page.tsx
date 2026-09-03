@@ -23,11 +23,14 @@ import { Button } from "@/components/ui/button";
 import { Filter, LayoutGrid, Loader2, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { OrderItem } from "@/types";
+import { OrderEnum } from "@/enums/order-status.enum";
 import {
   formatOrderPaymentStatus,
   formatOrderPaymentStatusColor,
   formatOrderStatus,
   formatOrderStatusColor,
+  formatOrderType,
+  formatOrderTypeColor,
 } from "@/utils/format-status";
 import OrderDetailSheet from "@/components/sections/admin/orders/OrderDetailSheet";
 import { formatDateTime } from "@/utils/format-date";
@@ -43,14 +46,14 @@ const LIMIT_OPTIONS = [
 ];
 
 interface FilterState {
-  is_active: boolean | undefined;
+  status: OrderEnum | undefined;
   sort_by: "created_at";
   order: "asc" | "desc";
   limit: number;
 }
 
 const DEFAULT_FILTER: FilterState = {
-  is_active: undefined,
+  status: undefined,
   sort_by: "created_at",
   order: "desc",
   limit: DEFAULT_LIMIT,
@@ -70,11 +73,22 @@ export default function AdminOrderPage() {
   const isFirstSearch = useRef(true);
 
   const STATUS_OPTIONS = [
-    { label: t("admin.staffsPage.filter.statusOptions.all"), value: "" },
-    { label: t("admin.staffsPage.filter.statusOptions.active"), value: "true" },
+    { label: t("admin.orderPage.filter.statusOptions.all"), value: "" },
     {
-      label: t("admin.staffsPage.filter.statusOptions.inactive"),
-      value: "false",
+      label: t("admin.orderPage.status.order.pending"),
+      value: OrderEnum.Pending,
+    },
+    {
+      label: t("admin.orderPage.status.order.confirmed"),
+      value: OrderEnum.Confirmed,
+    },
+    {
+      label: t("admin.orderPage.status.order.delivered"),
+      value: OrderEnum.Delivered,
+    },
+    {
+      label: t("admin.orderPage.status.order.cancelled"),
+      value: OrderEnum.Cancelled,
     },
   ];
 
@@ -102,8 +116,8 @@ export default function AdminOrderPage() {
 
         // get param
         const params = new URLSearchParams();
-        if (filter.is_active !== undefined) {
-          params.set("is_active", String(filter.is_active));
+        if (filter.status !== undefined) {
+          params.set("status", filter.status);
         }
         params.set("sort_by", filter.sort_by);
         params.set("order", filter.order);
@@ -161,13 +175,13 @@ export default function AdminOrderPage() {
   };
 
   const isFilterActive =
-    appliedFilter.is_active !== undefined ||
+    appliedFilter.status !== undefined ||
     appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
     appliedFilter.order !== DEFAULT_FILTER.order ||
     appliedFilter.limit !== DEFAULT_FILTER.limit;
 
   const activeFilterCount =
-    (appliedFilter.is_active !== undefined ? 1 : 0) +
+    (appliedFilter.status !== undefined ? 1 : 0) +
     (appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
     appliedFilter.order !== DEFAULT_FILTER.order
       ? 1
@@ -176,7 +190,7 @@ export default function AdminOrderPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.orderPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -195,12 +209,12 @@ export default function AdminOrderPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
+                  className="gap-2 bg-card hover:bg-primary/10 hover:text-primary hover:border-primary"
                 >
                   <Filter className="h-4 w-4" />
                   {t("button.filter")}
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">
+                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
                       {activeFilterCount}
                     </span>
                   )}
@@ -210,20 +224,19 @@ export default function AdminOrderPage() {
                 <div className="grid gap-4">
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      {t("admin.staffsPage.filter.statusLabel")}
+                      {t("admin.orderPage.filter.statusLabel")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
                       value={
-                        tempFilter.is_active === undefined
-                          ? ""
-                          : String(tempFilter.is_active)
+                        tempFilter.status === undefined ? "" : tempFilter.status
                       }
                       onChange={(e) => {
-                        const v = e.target.value;
                         setTempFilter((prev) => ({
                           ...prev,
-                          is_active: v === "" ? undefined : v === "true",
+                          status: e.target.value
+                            ? (e.target.value as OrderEnum)
+                            : undefined,
                         }));
                       }}
                     >
@@ -282,7 +295,7 @@ export default function AdminOrderPage() {
                   {/* Limit per page */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Số dòng mỗi trang
+                      {t("admin.orderPage.filter.limitPerPage")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -311,13 +324,13 @@ export default function AdminOrderPage() {
               </PopoverContent>
             </Popover>
 
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="group relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("admin.orderPage.searchPlaceholder")}
-                className="h-9 w-56 border-border bg-white pl-8 pr-8 text-sm focus-visible:ring-1 focus-visible:ring-border focus-visible:ring-offset-0"
+                className="h-9 w-64 border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 bg-white pl-8 pr-8 text-sm transition-colors"
               />
               {search && (
                 <button
@@ -346,24 +359,29 @@ export default function AdminOrderPage() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>
+              <TableHead className="">
                 {t("admin.orderPage.table.columns.orderCode")}
               </TableHead>
-              <TableHead>
+              <TableHead className="">
                 {t("admin.orderPage.table.columns.customer")}
               </TableHead>
-              <TableHead>{t("admin.orderPage.table.columns.store")}</TableHead>
-              <TableHead>{t("admin.orderPage.table.columns.total")}</TableHead>
-              <TableHead>
+              <TableHead className="">
+                {t("admin.orderPage.table.columns.total")} (VND)
+              </TableHead>
+              <TableHead className="">
+                {t("admin.orderPage.table.columns.orderType")}
+              </TableHead>
+
+              <TableHead className="">
                 {t("admin.orderPage.table.columns.orderStatus")}
               </TableHead>
-              <TableHead>
+              <TableHead className="">
                 {t("admin.orderPage.table.columns.paymentStatus")}
               </TableHead>
-              <TableHead>
+              <TableHead className="">
                 {t("admin.orderPage.table.columns.createdAt")}
               </TableHead>
-              <TableHead className="text-right">
+              <TableHead className="text-right ">
                 {t("admin.table.columns.actions")}
               </TableHead>
             </TableRow>
@@ -381,7 +399,7 @@ export default function AdminOrderPage() {
             ) : orders.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={8}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -393,20 +411,32 @@ export default function AdminOrderPage() {
             ) : (
               orders.map((order) => (
                 <TableRow key={order.id}>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm font-semibold">
                     {order?.order_code}
                   </TableCell>
                   <TableCell className="font-medium flex flex-col">
-                    <span>{order?.name}</span>
+                    <span className="font-semibold">{order?.name}</span>
                     <span className="text-sm text-muted-foreground">
                       {order?.phone}
                     </span>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {order?.store?.name}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+
+                  <TableCell className="text-sm ">
                     {order?.total?.toLocaleString("vi-VN") ?? "-"}
+                  </TableCell>
+
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatOrderTypeColor(
+                        order?.order_type,
+                      )}`}
+                    >
+                      {t(
+                        `admin.orderPage.status.orderType.${formatOrderType(
+                          order.order_type,
+                        )}`,
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <span

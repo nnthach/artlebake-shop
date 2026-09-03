@@ -36,17 +36,6 @@ import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useDebounce } from "@/hooks/useDebounce";
 
-const STATUS_OPTIONS = [
-  { label: "Tất cả", value: "" },
-  { label: "Đang hoạt động", value: "true" },
-  { label: "Không hoạt động", value: "false" },
-];
-
-const ORDER_OPTIONS = [
-  { label: "Ngày giảm dần", value: "desc" },
-  { label: "Ngày tăng dần", value: "asc" },
-];
-
 const DEFAULT_LIMIT = 8;
 
 const LIMIT_OPTIONS = [
@@ -70,13 +59,34 @@ const DEFAULT_FILTER: FilterState = {
 };
 
 export default function AdminProductPage() {
+  const { locale, t } = useI18n();
+
+  const STATUS_OPTIONS = [
+    { label: t("admin.productsPage.filter.options.all"), value: "" },
+    { label: t("admin.productsPage.filter.options.active"), value: "true" },
+    {
+      label: t("admin.productsPage.filter.options.inactive"),
+      value: "false",
+    },
+  ];
+
+  const ORDER_OPTIONS = [
+    {
+      label: t("admin.productsPage.filter.options.dateDesc"),
+      value: "desc",
+    },
+    {
+      label: t("admin.productsPage.filter.options.dateAsc"),
+      value: "asc",
+    },
+  ];
+
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
   const [tempFilter, setTempFilter] = useState<FilterState>(DEFAULT_FILTER);
 
-  const { locale, t } = useI18n();
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
   const [search, setSearch] = useState("");
@@ -175,7 +185,7 @@ export default function AdminProductPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.productsPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -200,7 +210,7 @@ export default function AdminProductPage() {
                   <Filter className="h-4 w-4" />
                   {t("button.filter")}
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">
+                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
                       {activeFilterCount}
                     </span>
                   )}
@@ -211,7 +221,7 @@ export default function AdminProductPage() {
                   {/* Status filter */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Trạng thái
+                      {t("admin.productsPage.filter.status")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -238,7 +248,9 @@ export default function AdminProductPage() {
 
                   {/* Order */}
                   <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">Thứ tự</p>
+                    <p className="text-sm font-medium leading-none">
+                      {t("admin.productsPage.filter.order")}
+                    </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
                       value={tempFilter.order}
@@ -260,7 +272,7 @@ export default function AdminProductPage() {
                   {/* Limit per page */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Số dòng mỗi trang
+                      {t("admin.productsPage.filter.limit")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -289,15 +301,15 @@ export default function AdminProductPage() {
               </PopoverContent>
             </Popover>
 
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="group relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={
                   locale === "vi" ? "Tìm sản phẩm..." : "Search products..."
                 }
-                className="h-9 w-56 border-border bg-white pl-8 pr-8 text-sm focus-visible:ring-1 focus-visible:ring-border focus-visible:ring-offset-0"
+                className="h-9 w-56 border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 bg-white pl-8 pr-8 text-sm transition-colors"
               />
               {search && (
                 <button

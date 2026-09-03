@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { page, limit, date, schedule_id } = getSearchParams(req);
+    const { page, limit, date, schedule_id, is_active } = getSearchParams(req);
 
     const { searchParams } = new URL(req.url);
 
@@ -77,6 +77,10 @@ export async function GET(req: NextRequest) {
     // Specific date
     if (date) {
       query = query.eq("preorder_schedules.date", date);
+    }
+
+    if (is_active !== null && is_active !== "") {
+      query = query.eq("is_active", is_active === "true");
     }
 
     // Date range

@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Filter, LayoutGrid, Loader2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverClose,
@@ -24,6 +23,10 @@ import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
 import CreateStoreInventoryModal from "@/components/sections/staff/store-inventory/CreateStoreInventoryModal";
+import {
+  formatDailyProductStatus,
+  formatDailyProductStatusColor,
+} from "@/utils/format-status";
 
 const STATUS_OPTIONS = [
   { label: "Tất cả", value: "" },
@@ -165,7 +168,7 @@ export default function AdminStoreInventoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.storeInventoriesPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -182,15 +185,11 @@ export default function AdminStoreInventoryPage() {
               onOpenChange={(open) => open && setTempFilter(appliedFilter)}
             >
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
-                >
+                <Button variant="outline" size="sm" className="gap-2 bg-card">
                   <Filter className="h-4 w-4" />
                   {t("button.filter")}
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">
+                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
                       {activeFilterCount}
                     </span>
                   )}
@@ -301,7 +300,7 @@ export default function AdminStoreInventoryPage() {
             {/* Date filter */}
             <input
               type="date"
-              className="border rounded-md h-9 px-2 w-40 text-sm bg-card"
+              className="border rounded-md h-9 px-2 w-40 text-sm bg-card border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
               value={selectedDate}
               onChange={(e) => {
                 setSelectedDate(e.target.value);
@@ -380,16 +379,6 @@ export default function AdminStoreInventoryPage() {
               </TableRow>
             ) : (
               stores.map((storeInventory, index) => {
-                const statusVariant: Record<
-                  string,
-                  "success" | "warning" | "destructive" | "secondary"
-                > = {
-                  available: "success",
-                  low_stock: "warning",
-                  out_of_stock: "destructive",
-                };
-                const statusKey = storeInventory.status ?? "unknown";
-
                 const translation =
                   storeInventory.products.product_translations.find(
                     (tr) => tr.locale === locale,
@@ -420,9 +409,17 @@ export default function AdminStoreInventoryPage() {
                       {storeInventory.remaining_quantity}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusVariant[statusKey] ?? "secondary"}>
-                        {t(`admin.storeInventoriesPage.status.${statusKey}`)}
-                      </Badge>
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatDailyProductStatusColor(
+                          storeInventory?.status,
+                        )}`}
+                      >
+                        {t(
+                          `admin.storeInventoriesPage.status.${formatDailyProductStatus(
+                            storeInventory?.status,
+                          )}`,
+                        )}
+                      </span>
                     </TableCell>
                     <TableCell className="font-medium">
                       {storeInventory.business_date ?? "-"}

@@ -12,7 +12,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       {/* Page title */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.dashboardPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">

@@ -31,25 +31,10 @@ import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
 import CreatePreOrderItemModal from "@/components/sections/admin/preorderItem/CreatePreOrderItemModal";
-
-const STATUS_OPTIONS = [
-  { label: "Tất cả", value: "" },
-  { label: "Còn hàng", value: "available" },
-  { label: "Không còn hàng", value: "out_of_stock" },
-  { label: "Ít hàng", value: "low_stock" },
-  { label: "Chờ bắt đầu", value: "draft" },
-  { label: "Đã đóng", value: "closed" },
-];
-
-const SORT_BY_OPTIONS = [
-  { label: "Ngày tạo", value: "created_at" },
-  { label: "Tên", value: "name" },
-];
-
-const ORDER_OPTIONS = [
-  { label: "Giảm dần", value: "desc" },
-  { label: "Tăng dần", value: "asc" },
-];
+import {
+  formatStatusBoolean,
+  formatStatusBooleanColor,
+} from "@/utils/format-status";
 
 const DEFAULT_LIMIT = 8;
 
@@ -76,6 +61,33 @@ const DEFAULT_FILTER: FilterState = {
 };
 
 export default function AdminPreOrderItemPage() {
+  const { t, locale } = useI18n();
+
+  const STATUS_OPTIONS = [
+    { label: t("admin.preorderItemPage.filter.options.all"), value: "" },
+    {
+      label: t("admin.preorderItemPage.filter.options.active"),
+      value: "true",
+    },
+    {
+      label: t("admin.preorderItemPage.filter.options.inactive"),
+      value: "false",
+    },
+  ];
+
+  const SORT_BY_OPTIONS = [
+    {
+      label: t("admin.preorderItemPage.filter.options.createdAt"),
+      value: "created_at",
+    },
+    { label: t("admin.preorderItemPage.filter.options.name"), value: "name" },
+  ];
+
+  const ORDER_OPTIONS = [
+    { label: t("admin.preorderItemPage.filter.options.desc"), value: "desc" },
+    { label: t("admin.preorderItemPage.filter.options.asc"), value: "asc" },
+  ];
+
   const [preOrderItems, setPreOrderItems] = useState<PreorderItem[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -87,8 +99,6 @@ export default function AdminPreOrderItemPage() {
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
 
-  const { t, locale } = useI18n();
-
   const fetchPreOrderItem = useCallback(
     async (filter: FilterState = appliedFilter, pageNum: number = page) => {
       try {
@@ -98,8 +108,8 @@ export default function AdminPreOrderItemPage() {
 
         params.set("date", selectedDate);
 
-        if (filter.status) {
-          params.set("status", filter.status);
+        if (filter.status !== "") {
+          params.set("is_active", filter.status);
         }
 
         params.set("page", String(pageNum));
@@ -203,7 +213,7 @@ export default function AdminPreOrderItemPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.preorderItemPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -228,7 +238,7 @@ export default function AdminPreOrderItemPage() {
                   <Filter className="h-4 w-4" />
                   {t("button.filter")}
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">
+                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
                       {activeFilterCount}
                     </span>
                   )}
@@ -239,7 +249,7 @@ export default function AdminPreOrderItemPage() {
                   {/* Status filter */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Trạng thái
+                      {t("admin.preorderItemPage.filter.status")}
                     </p>
 
                     <select
@@ -263,7 +273,7 @@ export default function AdminPreOrderItemPage() {
                   {/* Sort by */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Sắp xếp theo
+                      {t("admin.preorderItemPage.filter.sortBy")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -285,7 +295,9 @@ export default function AdminPreOrderItemPage() {
 
                   {/* Order */}
                   <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">Thứ tự</p>
+                    <p className="text-sm font-medium leading-none">
+                      {t("admin.preorderItemPage.filter.order")}
+                    </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
                       value={tempFilter.order}
@@ -307,7 +319,7 @@ export default function AdminPreOrderItemPage() {
                   {/* Limit per page */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Số dòng mỗi trang
+                      {t("admin.preorderItemPage.filter.limit")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -339,7 +351,7 @@ export default function AdminPreOrderItemPage() {
             {/* Date filter */}
             <input
               type="date"
-              className="border rounded-md h-9 px-2 w-40 text-sm bg-card"
+              className="border rounded-md h-9 px-2 w-40 text-sm bg-card border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
               value={selectedDate}
               onChange={(e) => {
                 setSelectedDate(e.target.value);
@@ -495,15 +507,15 @@ export default function AdminPreOrderItemPage() {
                     {/* Status */}
                     <TableCell>
                       <span
-                        className={
-                          preOrderItem.is_active
-                            ? "inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700"
-                            : "inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
-                        }
+                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatStatusBooleanColor(
+                          preOrderItem?.is_active,
+                        )}`}
                       >
-                        {preOrderItem.is_active
-                          ? t("admin.preorderItemPage.status.active")
-                          : t("admin.preorderItemPage.status.blocked")}
+                        {t(
+                          `admin.preorderItemPage.status.${formatStatusBoolean(
+                            preOrderItem?.is_active,
+                          )}`,
+                        )}
                       </span>
                     </TableCell>
 

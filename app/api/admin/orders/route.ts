@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { is_active, store_id, sort_by, order, search, page, limit } =
+    const { status, store_id, sort_by, order, search, page, limit } =
       getSearchParams(req);
 
     const validSortBy = ["created_at"].includes(sort_by)
@@ -28,11 +28,7 @@ export async function GET(req: NextRequest) {
     let query = supabaseAdmin
       .from("orders")
       .select(
-        `
-        *,store:stores (
-        id,
-        name,
-        address
+        `*
       )
       `,
         { count: "exact" },
@@ -47,15 +43,17 @@ export async function GET(req: NextRequest) {
       query = query.order("created_at", { ascending });
     }
 
-    if (is_active !== null && is_active !== "") {
-      query = query.eq("is_active", is_active === "true");
+    if (status) {
+      query = query.eq("status", status);
     }
     if (store_id) {
       query = query.eq("store_id", store_id);
     }
 
     if (search) {
-      query = query.ilike("order_code", `%${search}%`);
+      query = query.or(
+        `order_code.ilike.%${search}%,name.ilike.%${search}%,phone.ilike.%${search}%`,
+      );
     }
 
     const { data, error, count } = await query;

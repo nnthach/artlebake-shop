@@ -31,7 +31,6 @@ import {
   ShoppingBag,
   ShoppingCart,
   Tag,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -42,7 +41,6 @@ import { cn } from "@/utils/format-sth";
 const NAV_MANAGEMENT = [
   { key: "dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { key: "orders", href: "/admin/orders", icon: ShoppingCart },
-  { key: "customers", href: "/admin/customers", icon: Users },
 ];
 
 const NAV_STORE_MANAGEMENT = [

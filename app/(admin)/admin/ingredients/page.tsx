@@ -25,22 +25,6 @@ import UpdateIngredientModal from "@/components/sections/admin/ingredients/Updat
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
 
-const STATUS_OPTIONS = [
-  { label: "Tất cả", value: "" },
-  { label: "Đang hoạt động", value: "true" },
-  { label: "Không hoạt động", value: "false" },
-];
-
-const SORT_BY_OPTIONS = [
-  { label: "Ngày tạo", value: "created_at" },
-  { label: "Tên", value: "name" },
-];
-
-const ORDER_OPTIONS = [
-  { label: "Giảm dần", value: "desc" },
-  { label: "Tăng dần", value: "asc" },
-];
-
 const DEFAULT_LIMIT = 8;
 
 const LIMIT_OPTIONS = [
@@ -66,13 +50,45 @@ const DEFAULT_FILTER: FilterState = {
 };
 
 export default function AdminIngredientPage() {
+  const { t, locale } = useI18n();
+
+  const STATUS_OPTIONS = [
+    { label: t("admin.ingredientsPage.filter.options.all"), value: "" },
+    {
+      label: t("admin.ingredientsPage.filter.options.active"),
+      value: "true",
+    },
+    {
+      label: t("admin.ingredientsPage.filter.options.inactive"),
+      value: "false",
+    },
+  ];
+
+  const SORT_BY_OPTIONS = [
+    {
+      label: t("admin.ingredientsPage.filter.options.createdAt"),
+      value: "created_at",
+    },
+    { label: t("admin.ingredientsPage.filter.options.name"), value: "name" },
+  ];
+
+  const ORDER_OPTIONS = [
+    {
+      label: t("admin.ingredientsPage.filter.options.desc"),
+      value: "desc",
+    },
+    {
+      label: t("admin.ingredientsPage.filter.options.asc"),
+      value: "asc",
+    },
+  ];
+
   const [ingredients, setIngredients] = useState<IngredientItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
   const [tempFilter, setTempFilter] = useState<FilterState>(DEFAULT_FILTER);
 
-  const { t, locale } = useI18n();
   const { page, setPage, pagination, setPagination, resetPage } =
     usePagination();
 
@@ -162,7 +178,7 @@ export default function AdminIngredientPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-primary">
           {t("admin.ingredientsPage.headerTitle.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -187,7 +203,7 @@ export default function AdminIngredientPage() {
                   <Filter className="h-4 w-4" />
                   {t("button.filter")}
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">
+                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
                       {activeFilterCount}
                     </span>
                   )}
@@ -198,7 +214,7 @@ export default function AdminIngredientPage() {
                   {/* Status filter */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Trạng thái
+                      {t("admin.ingredientsPage.filter.status")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -226,7 +242,7 @@ export default function AdminIngredientPage() {
                   {/* Sort by */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Sắp xếp theo
+                      {t("admin.ingredientsPage.filter.sortBy")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
@@ -248,7 +264,9 @@ export default function AdminIngredientPage() {
 
                   {/* Order */}
                   <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">Thứ tự</p>
+                    <p className="text-sm font-medium leading-none">
+                      {t("admin.ingredientsPage.filter.order")}
+                    </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"
                       value={tempFilter.order}
@@ -270,7 +288,7 @@ export default function AdminIngredientPage() {
                   {/* Limit per page */}
                   <div className="grid gap-2">
                     <p className="text-sm font-medium leading-none">
-                      Số dòng mỗi trang
+                      {t("admin.ingredientsPage.filter.limit")}
                     </p>
                     <select
                       className="border rounded-md h-9 px-2 w-full text-sm"

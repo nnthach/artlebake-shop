@@ -20,7 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import LanguageToggle from "@/components/custom/LanguageToggle";
@@ -40,6 +40,7 @@ const BREADCRUMB_MAP: Record<string, string> = {
   stores: "stores",
   "store-inventories": "storeInventories",
   "preorder-schedules": "preorderSchedules",
+  "preorder-items": "preorder-items",
 };
 
 function useBreadcrumbs() {
@@ -123,15 +124,15 @@ export function AdminHeader() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full border-primary/30 bg-background shadow-sm hover:bg-primary/5"
               aria-label="Tài khoản"
             >
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/avatar.png" alt="Admin" />
-                <AvatarFallback className="bg-primary/20 text-primary hover:text-white text-xs font-semibold">
-                  AD
+                <AvatarFallback className="bg-primary/10 text-primary">
+                  <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
             </Button>
