@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
     const startDate = searchParams.get("start_date");
     const endDate = searchParams.get("end_date");
     const date = searchParams.get("date");
+    const status = searchParams.get("status");
 
     let query = supabaseAdmin
       .from("preorder_schedules")
@@ -87,6 +88,10 @@ export async function GET(req: NextRequest) {
 
     if (endDate) {
       query = query.lte("date", endDate);
+    }
+
+    if (status !== null && status !== "") {
+      query = query.eq("status", status === "true");
     }
 
     const { data, error } = await query;

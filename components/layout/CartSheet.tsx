@@ -31,7 +31,10 @@ export default function CartSheet() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent side="right" className="flex w-3/4 flex-col sm:max-w-md">
+      <SheetContent
+        side="right"
+        className="flex w-3/4 flex-col sm:max-w-md sm:px-6 px-4"
+      >
         <SheetHeader>
           <SheetTitle>{t("cart.title")}</SheetTitle>
         </SheetHeader>

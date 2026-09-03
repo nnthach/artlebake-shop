@@ -27,7 +27,7 @@ export default function OrderTakeNote() {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md overflow-hidden rounded-3xl border border-amber-100 bg-white p-0 shadow-xl">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-3xl border border-amber-100 bg-white p-0 shadow-xl">
         {/* Header: Thiết kế sạch sẽ, trang nhã */}
         <div className="bg-amber-50/50 px-6 pt-6 pb-4 border-b border-amber-100/60">
           <DialogHeader>

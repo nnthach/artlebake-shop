@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
         foreignTable: "preorder_schedules",
         ascending: true,
       })
-      .order("created_at", { ascending: true })
+      .order("created_at", { ascending: false })
       .range(from, to);
 
     // Specific schedule

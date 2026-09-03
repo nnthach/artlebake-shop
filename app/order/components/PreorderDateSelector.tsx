@@ -72,7 +72,7 @@ export default function PreorderDateSelector({
     };
 
     fetchAvailableDates();
-  }, [productIdsKey, productIds]);
+  }, [productIdsKey]);
 
   // Chỉ reset value nếu ngày hiện tại không còn hợp lệ.
   // Effect này KHÔNG fetch API.

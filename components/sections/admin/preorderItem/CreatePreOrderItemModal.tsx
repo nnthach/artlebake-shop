@@ -343,7 +343,7 @@ export default function CreatePreOrderItemModal({
                   }
                 }}
                 disabled={isLoadingSchedules || isSubmitting}
-                className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ${
+                className={`flex h-10 w-full outline-primary rounded-md border bg-background px-3 py-2 text-sm ${
                   errors.schedule ? "border-red-500" : "border-input"
                 }`}
               >
@@ -440,7 +440,7 @@ export default function CreatePreOrderItemModal({
                             updateRow(row.key, "product_id", e.target.value)
                           }
                           disabled={isLoadingProducts || isSubmitting}
-                          className={`flex h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm ${
+                          className={`flex h-10 flex-1 outline-primary rounded-md border bg-background px-3 py-2 text-sm ${
                             rowError ? "border-red-500" : "border-input"
                           }`}
                         >
@@ -471,7 +471,7 @@ export default function CreatePreOrderItemModal({
                             updateRow(row.key, "quantity", e.target.value)
                           }
                           disabled={isSubmitting}
-                          className={`flex h-10 w-28 rounded-md border bg-background px-3 py-2 text-sm ${
+                          className={`flex h-10 w-28 outline-primary rounded-md border bg-background px-3 py-2 text-sm ${
                             rowError ? "border-red-500" : "border-input"
                           }`}
                         />

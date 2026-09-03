@@ -137,7 +137,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
 
-    toast.success("Đã xóa sản phẩm khỏi giỏ hàng.");
+    toast.success(
+      locale === "vi" ? "Đã xóa sản phẩm khỏi giỏ hàng." : "Removed from cart.",
+    );
   };
 
   const clearCart = useCallback(() => {
