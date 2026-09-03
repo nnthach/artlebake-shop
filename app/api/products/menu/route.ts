@@ -1,5 +1,9 @@
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
-import { getSearchParams } from "@/lib/utils";
+import {
+  getBusinessDate,
+  getPreorderDateRange,
+  getSearchParams,
+} from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 interface DailyInventoryRow {
@@ -18,37 +22,6 @@ interface PreorderItemRow {
     id: string;
     date: string;
     status: boolean;
-  };
-}
-
-function getPreorderDateRange(businessDate: string) {
-  const [year, month, day] = businessDate.split("-").map(Number);
-
-  // Dùng UTC để xử lý calendar date, tránh phụ thuộc timezone của server
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  // Sunday = 0, Monday = 1, ..., Saturday = 6
-  const dayOfWeek = date.getUTCDay();
-
-  // Monday - Wednesday
-  // → upcoming Friday is this week
-  //
-  // Thursday - Sunday
-  // → upcoming Friday is next week
-  const daysUntilFriday = dayOfWeek <= 3 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
-
-  const firstFriday = new Date(date);
-  firstFriday.setUTCDate(firstFriday.getUTCDate() + daysUntilFriday);
-
-  // Friday → Sunday of next week = 10 days inclusive
-  const lastSunday = new Date(firstFriday);
-  lastSunday.setUTCDate(lastSunday.getUTCDate() + 9);
-
-  const formatDate = (value: Date) => value.toISOString().slice(0, 10);
-
-  return {
-    startDate: formatDate(firstFriday),
-    endDate: formatDate(lastSunday),
   };
 }
 
@@ -74,13 +47,11 @@ export async function GET(req: NextRequest) {
     const to = from + limitNum - 1;
 
     // 3. business date (today)
-    const businessDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(new Date());
+    const businessDate = getBusinessDate();
 
     // 4. PREORDER DATE RANGE
     const { startDate: preorderStartDate, endDate: preorderEndDate } =
-      getPreorderDateRange(businessDate);
+      getPreorderDateRange();
 
     // 5. query product
     let productQuery = supabaseAdmin

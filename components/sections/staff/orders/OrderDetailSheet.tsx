@@ -18,7 +18,7 @@ import {
   formatOrderStatusColor,
 } from "@/utils/format-status";
 import { useI18n } from "@/context/I18nContext";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime } from "@/utils/format-date";
 
 interface OrderItemDetail {
   id: string;

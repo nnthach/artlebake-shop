@@ -74,7 +74,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between py-4">
-        <Link href="/">
+        <Link href="/" className="sm:w-[250px]">
           <div
             className={`flex items-center gap-2 text-xl font-bold transition-colors ${
               isScrolled ? "text-charcoal" : "text-white"
@@ -114,10 +114,10 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
         </nav>
 
         {/* Desktop right section: cart, language, user */}
-        <div className="hidden items-center gap-4 md:flex">
-          <CartTriggerButton scrolled={isScrolled} />
-
+        <div className="hidden items-center justify-end gap-2 md:flex sm:w-[250px]">
           <LanguageToggle scrolled={isScrolled} />
+
+          <CartTriggerButton scrolled={isScrolled} />
 
           {user && (
             <DropdownMenu>
@@ -170,6 +170,8 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
 
         {/* Mobile right section: cart + menu toggle */}
         <div className="flex items-center gap-1 md:hidden">
+          <LanguageToggle scrolled={isScrolled} />
+
           <CartTriggerButton scrolled={isScrolled} />
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -193,9 +195,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
               <SheetTitle className="text-left text-lg font-bold text-charcoal">
                 Artle Bakeshop
               </SheetTitle>
-              <div className="mt-6 flex">
-                <LanguageToggle scrolled={scrolled} variant="dark" />
-              </div>
+
               <nav className="mt-6 flex flex-col gap-6 text-base font-medium text-charcoal/70">
                 {NAV_LINKS.map((link) => (
                   <SheetClose asChild key={link.href}>

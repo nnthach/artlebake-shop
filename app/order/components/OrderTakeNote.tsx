@@ -16,131 +16,154 @@ export default function OrderTakeNote() {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="group mb-5 mt-5 sm:mt-0 flex w-fit items-center gap-10 justify-between rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-left transition-all duration-200 hover:border-amber-300 hover:bg-amber-100/80 hover:shadow-sm active:scale-[0.99]"
+          className="mb-5 mt-5 sm:mt-0 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          <div className="flex items-center gap-2.5">
-            <div className="rounded-full bg-amber-100 p-1 text-amber-700 group-hover:bg-amber-200">
-              <Info className="h-4 w-4 shrink-0" />
-            </div>
-            <span className="text-xs font-medium text-amber-900">
-              {locale === "vi"
-                ? "Lưu ý quan trọng về hình thức đặt hàng"
-                : "Important note about order types"}
-            </span>
-          </div>
-          <span className="text-xs font-semibold text-amber-700 underline decoration-amber-400 underline-offset-2 group-hover:text-amber-900">
-            {locale === "vi" ? "Xem chi tiết" : "Details"}
+          <Info className="h-3.5 w-3.5 shrink-0 text-primary" />
+          <span className="font-bold underline underline-offset-2">
+            {locale === "vi"
+              ? "Lưu ý quan trọng về hình thức đặt hàng"
+              : "Important note about order types"}
           </span>
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md overflow-hidden rounded-3xl border-0 p-0 shadow-2xl">
-        {/* Header với Accent Line & Icon Nổi Bật */}
-        <div className="bg-primary/10 px-6 pt-6 pb-4 border-b border-primary/10">
+      <DialogContent className="max-w-md overflow-hidden rounded-3xl border border-amber-100 bg-white p-0 shadow-xl">
+        {/* Header: Thiết kế sạch sẽ, trang nhã */}
+        <div className="bg-amber-50/50 px-6 pt-6 pb-4 border-b border-amber-100/60">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-primary">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-xs">
+            <DialogTitle className="flex items-center gap-2.5 text-base font-semibold text-charcoal sm:text-lg">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-800">
                 <Info className="h-4 w-4" />
               </div>
               {locale === "vi"
-                ? "Lưu ý quan trọng khi đặt hàng"
-                : "Important Order Guidelines"}
+                ? "Lưu ý khi đặt bánh"
+                : "Important Order Information"}
             </DialogTitle>
           </DialogHeader>
         </div>
 
         {/* Body Content */}
-        <div className="space-y-3.5 p-6 text-sm leading-relaxed text-charcoal/80">
-          {/* Intro ngắn gọn */}
-          <p className="text-xs font-medium text-charcoal/60">
-            {locale === "vi"
-              ? "Đơn hàng của bạn có thể bao gồm bánh có sẵn hoặc bánh đặt trước:"
-              : "Your order may contain items available now or requiring pre-order:"}
-          </p>
+        <div className="space-y-4 p-6 text-xs text-charcoal/80 sm:text-sm">
+          {/* Phần 1: Lịch đặt bánh */}
+          <div className="flex gap-3">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-800 text-xs">
+              1
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h4 className="font-bold text-charcoal">
+                  {locale === "vi" ? "Bánh Đặt Trước" : "Pre-order Items"}
+                </h4>
+                <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
+                  {locale === "vi" ? "Lịch trình" : "Schedule"}
+                </span>
+              </div>
+              <p className="leading-relaxed text-charcoal/70">
+                {locale === "vi" ? (
+                  <>
+                    Nhận đặt hàng trong tuần từ{" "}
+                    <strong className="font-semibold text-charcoal">
+                      Thứ 2 đến Thứ 4
+                    </strong>
+                    , trả hàng vào{" "}
+                    <strong className="font-semibold text-charcoal">
+                      Thứ 6, Thứ 7 & Chủ Nhật
+                    </strong>
+                    .
+                  </>
+                ) : (
+                  <>
+                    Accepted{" "}
+                    <strong className="font-semibold text-charcoal">
+                      Mon – Wed
+                    </strong>
+                    , delivered/picked up on{" "}
+                    <strong className="font-semibold text-charcoal">
+                      Fri, Sat & Sun
+                    </strong>
+                    .
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
 
-          {/* Card 1: Cảnh báo Pre-order (Nổi bật chính) */}
-          <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 p-4 transition-all">
-            <div className="absolute top-0 left-0 h-full w-1.5 bg-primary" />
-            <p className="flex items-center gap-1.5 font-bold text-primary">
-              <span>⚠️</span>
-              {locale === "vi"
-                ? "Đơn hàng có sản phẩm Đặt Trước"
-                : "If your cart has Pre-order items"}
-            </p>
+          <hr className="border-dashed border-charcoal/10" />
 
-            <p className="mt-1.5 text-xs text-charcoal/85 leading-relaxed">
-              {locale === "vi" ? (
-                <>
-                  Chỉ cần{" "}
-                  <strong className="font-bold text-primary">
-                    1 sản phẩm chưa có sẵn
-                  </strong>
-                  , toàn bộ đơn hàng sẽ chuyển sang hình thức{" "}
-                  <span className="rounded bg-primary/15 px-1 py-0.5 font-semibold text-primary">
-                    Đặt trước
-                  </span>{" "}
-                  và giao cùng một ngày.
-                </>
-              ) : (
-                <>
-                  If even{" "}
-                  <strong className="font-bold text-primary">
-                    1 item is pre-order
-                  </strong>
-                  , the entire order will be processed as{" "}
-                  <span className="rounded bg-primary/15 px-1 py-0.5 font-semibold text-primary">
-                    Pre-order
-                  </span>{" "}
-                  for the same date.
-                </>
-              )}
+          {/* Phần 2: Đơn hàng kết hợp */}
+          <div className="flex gap-3">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-800 text-xs">
+              2
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-bold text-charcoal">
+                {locale === "vi" ? "Giỏ hàng kết hợp" : "Combined Orders"}
+              </h4>
+              <p className="leading-relaxed text-charcoal/70">
+                {locale === "vi" ? (
+                  <>
+                    Nếu giỏ có{" "}
+                    <strong className="font-semibold text-amber-900">
+                      ít nhất 1 món Đặt Trước (Pre-order)
+                    </strong>
+                    , toàn bộ đơn hàng sẽ giao cùng ngày theo lịch Đặt Trước.
+                  </>
+                ) : (
+                  <>
+                    If your cart has{" "}
+                    <strong className="font-semibold text-amber-900">
+                      at least 1 Pre-order item
+                    </strong>
+                    , all items will be fulfilled together on the Pre-order
+                    date.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* Phần 3: Tip tách đơn (Dạng Callout nhẹ nhàng) */}
+          <div className="mt-2 rounded-2xl bg-amber-50/60 p-3.5 border border-amber-200/50">
+            <p className="flex items-start gap-2 text-xs leading-relaxed text-amber-950">
+              <span className="text-base leading-none">💡</span>
+              <span>
+                {locale === "vi" ? (
+                  <>
+                    <strong className="font-semibold">Mẹo nhỏ:</strong> Để nhận
+                    bánh{" "}
+                    <span className="underline decoration-amber-400 underline-offset-2">
+                      Có Sẵn
+                    </span>{" "}
+                    ngay hôm nay, vui lòng{" "}
+                    <strong className="font-semibold">tách riêng</strong> thành
+                    đơn hàng khác.
+                  </>
+                ) : (
+                  <>
+                    <strong className="font-semibold">Tip:</strong> Want{" "}
+                    <span className="underline decoration-amber-400 underline-offset-2">
+                      Available
+                    </span>{" "}
+                    items today? Please{" "}
+                    <strong className="font-semibold">
+                      place a separate order
+                    </strong>
+                    .
+                  </>
+                )}
+              </span>
             </p>
           </div>
 
-          {/* Card 2: Tip mua Bánh Có Sẵn (Gợi ý bán hàng/UX Tip) */}
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-4">
-            <p className="flex items-center gap-1.5 font-bold text-emerald-800">
-              <span>💡</span>
+          {/* Footer Brand note */}
+          <div className="pt-2 text-center text-[11px] text-charcoal/40">
+            <p className="font-medium text-charcoal/60">Artle Bakeshop</p>
+            <p className="italic">
               {locale === "vi"
-                ? "Mẹo nhận bánh Có Sẵn ngay hôm nay"
-                : "Want your available cakes faster?"}
-            </p>
-
-            <p className="mt-1.5 text-xs text-emerald-900/80 leading-relaxed">
-              {locale === "vi" ? (
-                <>
-                  Vui lòng{" "}
-                  <strong className="font-semibold text-emerald-950">
-                    tách riêng
-                  </strong>{" "}
-                  các bánh{" "}
-                  <span className="rounded bg-emerald-200/60 px-1 py-0.5 font-semibold text-emerald-900">
-                    Có sẵn
-                  </span>{" "}
-                  vào một giỏ hàng độc lập để được giao sớm nhất!
-                </>
-              ) : (
-                <>
-                  Please{" "}
-                  <strong className="font-semibold text-emerald-950">
-                    place separate orders
-                  </strong>{" "}
-                  for{" "}
-                  <span className="rounded bg-emerald-200/60 px-1 py-0.5 font-semibold text-emerald-900">
-                    Available
-                  </span>{" "}
-                  products to get immediate delivery!
-                </>
-              )}
+                ? "Bánh tươi mới được chuẩn bị riêng cho từng đơn hàng."
+                : "Freshly baked with care for every single order."}
             </p>
           </div>
-
-          {/* Footer micro-copy */}
-          <p className="pt-1 text-center text-[11px] font-medium text-charcoal/40 italic">
-            {locale === "vi"
-              ? "✨ Artle Bakeshop luôn chuẩn bị bánh tươi mới nhất cho bạn."
-              : "✨ Artle Bakeshop ensures fresh quality for every order."}
-          </p>
         </div>
       </DialogContent>
     </Dialog>

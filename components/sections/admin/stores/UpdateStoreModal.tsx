@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { formatToSlug } from "@/lib/utils";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import { StoreItem } from "@/types";
 import { useI18n } from "@/context/I18nContext";
@@ -21,6 +20,7 @@ import { createStoreSchema, StoreFormData } from "@/lib/validations/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { formatToSlug } from "@/utils/format-sth";
 
 function toFormState(store: StoreItem): StoreFormData {
   return {

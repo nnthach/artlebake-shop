@@ -5,6 +5,7 @@ import { PayOSWebhookBody } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
 import { deleteCacheByResource } from "@/lib/redis-cache";
 import { sendOrderConfirmationEmail } from "@/lib/emails/send-order-confirmation";
+import { getBusinessDate } from "@/utils/logic-get";
 type OrderItemRow = {
   product_name: string;
   quantity: number | string;
@@ -61,9 +62,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Payment failed
     if (code !== "00") {
-      const businessDate = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Ho_Chi_Minh",
-      }).format(new Date());
+      const businessDate = getBusinessDate();
 
       const { data: result, error: cancelError } = await supabaseAdmin.rpc(
         "cancel_order_and_release_stock",

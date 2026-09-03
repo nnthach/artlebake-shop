@@ -29,8 +29,8 @@ import {
   formatOrderStatus,
   formatOrderStatusColor,
 } from "@/utils/format-status";
-import { formatDateTime } from "@/lib/utils";
 import OrderDetailSheet from "@/components/sections/admin/orders/OrderDetailSheet";
+import { formatDateTime } from "@/utils/format-date";
 
 const DEFAULT_LIMIT = 8;
 

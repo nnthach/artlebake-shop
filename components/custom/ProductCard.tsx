@@ -48,7 +48,7 @@ export default function ProductCard({
   return (
     <div
       style={animation ? { animationDelay: `${index * 80}ms` } : undefined}
-      className={`group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
+      className={`group overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
         animation
           ? inView
             ? "animate-fadeUp opacity-100"
@@ -57,7 +57,7 @@ export default function ProductCard({
       }`}
     >
       <Link href={`/menu/${product.slug}`}>
-        <div className="relative h-72 w-full overflow-hidden">
+        <div className="relative h-48 sm:h-72 w-full overflow-hidden">
           <Image
             src={product?.image}
             alt={product.name}
@@ -66,25 +66,25 @@ export default function ProductCard({
           />
 
           {/* Product status */}
-          <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+          <div className="absolute left-2 top-2 flex flex-wrap gap-1.5 sm:left-3 sm:top-3 sm:gap-2">
             {hasDaily ? (
               <Badge
                 variant="outline"
-                className="border-transparent bg-primary/90 text-white"
+                className="border-transparent bg-primary/90 px-1.5 py-0.5 text-[10px] text-white sm:px-2.5 sm:py-0.5 sm:text-xs"
               >
                 {t("menuPage.productStatus.available")}
               </Badge>
             ) : hasPreorder ? (
               <Badge
                 variant="outline"
-                className="border-transparent bg-amber-500/90 text-white"
+                className="border-transparent bg-amber-500/90 px-1.5 py-0.5 text-[10px] text-white sm:px-2.5 sm:py-0.5 sm:text-xs"
               >
                 {t("menuPage.productStatus.preorder")}
               </Badge>
             ) : (
               <Badge
                 variant="outline"
-                className="border-transparent bg-charcoal/40 text-white"
+                className="border-transparent bg-charcoal/40 px-1.5 py-0.5 text-[10px] text-white sm:px-2.5 sm:py-0.5 sm:text-xs"
               >
                 {t("menuPage.productStatus.out_of_stock")}
               </Badge>
@@ -93,17 +93,19 @@ export default function ProductCard({
         </div>
       </Link>
 
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <Link href={`/menu/${product.slug}`}>
-          <h3 className="font-serif text-xl text-charcoal">{product.name}</h3>
+          <h3 className="font-serif text-base sm:text-xl text-charcoal">
+            {product.name}
+          </h3>
         </Link>
 
-        <p className="mt-2 line-clamp-2 text-sm text-charcoal/55">
+        <p className="mt-2 line-clamp-2 text-xs sm:text-sm text-charcoal/55">
           {product.description}
         </p>
 
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-lg font-bold text-charcoal">
+          <span className="text-base sm:text-lg font-bold text-charcoal">
             {product.price.toLocaleString("vi-VN")} đ
           </span>
 

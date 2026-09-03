@@ -1,6 +1,6 @@
 import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { getSearchParams } from "@/lib/utils";
+import { getSearchParams } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

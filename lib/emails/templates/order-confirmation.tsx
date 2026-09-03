@@ -1,5 +1,5 @@
-import { formatDateReverse } from "@/lib/utils";
 import { OrderConfirmationEmailProps } from "@/types/form-type";
+import { formatDateReverse } from "@/utils/format-date";
 import {
   Body,
   Container,

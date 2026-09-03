@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { formatToSlug } from "@/lib/utils";
 import { CategoryItem, IngredientItem } from "@/types";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import { useI18n } from "@/context/I18nContext";
@@ -24,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Switch } from "@/components/ui/switch";
+import { formatToSlug } from "@/utils/format-sth";
 
 const INITIAL_FORM: ProductFormData = {
   name_vi: "",

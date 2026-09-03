@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useI18n } from "@/context/I18nContext";
 import { BakeryProduct } from "@/types";
+import { useCart } from "@/context/CartContext";
+import { useState } from "react";
 
 type ProductCardMobileProps = {
   product: BakeryProduct;
@@ -12,10 +14,26 @@ type ProductCardMobileProps = {
 
 export default function ProductCardMobile({ product }: ProductCardMobileProps) {
   const { t, locale } = useI18n();
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
   const hasDaily = (product.daily?.remaining_quantity ?? 0) > 0;
   const hasPreorder = product.preorder?.available ?? false;
   const isAvailable = hasDaily || hasPreorder;
+
+  const addToCartButton = async (product: BakeryProduct) => {
+    setIsAdding(true);
+    await addItem({
+      id: product.id,
+      name: product?.name || "",
+      slug: product.slug || "",
+      price: product.price,
+      image_url: product.image,
+      available: product.daily.available,
+      preorder: product.preorder.available,
+    });
+    setIsAdding(false);
+  };
 
   return (
     <div className="group flex gap-4 rounded-2xl bg-white p-3 shadow-sm transition-all duration-300 active:scale-[0.99]">
@@ -42,11 +60,9 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
               {t("menuPage.productStatus.preorder")}
             </span>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-charcoal/40">
-              <span className="text-xs font-medium text-white">
-                {t("menuPage.productStatus.out_of_stock")}
-              </span>
-            </div>
+            <span className="rounded-full bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
+              {t("menuPage.productStatus.out_of_stock")}
+            </span>
           )}
         </div>
       </Link>
@@ -71,7 +87,8 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
 
           <button
             type="button"
-            disabled={!isAvailable}
+            disabled={!isAvailable || isAdding}
+            onClick={() => addToCartButton(product)}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ShoppingCart className="h-3.5 w-3.5" />

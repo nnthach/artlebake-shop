@@ -112,7 +112,7 @@ export default function CartSheet() {
               ))}
             </div>
 
-            <SheetFooter className="border-t pt-4 sm:flex-col sm:space-x-0">
+            <SheetFooter className="border-t pt-4 flex-col space-x-0 sm:flex-col sm:space-x-0">
               <div className="flex w-full items-center justify-between text-sm font-semibold">
                 <span>{t("cart.subtotal")}</span>
                 <span>{formatPrice(totalPrice)}</span>

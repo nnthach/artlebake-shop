@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase, supabaseAdmin } from "@/lib/supabase";
 import { ProductIngredientRow, RawProduct } from "@/types";
+import { getBusinessDate, getPreorderDateRange } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 interface PreorderItemRow {
@@ -11,32 +12,6 @@ interface PreorderItemRow {
     id: string;
     date: string;
     status: boolean;
-  };
-}
-
-function getPreorderDateRange(businessDate: string) {
-  const date = new Date(`${businessDate}T00:00:00+07:00`);
-  const dayOfWeek = date.getDay();
-
-  // Mon - Wed → Friday this week
-  // Thu - Sun → Friday next week
-  const daysUntilFriday = dayOfWeek <= 3 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
-
-  const firstFriday = new Date(date);
-  firstFriday.setDate(date.getDate() + daysUntilFriday);
-
-  // Friday → following Sunday
-  const lastSunday = new Date(firstFriday);
-  lastSunday.setDate(firstFriday.getDate() + 9);
-
-  const formatDate = (value: Date) =>
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(value);
-
-  return {
-    startDate: formatDate(firstFriday),
-    endDate: formatDate(lastSunday),
   };
 }
 
@@ -116,9 +91,7 @@ export async function GET(
     // ----------------------------------------
     // 3. Business date
     // ----------------------------------------
-    const businessDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(new Date());
+    const businessDate = getBusinessDate();
 
     // ----------------------------------------
     // 4. Get today's daily inventory
@@ -143,7 +116,7 @@ export async function GET(
     // ----------------------------------------
     // 5. Get upcoming preorder
     // ----------------------------------------
-    const { startDate, endDate } = getPreorderDateRange(businessDate);
+    const { startDate, endDate } = getPreorderDateRange();
 
     const { data: preorderItems, error: preorderError } = await supabaseAdmin
       .from("preorder_items")

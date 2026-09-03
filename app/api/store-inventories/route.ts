@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
-import { getSearchParams } from "@/lib/utils";
+import { getSearchParams } from "@/utils/logic-get";
 import { ProductIngredientRow, ProductTranslation } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -128,4 +128,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

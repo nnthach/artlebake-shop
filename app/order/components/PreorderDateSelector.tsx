@@ -1,9 +1,9 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
 import { useEffect, useState } from "react";
+import { cn } from "@/utils/format-sth";
 
 interface PreorderDateSelectorProps {
   productIds: string[];
@@ -72,7 +72,7 @@ export default function PreorderDateSelector({
     };
 
     fetchAvailableDates();
-  }, [productIdsKey]);
+  }, [productIdsKey, productIds]);
 
   // Chỉ reset value nếu ngày hiện tại không còn hợp lệ.
   // Effect này KHÔNG fetch API.
@@ -130,8 +130,8 @@ export default function PreorderDateSelector({
       ) : dates.length === 0 ? (
         <div className="mt-4 rounded-xl bg-charcoal/5 px-4 py-3 text-sm text-charcoal/50">
           {locale === "vi"
-            ? "Không có ngày nhận phù hợp cho các sản phẩm trong giỏ hàng."
-            : "No available date for the products in your cart."}
+            ? "Không có ngày đặt trước phù hợp cho các sản phẩm trong giỏ hàng."
+            : "No available pre-order date for the products in your cart."}
         </div>
       ) : (
         <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-7">

@@ -279,7 +279,7 @@ export const translations = {
         message: "Please sign in so we can prepare your order.",
       },
       info: {
-        title: "Delivery Information",
+        title: "Customer Information",
         fullName: "Recipient Name",
         fullNamePlaceholder: "John Doe",
         phone: "Phone Number",
@@ -1229,7 +1229,7 @@ export const translations = {
         next: "Sau",
       },
       productStatus: {
-        available: "Còn hàng",
+        available: "Có sẵn",
         preorder: "Đặt trước",
         low_stock: "Sắp hết hàng",
         out_of_stock: "Hết hàng",

@@ -1,7 +1,7 @@
 import { MapPin, Store } from "lucide-react";
 
 import { useI18n } from "@/context/I18nContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format-sth";
 
 interface FulfillmentMethodProps {
   fulfillmentMethod: "delivery" | "pickup";

@@ -1,7 +1,7 @@
 "use client";
 
 import ProductCard from "@/components/custom/ProductCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format-sth";
 import { CategoryItem, FetchedProductMenu } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";

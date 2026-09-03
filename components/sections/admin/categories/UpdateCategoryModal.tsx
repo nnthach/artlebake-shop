@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { formatToSlug } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
 import {
   createCategorySchema,
@@ -22,6 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import InputFormField from "@/components/custom/InputFormField";
+import { formatToSlug } from "@/utils/format-sth";
 
 interface UpdateCategoryModalProps {
   id: string;

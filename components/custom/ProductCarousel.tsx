@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useInView } from "@/hooks/useInView";
-import { cn } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
+import { cn } from "@/utils/format-sth";
 
 interface Product {
   id: string;

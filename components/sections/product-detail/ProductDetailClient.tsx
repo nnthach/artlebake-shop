@@ -4,7 +4,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import ProductCard from "@/components/custom/ProductCard";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format-sth";
 import { FetchedProductMenu, ProductDetailPage } from "@/types";
 import { ChevronLeft, ShoppingCart, Wheat } from "lucide-react";
 import Image from "next/image";
@@ -186,20 +186,20 @@ export default function ProductDetailClient({
             />
           </div>
 
-          <p className="mt-8 text-2xl font-bold text-primary">
+          <p className="mt-8 text-xl sm:text-2xl font-bold text-primary">
             {formattedPrice}
           </p>
-          <p className="mx-auto mt-4 max-w-md text-charcoal/60">
+          <p className="mx-auto mt-4 max-w-md text-charcoal/60 text-sm sm:text-base">
             {product.description}
           </p>
 
           {product.ingredients.length > 0 && (
             <div className="mx-auto mt-10 max-w-sm text-left">
-              <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-charcoal">
+              <h2 className="flex items-center gap-2 font-serif text-base sm:text-lg font-bold text-charcoal">
                 <Wheat className="h-4 w-4 text-primary" />
                 {t("productDetailPage.ingredients")}
               </h2>
-              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-charcoal/60">
+              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm text-charcoal/60">
                 {product.ingredients.map((ingredient) => (
                   <li key={ingredient.id} className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -228,18 +228,19 @@ export default function ProductDetailClient({
               )}
             </div>
 
-            {/* Add to cart */}
             <Button
               variant={isOutOfStock ? "secondary" : "default"}
               className={cn(
-                "h-11 rounded-full px-8 font-semibold",
+                "h-10 rounded-full px-5 !text-sm font-semibold sm:h-11 sm:px-8 sm:!text-base",
                 isOutOfStock &&
                   "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10",
               )}
               disabled={isAdding || isOutOfStock}
               onClick={addToCartButton}
             >
-              {!isOutOfStock && <ShoppingCart className="h-10 w-10" />}
+              {!isOutOfStock && (
+                <ShoppingCart className="h-5 w-5 sm:h-5 sm:w-5" />
+              )}
               {isOutOfStock
                 ? t("menuPage.productStatus.out_of_stock")
                 : t("button.addToCart")}
@@ -254,22 +255,26 @@ export default function ProductDetailClient({
             <p className="text-center font-script text-2xl text-primary">
               {t("productDetailPage.youMightAlsoLike")}
             </p>
-            <div className="mt-10 grid gap-8 text-left sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 flex gap-5 overflow-x-auto px-1 pb-4 snap-x snap-mandatory scrollbar-hide sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3">
               {relatedProducts.map((item) => (
-                <ProductCard
+                <div
                   key={item.id}
-                  product={{
-                    id: item.slug,
-                    image: item.image_url?.[0] ?? "/images/placeholder.webp",
-                    name: item.name,
-                    description: item.description,
-                    slug: item.slug,
-                    price: item.price,
-                    daily: item.daily,
-                    preorder: item.preorder,
-                  }}
-                  animation={false}
-                />
+                  className="w-[280px] shrink-0 snap-start sm:w-auto"
+                >
+                  <ProductCard
+                    product={{
+                      id: item.slug,
+                      image: item.image_url?.[0] ?? "/images/placeholder.webp",
+                      name: item.name,
+                      description: item.description,
+                      slug: item.slug,
+                      price: item.price,
+                      daily: item.daily,
+                      preorder: item.preorder,
+                    }}
+                    animation={false}
+                  />
+                </div>
               ))}
             </div>
           </div>

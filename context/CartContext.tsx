@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import toast from "react-hot-toast";
+import { useI18n } from "./I18nContext";
 
 type CartType = "available" | "preorder" | "select";
 
@@ -35,6 +36,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const { locale } = useI18n();
 
   const refreshCart = useCallback(async () => {
     try {
@@ -95,11 +98,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
 
-      toast.success("Đã thêm vào giỏ hàng!");
+      toast.success(
+        locale === "vi" ? "Đã thêm sản phẩm vào giỏ hàng." : "Added to cart.",
+      );
     } catch (error) {
       console.error("Failed to add item:", error);
 
-      toast.error("Không thể thêm sản phẩm vào giỏ hàng.");
+      toast.error(
+        locale === "vi"
+          ? "Không thể thêm sản phẩm vào giỏ hàng."
+          : "Failed to add item to cart.",
+      );
     }
   };
 

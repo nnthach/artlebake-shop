@@ -1,6 +1,6 @@
 import { payosConfig } from "@/lib/payos";
 import { supabaseAdmin } from "@/lib/supabase";
-import { generateOrderCode } from "@/lib/utils";
+import { generateOrderCode, getBusinessDate } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
@@ -112,9 +112,7 @@ export async function POST(req: NextRequest) {
     // 2. Create order + lock stock atomically
     const orderCode = generateOrderCode();
 
-    const businessDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(new Date());
+    const businessDate = getBusinessDate();
 
     const { data: result, error: orderError } = await supabaseAdmin.rpc(
       "create_order_with_stock_lock",

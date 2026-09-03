@@ -1,7 +1,7 @@
 import { CalendarClock, PackageCheck } from "lucide-react";
 
 import { useI18n } from "@/context/I18nContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format-sth";
 
 interface OrderTypeSelectProps {
   orderType: "available" | "preorder";

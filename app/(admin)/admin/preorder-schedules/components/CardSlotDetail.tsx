@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/context/I18nContext";
-import { formatDateTime } from "@/lib/utils";
 import { PreorderSchedule } from "@/types";
+import { formatDateTime } from "@/utils/format-date";
 import { CalendarDays, Clock3, Pencil } from "lucide-react";
 import React from "react";
 

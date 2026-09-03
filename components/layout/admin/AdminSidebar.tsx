@@ -35,9 +35,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { useI18n } from "@/context/I18nContext";
 import Image from "next/image";
+import { cn } from "@/utils/format-sth";
 
 const NAV_MANAGEMENT = [
   { key: "dashboard", href: "/admin/dashboard", icon: LayoutDashboard },

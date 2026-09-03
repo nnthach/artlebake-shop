@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/format-sth";
 import { useI18n } from "@/context/I18nContext";
 
 const NAV_MANAGEMENT = [

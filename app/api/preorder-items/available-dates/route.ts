@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { getPreorderDateRange } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 interface PreorderItem {
@@ -70,12 +71,17 @@ export async function GET(request: NextRequest) {
         (value, index, values) => value && values.indexOf(value) === index,
       );
 
+    const { startDate: preorderStartDate, endDate: preorderEndDate } =
+      getPreorderDateRange();
+
     // Get schedules
     const { data: schedulesData, error: schedulesError } = await supabase
       .from("preorder_schedules")
       .select("id, date, status")
       .in("id", scheduleIds)
-      .eq("status", true);
+      .eq("status", true)
+      .gte("date", preorderStartDate)
+      .lte("date", preorderEndDate);
 
     if (schedulesError) {
       console.error("Failed to fetch preorder schedules:", schedulesError);
