@@ -142,7 +142,7 @@ export function AdminHeader() {
               <div className="flex flex-col gap-0.5">
                 <p className="text-sm font-semibold">Admin</p>
                 <p className="text-xs text-muted-foreground">
-                  admin@petitbakery.com
+                  admin@artlebakeshop.com
                 </p>
               </div>
             </DropdownMenuLabel>

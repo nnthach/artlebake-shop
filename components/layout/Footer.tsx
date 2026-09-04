@@ -8,32 +8,61 @@ import React from "react";
 
 function FacebookIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-      <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94Z" />
+    <svg viewBox="0 0 24 24" className="h-6 w-6">
+      <path
+        fill="#1877F2"
+        d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94Z"
+      />
     </svg>
   );
 }
 
 function InstagramIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="h-4 w-4"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+    <svg viewBox="0 0 24 24" className="h-6 w-6">
+      <defs>
+        <linearGradient id="igGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFDD55" />
+          <stop offset="25%" stopColor="#FF543E" />
+          <stop offset="50%" stopColor="#C837AB" />
+          <stop offset="75%" stopColor="#7638FA" />
+          <stop offset="100%" stopColor="#3E5CFF" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="18" height="18" rx="5" fill="url(#igGradient)" />
+      <circle
+        cx="12"
+        cy="12"
+        r="4"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="1.8"
+      />
+      <circle cx="17.2" cy="6.8" r="1.1" fill="#fff" />
     </svg>
   );
 }
 
-function YoutubeIcon() {
+function TiktokIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-      <path d="M23.5 6.5s-.23-1.64-.94-2.36c-.9-.94-1.9-.94-2.36-1C16.9 3 12 3 12 3h-.01s-4.9 0-8.19.14c-.47.05-1.47.06-2.36 1C.73 4.86.5 6.5.5 6.5S.27 8.42.27 10.34v1.32C.27 13.58.5 15.5.5 15.5s.23 1.64.94 2.36c.89.94 2.06.91 2.58 1.01 1.87.18 8 .14 8 .14s4.9-.01 8.19-.15c.47-.06 1.47-.06 2.36-1.01.71-.72.94-2.36.94-2.36s.23-1.92.23-3.84v-1.32c0-1.92-.23-3.84-.23-3.84ZM9.55 14.6V8.4L15.5 11.5l-5.95 3.1Z" />
+    <svg viewBox="0 0 24 24" className="h-6 w-6">
+      {/* lớp cyan (offset trái) */}
+      <path
+        fill="#25F4EE"
+        transform="translate(-0.9, 0.6)"
+        d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48Z"
+      />
+      {/* lớp hồng (offset phải) */}
+      <path
+        fill="#FE2C55"
+        transform="translate(0.9, -0.6)"
+        d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48Z"
+      />
+      {/* lớp đen chính giữa */}
+      <path
+        fill="#000000"
+        d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48Z"
+      />
     </svg>
   );
 }
@@ -64,22 +93,28 @@ export default function Footer() {
           </p>
           <div className="mt-5 flex gap-3">
             <a
-              href="#"
+              href="https://www.facebook.com/profile.php?id=61569251378180"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-charcoal/15 transition hover:bg-charcoal/5"
             >
               <FacebookIcon />
             </a>
             <a
-              href="#"
+              href="https://www.instagram.com/artlebakeshop/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-charcoal/15 transition hover:bg-charcoal/5"
             >
               <InstagramIcon />
             </a>
             <a
-              href="#"
+              href="https://www.tiktok.com/@artlebakeshop"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-charcoal/15 transition hover:bg-charcoal/5"
             >
-              <YoutubeIcon />
+              <TiktokIcon />
             </a>
           </div>
         </div>
