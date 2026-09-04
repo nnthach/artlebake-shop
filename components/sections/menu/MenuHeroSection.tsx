@@ -8,7 +8,7 @@ export default function MenuHeroSection() {
   return (
     <section className="relative flex h-[60vh] min-h-[420px] flex-col items-center justify-center overflow-hidden px-6 pt-16">
       <Image
-        src="/images/bread_banner.webp"
+        src="/images/menu_banner_final.jpeg"
         alt="Freshly baked breads on a wooden table"
         fill
         priority

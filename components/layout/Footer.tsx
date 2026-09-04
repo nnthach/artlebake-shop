@@ -39,7 +39,7 @@ function YoutubeIcon() {
 }
 
 export default function Footer() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   return (
     <footer
@@ -47,6 +47,7 @@ export default function Footer() {
       className="relative z-10 bg-sand border-t border-sand-200 px-4 py-10 sm:px-6 sm:py-16 text-charcoal/80"
     >
       <div className="mx-auto grid max-w-7xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        {/*shop */}
         <div>
           <div className="flex items-center gap-2 text-xl font-bold text-charcoal">
             <Image
@@ -83,56 +84,66 @@ export default function Footer() {
           </div>
         </div>
 
-        <div>
-          <h4 className="font-serif text-charcoal">{t("footer.menu.title")}</h4>
-          <ul className="mt-4 space-y-2 text-sm text-charcoal/60">
-            <li>
-              <Link
-                href="/#bestsellers"
-                className="transition hover:text-charcoal"
-              >
-                {t("footer.menu.links.bestsellers")}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/#standards"
-                className="transition hover:text-charcoal"
-              >
-                {t("footer.menu.links.standards")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/#why" className="transition hover:text-charcoal">
-                {t("footer.menu.links.whyChoose")}
-              </Link>
-            </li>
-          </ul>
+        <div className="grid grid-cols-2 gap-8 sm:contents">
+          {/*Our menu */}
+          <div>
+            <h4 className="font-serif text-charcoal">
+              {t("footer.menu.title")}
+            </h4>
+            <ul className="mt-4 space-y-2 text-sm text-charcoal/60">
+              <li>
+                <Link
+                  href="/#bestsellers"
+                  className="transition hover:text-charcoal"
+                >
+                  {t("footer.menu.links.bestsellers")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/#standards"
+                  className="transition hover:text-charcoal"
+                >
+                  {t("footer.menu.links.standards")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/#why" className="transition hover:text-charcoal">
+                  {t("footer.menu.links.whyChoose")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/*About us */}
+          <div>
+            <h4 className="font-serif text-charcoal">
+              {t("footer.about.title")}
+            </h4>
+            <ul className="mt-4 space-y-2 text-sm text-charcoal/60">
+              <li>
+                <Link href="/#story" className="transition hover:text-charcoal">
+                  {t("footer.about.links.ourStory")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/#home" className="transition hover:text-charcoal">
+                  {t("footer.about.links.ourBakery")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/#contact"
+                  className="transition hover:text-charcoal"
+                >
+                  {t("footer.about.links.getInTouch")}
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div>
-          <h4 className="font-serif text-charcoal">
-            {t("footer.about.title")}
-          </h4>
-          <ul className="mt-4 space-y-2 text-sm text-charcoal/60">
-            <li>
-              <Link href="/#story" className="transition hover:text-charcoal">
-                {t("footer.about.links.ourStory")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/#home" className="transition hover:text-charcoal">
-                {t("footer.about.links.ourBakery")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/#contact" className="transition hover:text-charcoal">
-                {t("footer.about.links.getInTouch")}
-              </Link>
-            </li>
-          </ul>
-        </div>
-
+        {/*address info */}
         <div>
           <h4 className="font-serif text-charcoal">
             {t("footer.visit.title")}
@@ -140,19 +151,22 @@ export default function Footer() {
           <ul className="mt-4 space-y-3 text-sm text-charcoal/60">
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 text-primary" />{" "}
-              {t("footer.visit.address")}
+              {locale === "vi"
+                ? "331 Bến Vân Đồn, Phường Vĩnh Hội, Quận 4, TP Hồ Chí Minh"
+                : "331 Ben Van Don, Vinh Hoi Ward, District 4, Ho Chi Minh City"}
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" />{" "}
-              {t("footer.visit.phone")}
+              <Phone className="h-4 w-4 text-primary" /> {"0123456789"}
             </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-primary" />{" "}
-              {t("footer.visit.email")}
+              {"artlebakeshop@gmail.com"}
             </li>
             <li className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />{" "}
-              {t("footer.visit.hours")}
+              {locale === "vi"
+                ? "Mở cửa hàng ngày: 8:00 - 20:00"
+                : "Open Daily: 8:00 AM – 8:00 PM"}{" "}
             </li>
           </ul>
         </div>

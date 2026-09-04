@@ -7,9 +7,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const SLIDES = [
-  { src: "/images/banner1.webp", alt: "Freshly baked bread loaves" },
+  { src: "/images/browniebanner1.jpg", alt: "Freshly baked bread loaves" },
   { src: "/images/banner2.webp", alt: "Artisan bakery display" },
-  { src: "/images/banner3.webp", alt: "Fresh pastries and bread" },
+  { src: "/images/menu_banner_final.jpeg", alt: "Fresh pastries and bread" },
 ];
 
 const SLIDE_DURATION = 6000;
@@ -51,8 +51,8 @@ export default function HeroSection() {
           );
         })}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-charcoal-900/65 via-charcoal-900/25 to-charcoal-900/75" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_55%_at_50%_42%,rgba(0,0,0,0.4),transparent_70%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-charcoal-900/65 via-charcoal-900/45 to-charcoal-900/75" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_55%_at_50%_42%,rgba(0,0,0,0.7),transparent_70%)]" />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center text-center animate-fadeInUp">
         <p className="font-script text-4xl text-primary sm:text-5xl">

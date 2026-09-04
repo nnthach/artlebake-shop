@@ -33,7 +33,7 @@ export default function OurStorySection() {
           </div>
           <div className="absolute bottom-0 right-0 h-[58%] w-[52%] overflow-hidden rounded-2xl shadow-2xl ring-4 ring-white">
             <Image
-              src="/images/chef3.jpg"
+              src="/images/tiramisualone.jpeg"
               alt="Fresh croissant on display"
               fill
               className="object-cover"

@@ -139,10 +139,10 @@ export const translations = {
             description:
               "We source only the finest organic flours, European butter, and seasonal ingredients from local farms.",
           },
-          slowFermented: {
-            title: "Slow Fermented",
+          richFlavor: {
+            title: "Rich & Bold Flavor",
             description:
-              "Our breads are fermented for 48–72 hours, developing deep flavors and perfect texture naturally.",
+              "Crafted with pure cacao and rich Espresso shots — awakening your senses from the very first bite.",
           },
           handmadeProcess: {
             title: "Handmade Process",
@@ -1277,10 +1277,10 @@ export const translations = {
             description:
               "Chúng tôi chỉ chọn loại bột hữu cơ thượng hạng, bơ nhập từ châu Âu và nguyên liệu theo mùa từ nông trại địa phương.",
           },
-          slowFermented: {
-            title: "Lên Men Tự Nhiên",
+          richFlavor: {
+            title: "Hương Vị Đậm Đà",
             description:
-              "Bánh mì được lên men từ 48–72 giờ, tạo nên hương vị đậm đà và kết cấu hoàn hảo một cách tự nhiên.",
+              "Sử dụng cacao nguyên chất và cốt cà phê Espresso đậm vị — đánh thức trọn vẹn giác quan ngay từ miếng bánh đầu tiên.",
           },
           handmadeProcess: {
             title: "Tỉ Mỉ Từng Công Đoạn",

@@ -1,9 +1,9 @@
 import { BakeryReason, BakeryStandard, MenuCategory } from "@/types";
-import { Clock, Heart, Leaf, Wheat } from "lucide-react";
+import { Clock, Cookie, Heart, Leaf } from "lucide-react";
 
 export const BAKERY_PRINCIPLES: BakeryStandard[] = [
   {
-    image: "/images/banner1.webp",
+    image: "/images/brownie2.jpg",
     key: "natural",
   },
   {
@@ -33,8 +33,8 @@ export const WHY_RETURN_REASONS: BakeryReason[] = [
     icon: Leaf,
   },
   {
-    key: "slowFermented",
-    icon: Wheat,
+    key: "richFlavor",
+    icon: Cookie,
   },
   {
     key: "handmadeProcess",

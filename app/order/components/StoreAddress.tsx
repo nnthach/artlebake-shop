@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone } from "lucide-react";
+import { Clock, MapPin, Phone } from "lucide-react";
 
 import { useI18n } from "@/context/I18nContext";
 
@@ -13,10 +13,10 @@ export default function StoreAddress() {
         {locale === "vi" ? "Địa chỉ nhận hàng" : "Pickup location"}
       </h2>
 
-      <div className="mt-4 rounded-xl bg-charcoal/5 p-4">
+      <div className="mt-4 rounded-xl bg-sand-100 p-4">
         <div className="flex gap-3">
           <div className="min-w-0">
-            <p className="font-semibold text-charcoal">Duotech Bakery</p>
+            <p className="font-semibold text-charcoal">Artle Bakeshop</p>
 
             <div className="mt-2 space-y-2 text-sm text-charcoal/60">
               <div className="flex items-start gap-2">
@@ -24,8 +24,8 @@ export default function StoreAddress() {
 
                 <span>
                   {locale === "vi"
-                    ? "123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh"
-                    : "123 ABC Street, XYZ District, Ho Chi Minh City"}
+                    ? "331 Bến Vân Đồn, Phường Vĩnh Hội, Quận 4, TP Hồ Chí Minh"
+                    : "331 Ben Van Don, Vinh Hoi Ward, District 4, Ho Chi Minh City"}
                 </span>
               </div>
 
@@ -33,6 +33,13 @@ export default function StoreAddress() {
                 <Phone className="h-4 w-4 shrink-0" />
 
                 <span>0909 123 456</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 shrink-0" />{" "}
+                {locale === "vi"
+                  ? "Mở cửa hàng ngày: 8:00 - 20:00"
+                  : "Open Daily: 8:00 AM – 8:00 PM"}{" "}
               </div>
             </div>
           </div>
