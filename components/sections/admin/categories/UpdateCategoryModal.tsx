@@ -96,7 +96,7 @@ export default function UpdateCategoryModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Pencil className="h-3.5 w-3.5" />
+          <Pencil className="h-5 w-5" />
         </Button>
       </DialogTrigger>
 

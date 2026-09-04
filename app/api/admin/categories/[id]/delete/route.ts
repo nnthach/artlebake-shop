@@ -2,7 +2,7 @@ import { deleteCacheByResource } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(
+export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -15,6 +15,7 @@ export async function PUT(
     }
 
     const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
         { success: false, error: "Id is required" },
@@ -22,35 +23,14 @@ export async function PUT(
       );
     }
 
-    const body = await req.json();
-    const {
-      name_vi,
-      name_en,
-      description_vi,
-      description_en,
-      slug_vi,
-      slug_en,
-    } = body;
-    if (!name_vi || !name_en) {
-      return NextResponse.json(
-        { success: false, error: "Names are required" },
-        { status: 400 },
-      );
-    }
-    const { data, error } = await supabaseAdmin
+    const { error, count } = await supabaseAdmin
       .from("categories")
-      .update({
-        name: { vi: name_vi, en: name_en },
-        description: { vi: description_vi ?? "", en: description_en ?? "" },
-        slug: { vi: slug_vi, en: slug_en },
-      })
-      .eq("id", id)
-      .select()
-      .single();
+      .delete({ count: "exact" })
+      .eq("id", id);
 
     if (error) throw error;
 
-    if (!data) {
+    if (count === 0) {
       return NextResponse.json(
         { success: false, error: "Category not found" },
         { status: 404 },
@@ -60,14 +40,12 @@ export async function PUT(
     // delete redis cache
     void deleteCacheByResource("categories");
 
-    return NextResponse.json({ success: true, data }, { status: 200 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("Update categories error:", error);
+    console.error("Delete categories error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to update" },
+      { success: false, error: "Failed to delete" },
       { status: 500 },
     );
   }
 }
-
-

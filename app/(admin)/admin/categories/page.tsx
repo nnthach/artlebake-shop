@@ -1,15 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, Trash2, LayoutGrid, Loader2 } from "lucide-react";
+import { Ban, Trash2, LayoutGrid, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -20,68 +13,18 @@ import {
 } from "@/components/ui/table";
 import { CategoryItem } from "@/types";
 import { useI18n } from "@/context/I18nContext";
-import CreateCategoryModal from "@/components/sections/admin/categories/CreateCategoryModal";
 import UpdateCategoryModal from "@/components/sections/admin/categories/UpdateCategoryModal";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
-
-const DEFAULT_LIMIT = 8;
-
-const LIMIT_OPTIONS = [
-  { label: `${DEFAULT_LIMIT}`, value: String(DEFAULT_LIMIT) },
-  { label: "10", value: "10" },
-  { label: "15", value: "15" },
-  { label: "20", value: "20" },
-  { label: "50", value: "50" },
-];
-
-interface FilterState {
-  is_active: boolean | undefined;
-  sort_by: "name" | "created_at";
-  order: "asc" | "desc";
-  limit: number;
-}
-
-const DEFAULT_FILTER: FilterState = {
-  is_active: undefined,
-  sort_by: "created_at",
-  order: "desc",
-  limit: DEFAULT_LIMIT,
-};
+import CategoryFilter, {
+  DEFAULT_FILTER,
+  FilterState,
+} from "@/app/(admin)/admin/categories/components/Filter";
+import { formatStatusBooleanColor } from "@/utils/format-status";
+import toast from "react-hot-toast";
 
 export default function AdminCategoryPage() {
   const { t, locale } = useI18n();
-
-  const STATUS_OPTIONS = [
-    { label: t("admin.categoriesPage.filter.options.all"), value: "" },
-    {
-      label: t("admin.categoriesPage.filter.options.active"),
-      value: "true",
-    },
-    {
-      label: t("admin.categoriesPage.filter.options.inactive"),
-      value: "false",
-    },
-  ];
-
-  const SORT_BY_OPTIONS = [
-    {
-      label: t("admin.categoriesPage.filter.options.createdAt"),
-      value: "created_at",
-    },
-    { label: t("admin.categoriesPage.filter.options.name"), value: "name" },
-  ];
-
-  const ORDER_OPTIONS = [
-    {
-      label: t("admin.categoriesPage.filter.options.desc"),
-      value: "desc",
-    },
-    {
-      label: t("admin.categoriesPage.filter.options.asc"),
-      value: "asc",
-    },
-  ];
 
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -131,15 +74,71 @@ export default function AdminCategoryPage() {
   // DELETE METHOD
   const deleteCategory = async (id: string) => {
     try {
-      await fetch(`/api/admin/categories/${id}`, {
+      const res = await fetch(`/api/admin/categories/${id}/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
 
-      fetchCategories(appliedFilter, page);
+      if (!res.ok) throw new Error("Failed to delete category");
+      await fetchCategories(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã xóa danh mục thành công"
+          : "Category deleted successfully",
+      );
     } catch (error) {
       console.error(error);
-      alert("Failed to delete");
+      toast.error(
+        locale === "vi" ? "Không thể xóa danh mục" : "Failed to delete category",
+      );
+    }
+  };
+
+  const handleDisabled = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/categories/${id}/disabled`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to disable category");
+      await fetchCategories(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã vô hiệu hóa danh mục thành công"
+          : "Category disabled successfully",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể vô hiệu hóa danh mục"
+          : "Failed to disable category",
+      );
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/categories/${id}/restore`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to restore category");
+      await fetchCategories(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã khôi phục danh mục thành công"
+          : "Category restored successfully",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể khôi phục danh mục"
+          : "Failed to restore category",
+      );
     }
   };
 
@@ -158,21 +157,6 @@ export default function AdminCategoryPage() {
     fetchCategories(DEFAULT_FILTER, 1);
   };
 
-  //check filter
-  const isFilterActive =
-    appliedFilter.is_active !== undefined ||
-    appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order ||
-    appliedFilter.limit !== DEFAULT_FILTER.limit;
-
-  const activeFilterCount =
-    (appliedFilter.is_active !== undefined ? 1 : 0) +
-    (appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order
-      ? 1
-      : 0) +
-    (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
-
   return (
     <div className="space-y-6">
       <div>
@@ -185,153 +169,19 @@ export default function AdminCategoryPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
-        {/* Card header */}
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Popover
-              onOpenChange={(open) => open && setTempFilter(appliedFilter)}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
-                >
-                  <Filter className="h-4 w-4" />
-                  {t("button.filter")}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-56">
-                <div className="grid gap-4">
-                  {/* Status filter */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.categoriesPage.filter.status")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={
-                        tempFilter.is_active === undefined
-                          ? ""
-                          : String(tempFilter.is_active)
-                      }
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          is_active: v === "" ? undefined : v === "true",
-                        }));
-                      }}
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sort by */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.categoriesPage.filter.sortBy")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.sort_by}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          sort_by: e.target.value as FilterState["sort_by"],
-                        }))
-                      }
-                    >
-                      {SORT_BY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Order */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.categoriesPage.filter.order")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.order}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          order: e.target.value as FilterState["order"],
-                        }))
-                      }
-                    >
-                      {ORDER_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Limit per page */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.categoriesPage.filter.limit")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={String(tempFilter.limit)}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value, 10),
-                        }))
-                      }
-                    >
-                      {LIMIT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <PopoverClose asChild>
-                    <Button variant={"default"} size="sm" onClick={handleApply}>
-                      {t("button.apply")}
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            {isFilterActive && (
-              <button
-                onClick={handleClearFilter}
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("button.clearFilter")}
-              </button>
-            )}
-          </div>
-
-          <CreateCategoryModal
-            onCreated={() => fetchCategories(appliedFilter)}
-          />
-        </div>
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+        <CategoryFilter
+          appliedFilter={appliedFilter}
+          tempFilter={tempFilter}
+          setTempFilter={setTempFilter}
+          onApply={handleApply}
+          onClearFilter={handleClearFilter}
+          onCreated={() => fetchCategories(appliedFilter)}
+        />
 
         {/* Table */}
         <Table>
-          <TableHeader className="bg-sand">
+          <TableHeader className="bg-gradient-to-br from-white to-[#FAF6F0]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}
@@ -388,15 +238,15 @@ export default function AdminCategoryPage() {
                     {category.description?.[locale] ?? category.description?.vi}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={category.is_active ? "success" : "warning"}>
-                      {category.is_active
-                        ? locale === "vi"
-                          ? "Hoạt động"
-                          : "Active"
-                        : locale === "vi"
-                          ? "Không hoạt động"
-                          : "Inactive"}
-                    </Badge>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatStatusBooleanColor(
+                        category.is_active,
+                      )}`}
+                    >
+                      {t(
+                        `admin.storeInventoriesPage.status.${category.is_active ? "active" : "inactive"}`,
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(category.created_at).toLocaleDateString("vi-VN")}
@@ -413,14 +263,41 @@ export default function AdminCategoryPage() {
                         }}
                         onUpdated={() => fetchCategories(appliedFilter, page)}
                       />
-                      <Button
-                        onClick={() => deleteCategory(category.id)}
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {category.is_active ? (
+                        <Button
+                          onClick={() => handleDisabled(category.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                          aria-label="Disable category"
+                          title="Disable category"
+                        >
+                          <Ban className="h-5 w-5" />
+                        </Button>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={() => handleRestore(category.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                            aria-label="Restore category"
+                            title="Restore category"
+                          >
+                            <RotateCcw className="h-5 w-5" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteCategory(category.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            aria-label="Delete category"
+                            title="Delete category"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

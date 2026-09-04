@@ -11,7 +11,7 @@ export const BAKERY_PRINCIPLES: BakeryStandard[] = [
     key: "handcraftedDaily",
   },
   {
-    image: "/images/banner3.webp",
+    image: "/images/cinamonrollbanner.jpg",
     key: "alwaysFresh",
   },
 ];

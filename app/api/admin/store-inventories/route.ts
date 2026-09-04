@@ -12,13 +12,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { status, page, limit, date } = getSearchParams(req);
+    const { status, page, limit, date, order } = getSearchParams(req);
 
     // parse page/limit & pagination
     const pageNum = Math.max(1, parseInt(page) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
     const from = (pageNum - 1) * limitNum;
     const to = from + limitNum - 1;
+
+    const ascending = order === "asc";
 
     let query = supabaseAdmin
       .from("daily_inventories")
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest) {
       `,
         { count: "exact" },
       )
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending })
       .range(from, to);
 
     if (date) {

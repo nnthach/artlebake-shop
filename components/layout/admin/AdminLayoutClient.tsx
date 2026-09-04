@@ -12,7 +12,9 @@ export default function AdminLayoutClient({
       <AdminSidebar />
       <SidebarInset>
         <AdminHeader />
-        <main className="flex-1 bg-sand p-6">{children}</main>
+        <main className="flex-1 bg-gradient-to-br from-white via-[#FAF6F0] to-[#F3EDE4] p-6">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

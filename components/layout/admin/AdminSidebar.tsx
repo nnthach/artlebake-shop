@@ -3,7 +3,6 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
@@ -11,20 +10,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   Boxes,
   Calendar,
-  ChevronUp,
   FlaskConical,
   LayoutDashboard,
   Package,
@@ -116,7 +106,10 @@ export function AdminSidebar() {
   const { t } = useI18n();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-zinc-200 bg-white">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-zinc-100 bg-white shadow-md"
+    >
       {/* Header - Logo */}
       <SidebarHeader className="border-b border-sidebar-border pb-3">
         <SidebarMenu>
@@ -159,16 +152,12 @@ export function AdminSidebar() {
           t={t}
         />
 
-        <SidebarSeparator />
-
         <NavGroup
           items={NAV_STORE_MANAGEMENT}
           label={t("admin.sidebar.groups.productSellManagement")}
           pathname={pathname}
           t={t}
         />
-
-        <SidebarSeparator />
 
         <NavGroup
           items={NAV_PRODUCTS}
@@ -177,53 +166,6 @@ export function AdminSidebar() {
           t={t}
         />
       </SidebarContent>
-
-      {/* Footer - User Profile */}
-      <SidebarFooter className="border-t border-sidebar-border pt-3">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="/avatar.png" alt="Admin" />
-                    <AvatarFallback className="rounded-lg bg-primary/20 text-primary text-xs font-semibold">
-                      AD
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Admin</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      admin@petitbakery.com
-                    </span>
-                  </div>
-                  <ChevronUp className="ml-auto h-4 w-4 text-muted-foreground" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-52 rounded-lg"
-                side="bottom"
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuItem>
-                  <span>{t("admin.sidebar.user.profile")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>{t("admin.sidebar.user.account")}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive focus:text-destructive">
-                  <span>{t("admin.sidebar.user.signOut")}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

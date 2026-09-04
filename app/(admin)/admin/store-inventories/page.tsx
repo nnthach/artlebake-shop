@@ -1,14 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, LayoutGrid, Loader2, Lock, Unlock } from "lucide-react";
+import { LayoutGrid, Loader2, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -22,7 +16,10 @@ import { useI18n } from "@/context/I18nContext";
 import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
-import CreateStoreInventoryModal from "@/components/sections/staff/store-inventory/CreateStoreInventoryModal";
+import InventoryFilter, {
+  DEFAULT_FILTER,
+  FilterState,
+} from "@/app/(admin)/admin/store-inventories/components/Filter";
 import {
   formatDailyProductStatus,
   formatDailyProductStatusColor,
@@ -31,55 +28,11 @@ import {
 import { formatDateReverse } from "@/utils/format-date";
 import toast from "react-hot-toast";
 
-const STATUS_OPTIONS = [
-  { label: "Tất cả", value: "" },
-  { label: "Còn hàng", value: "available" },
-  { label: "Không còn hàng", value: "out_of_stock" },
-  { label: "Ít hàng", value: "low_stock" },
-  { label: "Chờ bắt đầu", value: "draft" },
-  { label: "Đã đóng", value: "closed" },
-];
-
-const SORT_BY_OPTIONS = [
-  { label: "Ngày tạo", value: "created_at" },
-  { label: "Tên", value: "name" },
-];
-
-const ORDER_OPTIONS = [
-  { label: "Giảm dần", value: "desc" },
-  { label: "Tăng dần", value: "asc" },
-];
-
-const DEFAULT_LIMIT = 8;
-
-const LIMIT_OPTIONS = [
-  { label: `${DEFAULT_LIMIT}`, value: String(DEFAULT_LIMIT) },
-  { label: "10", value: "10" },
-  { label: "15", value: "15" },
-  { label: "20", value: "20" },
-  { label: "50", value: "50" },
-];
-
-interface FilterState {
-  status: string;
-  sort_by: "name" | "created_at";
-  order: "asc" | "desc";
-  limit: number;
-}
-
-const DEFAULT_FILTER: FilterState = {
-  status: "",
-  sort_by: "created_at",
-  order: "desc",
-  limit: DEFAULT_LIMIT,
-};
-
 export default function AdminStoreInventoryPage() {
   const [stores, setStoreInventories] = useState<StoreInventoryRaw[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  // const [isPublishing, setIsPublishing] = useState(false);
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
   const [tempFilter, setTempFilter] = useState<FilterState>(DEFAULT_FILTER);
@@ -101,6 +54,8 @@ export default function AdminStoreInventoryPage() {
           params.set("status", filter.status);
         }
 
+        params.set("sort_by", filter.sort_by);
+        params.set("order", filter.order);
         params.set("page", String(pageNum));
         params.set("limit", String(filter.limit));
 
@@ -177,9 +132,7 @@ export default function AdminStoreInventoryPage() {
       );
 
       toast.success(
-        locale === "vi"
-          ? "Mở bán hàng thành công"
-          : "Inventory activated",
+        locale === "vi" ? "Mở bán hàng thành công" : "Inventory activated",
       );
     } catch (error) {
       console.error("Activate inventory error:", error);
@@ -216,9 +169,7 @@ export default function AdminStoreInventoryPage() {
       );
 
       toast.success(
-        locale === "vi"
-          ? "Đóng hàng bán thành công"
-          : "Inventory deactivated",
+        locale === "vi" ? "Đóng hàng bán thành công" : "Inventory deactivated",
       );
     } catch (error) {
       console.error("Deactivate inventory error:", error);
@@ -232,60 +183,6 @@ export default function AdminStoreInventoryPage() {
     }
   };
 
-  // const handlePublishAvailable = async () => {
-  //   try {
-  //     setIsPublishing(true);
-
-  //     const response = await fetch(
-  //       "/api/admin/store-inventories/publish-available",
-  //       { method: "PATCH" },
-  //     );
-  //     const data = await response.json();
-
-  //     if (!response.ok || !data.success) {
-  //       throw new Error(data.error || "Failed to publish inventories");
-  //     }
-
-  //     toast.success(
-  //       locale === "vi"
-  //         ? `Đã mở bán ${data.updated_count ?? 0} sản phẩm hôm nay`
-  //         : `${data.updated_count ?? 0} products published for today`,
-  //     );
-
-  //     if (selectedDate) {
-  //       setSelectedDate("");
-  //       resetPage();
-  //     } else {
-  //       fetchStoreInventory(appliedFilter, page);
-  //     }
-  //   } catch (error) {
-  //     console.error("Publish inventories error:", error);
-  //     toast.error(
-  //       locale === "vi"
-  //         ? "Không thể mở bán tồn kho hôm nay"
-  //         : "Unable to publish today's inventories",
-  //     );
-  //   } finally {
-  //     setIsPublishing(false);
-  //   }
-  // };
-
-  //check filter
-  const isFilterActive =
-    appliedFilter.status !== "" ||
-    selectedDate !== "" ||
-    appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order ||
-    appliedFilter.limit !== DEFAULT_FILTER.limit;
-
-  const activeFilterCount =
-    (appliedFilter.status !== "" ? 1 : 0) +
-    (appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order
-      ? 1
-      : 0) +
-    (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
-
   return (
     <div className="space-y-6">
       <div>
@@ -298,167 +195,25 @@ export default function AdminStoreInventoryPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
         {/* Card header */}
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Popover
-              onOpenChange={(open) => open && setTempFilter(appliedFilter)}
-            >
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 bg-card">
-                  <Filter className="h-4 w-4" />
-                  {t("button.filter")}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-64">
-                <div className="grid gap-4">
-                  {/* Status filter */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      Trạng thái
-                    </p>
+        <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-4">
+          <InventoryFilter
+            appliedFilter={appliedFilter}
+            tempFilter={tempFilter}
+            setTempFilter={setTempFilter}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
 
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.status}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          status: e.target.value,
-                        }))
-                      }
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sort by */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      Sắp xếp theo
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.sort_by}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          sort_by: e.target.value as FilterState["sort_by"],
-                        }))
-                      }
-                    >
-                      {SORT_BY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Order */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">Thứ tự</p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.order}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          order: e.target.value as FilterState["order"],
-                        }))
-                      }
-                    >
-                      {ORDER_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Limit per page */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      Số dòng mỗi trang
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={String(tempFilter.limit)}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value, 10),
-                        }))
-                      }
-                    >
-                      {LIMIT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <PopoverClose asChild>
-                    <Button variant={"default"} size="sm" onClick={handleApply}>
-                      {t("button.apply")}
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            {/* Date filter */}
-            <input
-              type="date"
-              className="border rounded-md h-9 px-2 w-40 text-sm bg-card border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
-              value={selectedDate}
-              onChange={(e) => {
-                setSelectedDate(e.target.value);
-                resetPage();
-              }}
-            />
-
-            {isFilterActive && (
-              <button
-                onClick={handleClearFilter}
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("button.clearFilter")}
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* <Button
-              size="sm"
-              disabled={isPublishing}
-              onClick={handlePublishAvailable}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              <Unlock className="h-4 w-4" />
-              Publish Available
-            </Button> */}
-
-            <CreateStoreInventoryModal
-              onCreated={() => fetchStoreInventory(DEFAULT_FILTER, 1)}
-            />
-          </div>
+            onApply={handleApply}
+            onClearFilter={handleClearFilter}
+            onCreated={() => fetchStoreInventory(DEFAULT_FILTER, 1)}
+          />
         </div>
 
         {/* Table */}
         <Table>
-          <TableHeader className="bg-sand">
+          <TableHeader className="bg-gradient-to-br from-white to-[#FAF6F0]">
             <TableRow className="hover:bg-sand">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}

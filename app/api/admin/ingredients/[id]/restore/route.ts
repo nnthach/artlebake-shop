@@ -1,7 +1,7 @@
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(
+export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -14,6 +14,7 @@ export async function PUT(
     }
 
     const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
         { success: false, error: "Id is required" },
@@ -21,41 +22,31 @@ export async function PUT(
       );
     }
 
-    const body = await req.json();
-    const { name_vi, name_en, slug_vi, slug_en } = body;
-    if (!name_vi || !name_en) {
-      return NextResponse.json(
-        { success: false, error: "Names are required" },
-        { status: 400 },
-      );
-    }
-    const { data, error } = await supabaseAdmin
+    const { data: ingredient, error } = await supabaseAdmin
       .from("ingredients")
-      .update({
-        name: { vi: name_vi, en: name_en },
-        slug: { vi: slug_vi, en: slug_en },
-      })
+      .update({ is_active: true })
       .eq("id", id)
-      .select()
-      .single();
+      .select("id")
+      .maybeSingle();
 
     if (error) throw error;
 
-    if (!data) {
+    if (!ingredient) {
       return NextResponse.json(
         { success: false, error: "Ingredient not found" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ success: true, data }, { status: 200 });
-  } catch (error) {
-    console.error("Update ingredient error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to update" },
+      { success: true, message: "Ingredient restored successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Restore ingredient error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to restore ingredient" },
       { status: 500 },
     );
   }
 }
-
-

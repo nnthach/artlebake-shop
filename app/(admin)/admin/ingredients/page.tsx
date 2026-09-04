@@ -1,15 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, Trash2, LayoutGrid, Loader2 } from "lucide-react";
+import { Ban, Trash2, LayoutGrid, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -20,68 +13,18 @@ import {
 } from "@/components/ui/table";
 import { IngredientItem } from "@/types";
 import { useI18n } from "@/context/I18nContext";
-import CreateIngredientModal from "@/components/sections/admin/ingredients/CreateIngredientModal";
 import UpdateIngredientModal from "@/components/sections/admin/ingredients/UpdateIngredientModal";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
-
-const DEFAULT_LIMIT = 8;
-
-const LIMIT_OPTIONS = [
-  { label: `${DEFAULT_LIMIT}`, value: String(DEFAULT_LIMIT) },
-  { label: "10", value: "10" },
-  { label: "15", value: "15" },
-  { label: "20", value: "20" },
-  { label: "50", value: "50" },
-];
-
-interface FilterState {
-  is_active: boolean | undefined;
-  sort_by: "name" | "created_at";
-  order: "asc" | "desc";
-  limit: number;
-}
-
-const DEFAULT_FILTER: FilterState = {
-  is_active: undefined,
-  sort_by: "created_at",
-  order: "desc",
-  limit: DEFAULT_LIMIT,
-};
+import IngredientFilter, {
+  DEFAULT_FILTER,
+  FilterState,
+} from "@/app/(admin)/admin/ingredients/components/Filter";
+import { formatStatusBooleanColor } from "@/utils/format-status";
+import toast from "react-hot-toast";
 
 export default function AdminIngredientPage() {
   const { t, locale } = useI18n();
-
-  const STATUS_OPTIONS = [
-    { label: t("admin.ingredientsPage.filter.options.all"), value: "" },
-    {
-      label: t("admin.ingredientsPage.filter.options.active"),
-      value: "true",
-    },
-    {
-      label: t("admin.ingredientsPage.filter.options.inactive"),
-      value: "false",
-    },
-  ];
-
-  const SORT_BY_OPTIONS = [
-    {
-      label: t("admin.ingredientsPage.filter.options.createdAt"),
-      value: "created_at",
-    },
-    { label: t("admin.ingredientsPage.filter.options.name"), value: "name" },
-  ];
-
-  const ORDER_OPTIONS = [
-    {
-      label: t("admin.ingredientsPage.filter.options.desc"),
-      value: "desc",
-    },
-    {
-      label: t("admin.ingredientsPage.filter.options.asc"),
-      value: "asc",
-    },
-  ];
 
   const [ingredients, setIngredients] = useState<IngredientItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -134,14 +77,71 @@ export default function AdminIngredientPage() {
   // delete
   const deleteIngredient = async (id: string) => {
     try {
-      await fetch(`/api/admin/ingredients/${id}`, {
+      const res = await fetch(`/api/admin/ingredients/${id}/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
-      fetchIngredients(appliedFilter, page);
+
+      if (!res.ok) throw new Error("Failed to delete ingredient");
+      await fetchIngredients(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã xóa nguyên liệu thành công"
+          : "Ingredient deleted successfully",
+      );
     } catch (error) {
       console.error(error);
-      alert("Failed to delete");
+      toast.error(
+        locale === "vi" ? "Không thể xóa nguyên liệu" : "Failed to delete ingredient",
+      );
+    }
+  };
+
+  const handleDisabled = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/ingredients/${id}/disabled`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to disable ingredient");
+      await fetchIngredients(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã vô hiệu hóa nguyên liệu thành công"
+          : "Ingredient disabled successfully",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể vô hiệu hóa nguyên liệu"
+          : "Failed to disable ingredient",
+      );
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/ingredients/${id}/restore`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to restore ingredient");
+      await fetchIngredients(appliedFilter, page);
+      toast.success(
+        locale === "vi"
+          ? "Đã khôi phục nguyên liệu thành công"
+          : "Ingredient restored successfully",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể khôi phục nguyên liệu"
+          : "Failed to restore ingredient",
+      );
     }
   };
 
@@ -160,21 +160,6 @@ export default function AdminIngredientPage() {
     fetchIngredients(DEFAULT_FILTER, 1);
   };
 
-  //check filter
-  const isFilterActive =
-    appliedFilter.is_active !== undefined ||
-    appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order ||
-    appliedFilter.limit !== DEFAULT_FILTER.limit;
-
-  const activeFilterCount =
-    (appliedFilter.is_active !== undefined ? 1 : 0) +
-    (appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order
-      ? 1
-      : 0) +
-    (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
-
   return (
     <div className="space-y-6">
       <div>
@@ -187,154 +172,20 @@ export default function AdminIngredientPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
         {/* Card header */}
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Popover
-              onOpenChange={(open) => open && setTempFilter(appliedFilter)}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
-                >
-                  <Filter className="h-4 w-4" />
-                  {t("button.filter")}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-64">
-                <div className="grid gap-4">
-                  {/* Status filter */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.ingredientsPage.filter.status")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={
-                        tempFilter.is_active === undefined
-                          ? ""
-                          : String(tempFilter.is_active)
-                      }
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          is_active: v === "" ? undefined : v === "true",
-                        }));
-                      }}
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sort by */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.ingredientsPage.filter.sortBy")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.sort_by}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          sort_by: e.target.value as FilterState["sort_by"],
-                        }))
-                      }
-                    >
-                      {SORT_BY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Order */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.ingredientsPage.filter.order")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.order}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          order: e.target.value as FilterState["order"],
-                        }))
-                      }
-                    >
-                      {ORDER_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Limit per page */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.ingredientsPage.filter.limit")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={String(tempFilter.limit)}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value, 10),
-                        }))
-                      }
-                    >
-                      {LIMIT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <PopoverClose asChild>
-                    <Button variant={"default"} size="sm" onClick={handleApply}>
-                      {t("button.apply")}
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            {isFilterActive && (
-              <button
-                onClick={handleClearFilter}
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("button.clearFilter")}
-              </button>
-            )}
-          </div>
-
-          <CreateIngredientModal
-            onCreated={() => fetchIngredients(appliedFilter)}
-          />
-        </div>
+        <IngredientFilter
+          appliedFilter={appliedFilter}
+          tempFilter={tempFilter}
+          setTempFilter={setTempFilter}
+          onApply={handleApply}
+          onClearFilter={handleClearFilter}
+          onCreated={() => fetchIngredients(appliedFilter)}
+        />
 
         {/* Table */}
         <Table>
-          <TableHeader className="bg-sand">
+          <TableHeader className="bg-gradient-to-br from-white to-[#FAF6F0]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}
@@ -385,17 +236,15 @@ export default function AdminIngredientPage() {
                     {ingredient.name[locale]}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={ingredient.is_active ? "success" : "warning"}
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatStatusBooleanColor(
+                        ingredient.is_active,
+                      )}`}
                     >
-                      {ingredient.is_active
-                        ? locale === "vi"
-                          ? "Hoạt động"
-                          : "Active"
-                        : locale === "vi"
-                          ? "Không hoạt động"
-                          : "Inactive"}
-                    </Badge>
+                      {t(
+                        `admin.storeInventoriesPage.status.${ingredient.is_active ? "active" : "inactive"}`,
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(ingredient.created_at).toLocaleDateString(
@@ -412,14 +261,41 @@ export default function AdminIngredientPage() {
                         }}
                         onUpdated={() => fetchIngredients(appliedFilter)}
                       />
-                      <Button
-                        onClick={() => deleteIngredient(ingredient.id)}
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {ingredient.is_active ? (
+                        <Button
+                          onClick={() => handleDisabled(ingredient.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                          aria-label="Disable ingredient"
+                          title="Disable ingredient"
+                        >
+                          <Ban className="h-5 w-5" />
+                        </Button>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            onClick={() => handleRestore(ingredient.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                            aria-label="Restore ingredient"
+                            title="Restore ingredient"
+                          >
+                            <RotateCcw className="h-5 w-5" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteIngredient(ingredient.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            aria-label="Delete ingredient"
+                            title="Delete ingredient"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

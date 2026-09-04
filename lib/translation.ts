@@ -829,6 +829,23 @@ export const translations = {
           inactive: "Inactive",
           unknown: "Unknown",
         },
+        filter: {
+          status: "Status",
+          sortBy: "Sort by",
+          order: "Order",
+          limit: "Rows per page",
+          statusOptions: {
+            all: "All",
+          },
+          sortOptions: {
+            createdAt: "Created at",
+            name: "Name",
+          },
+          orderOptions: {
+            desc: "Descending",
+            asc: "Ascending",
+          },
+        },
         storeSelect: {
           loading: "Loading stores...",
           empty: "No stores available",
@@ -1952,6 +1969,23 @@ export const translations = {
           active: "Đang hoạt động",
           inactive: "Không hoạt động",
           unknown: "Không xác định",
+        },
+        filter: {
+          status: "Trạng thái",
+          sortBy: "Sắp xếp theo",
+          order: "Thứ tự",
+          limit: "Số dòng mỗi trang",
+          statusOptions: {
+            all: "Tất cả",
+          },
+          sortOptions: {
+            createdAt: "Ngày tạo",
+            name: "Tên",
+          },
+          orderOptions: {
+            desc: "Giảm dần",
+            asc: "Tăng dần",
+          },
         },
         storeSelect: {
           loading: "Đang tải cửa hàng...",

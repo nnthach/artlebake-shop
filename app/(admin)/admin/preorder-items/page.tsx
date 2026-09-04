@@ -1,22 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Filter,
-  LayoutGrid,
-  Loader2,
-  Eye,
-  ImageOff,
-  Lock,
-  Unlock,
-} from "lucide-react";
+import { LayoutGrid, Loader2, ImageOff, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -30,63 +16,17 @@ import { useI18n } from "@/context/I18nContext";
 import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
-import CreatePreOrderItemModal from "@/components/sections/admin/preorderItem/CreatePreOrderItemModal";
+import PreOrderItemFilter, {
+  DEFAULT_FILTER,
+  FilterState,
+} from "@/app/(admin)/admin/preorder-items/components/Filter";
 import {
   formatStatusBoolean,
   formatStatusBooleanColor,
 } from "@/utils/format-status";
 
-const DEFAULT_LIMIT = 8;
-
-const LIMIT_OPTIONS = [
-  { label: `${DEFAULT_LIMIT}`, value: String(DEFAULT_LIMIT) },
-  { label: "10", value: "10" },
-  { label: "15", value: "15" },
-  { label: "20", value: "20" },
-  { label: "50", value: "50" },
-];
-
-interface FilterState {
-  status: string;
-  sort_by: "name" | "created_at";
-  order: "asc" | "desc";
-  limit: number;
-}
-
-const DEFAULT_FILTER: FilterState = {
-  status: "",
-  sort_by: "created_at",
-  order: "desc",
-  limit: DEFAULT_LIMIT,
-};
-
 export default function AdminPreOrderItemPage() {
   const { t, locale } = useI18n();
-
-  const STATUS_OPTIONS = [
-    { label: t("admin.preorderItemPage.filter.options.all"), value: "" },
-    {
-      label: t("admin.preorderItemPage.filter.options.active"),
-      value: "true",
-    },
-    {
-      label: t("admin.preorderItemPage.filter.options.inactive"),
-      value: "false",
-    },
-  ];
-
-  const SORT_BY_OPTIONS = [
-    {
-      label: t("admin.preorderItemPage.filter.options.createdAt"),
-      value: "created_at",
-    },
-    { label: t("admin.preorderItemPage.filter.options.name"), value: "name" },
-  ];
-
-  const ORDER_OPTIONS = [
-    { label: t("admin.preorderItemPage.filter.options.desc"), value: "desc" },
-    { label: t("admin.preorderItemPage.filter.options.asc"), value: "asc" },
-  ];
 
   const [preOrderItems, setPreOrderItems] = useState<PreorderItem[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
@@ -165,22 +105,6 @@ export default function AdminPreOrderItemPage() {
     fetchPreOrderItem(DEFAULT_FILTER, 1);
   };
 
-  //check filter
-  const isFilterActive =
-    appliedFilter.status !== "" ||
-    selectedDate !== "" ||
-    appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order ||
-    appliedFilter.limit !== DEFAULT_FILTER.limit;
-
-  const activeFilterCount =
-    (appliedFilter.status !== "" ? 1 : 0) +
-    (appliedFilter.sort_by !== DEFAULT_FILTER.sort_by ||
-    appliedFilter.order !== DEFAULT_FILTER.order
-      ? 1
-      : 0) +
-    (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
-
   const handleToggleActive = async (item: PreorderItem) => {
     try {
       setUpdatingId(item.id);
@@ -222,161 +146,22 @@ export default function AdminPreOrderItemPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
         {/* Card header */}
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Popover
-              onOpenChange={(open) => open && setTempFilter(appliedFilter)}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
-                >
-                  <Filter className="h-4 w-4" />
-                  {t("button.filter")}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-64">
-                <div className="grid gap-4">
-                  {/* Status filter */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.preorderItemPage.filter.status")}
-                    </p>
-
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.status}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          status: e.target.value,
-                        }))
-                      }
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sort by */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.preorderItemPage.filter.sortBy")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.sort_by}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          sort_by: e.target.value as FilterState["sort_by"],
-                        }))
-                      }
-                    >
-                      {SORT_BY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Order */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.preorderItemPage.filter.order")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.order}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          order: e.target.value as FilterState["order"],
-                        }))
-                      }
-                    >
-                      {ORDER_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Limit per page */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.preorderItemPage.filter.limit")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={String(tempFilter.limit)}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value, 10),
-                        }))
-                      }
-                    >
-                      {LIMIT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <PopoverClose asChild>
-                    <Button variant={"default"} size="sm" onClick={handleApply}>
-                      {t("button.apply")}
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            {/* Date filter */}
-            <input
-              type="date"
-              className="border rounded-md h-9 px-2 w-40 text-sm bg-card border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
-              value={selectedDate}
-              onChange={(e) => {
-                setSelectedDate(e.target.value);
-                resetPage();
-              }}
-            />
-
-            {isFilterActive && (
-              <button
-                onClick={handleClearFilter}
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("button.clearFilter")}
-              </button>
-            )}
-          </div>
-
-          <CreatePreOrderItemModal
-            onCreated={() => fetchPreOrderItem(DEFAULT_FILTER, 1)}
-          />
-        </div>
+        <PreOrderItemFilter
+          appliedFilter={appliedFilter}
+          tempFilter={tempFilter}
+          setTempFilter={setTempFilter}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          onApply={handleApply}
+          onClearFilter={handleClearFilter}
+          onCreated={() => fetchPreOrderItem(DEFAULT_FILTER, 1)}
+        />
 
         {/* Table */}
         <Table>
-          <TableHeader className="bg-sand">
+          <TableHeader className="bg-gradient-to-br from-white to-[#FAF6F0]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}
@@ -522,33 +307,27 @@ export default function AdminPreOrderItemPage() {
                     {/* Actions */}
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
-                        {/* View */}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:bg-yellow-50 hover:text-yellow-600"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </Button>
-
                         {/* Toggle active */}
                         <Button
                           variant="ghost"
                           size="icon"
                           disabled={updatingId === preOrderItem.id}
                           onClick={() => handleToggleActive(preOrderItem)}
-                          className={
-                            preOrderItem.is_active
-                              ? "h-8 w-8 text-muted-foreground hover:bg-red-50 hover:text-red-600"
-                              : "h-8 w-8 text-muted-foreground hover:bg-green-50 hover:text-green-600"
-                          }
+                          className={`h-8 w-8 
+
+                            ${
+                              preOrderItem.is_active
+                                ? "text-red-400 hover:text-red-600 hover:bg-primary/10"
+                                : "text-green-400 hover:text-green-600 hover:bg-green-600/10"
+                            }
+                          `}
                         >
                           {updatingId === preOrderItem.id ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <Loader2 className="h-5 w-5 animate-spin" />
                           ) : preOrderItem.is_active ? (
-                            <Lock className="h-3.5 w-3.5" />
+                            <Lock className="h-5 w-5" strokeWidth={2.5} />
                           ) : (
-                            <Unlock className="h-3.5 w-3.5" />
+                            <Unlock className="h-5 w-5" strokeWidth={2.5} />
                           )}
                         </Button>
                       </div>

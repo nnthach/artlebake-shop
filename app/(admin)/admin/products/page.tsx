@@ -2,23 +2,14 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Filter,
-  Search,
-  X,
   Trash2,
   LayoutGrid,
   Loader2,
   Star,
+  RotateCcw,
+  Ban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -29,57 +20,20 @@ import {
 } from "@/components/ui/table";
 import { ProductItem } from "@/types";
 import { useI18n } from "@/context/I18nContext";
-import CreateProductModal from "@/components/sections/admin/products/CreateProductModal";
 import UpdateProductModal from "@/components/sections/admin/products/UpdateProductModal";
 import Image from "next/image";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useDebounce } from "@/hooks/useDebounce";
-
-const DEFAULT_LIMIT = 8;
-
-const LIMIT_OPTIONS = [
-  { label: `${DEFAULT_LIMIT}`, value: String(DEFAULT_LIMIT) },
-  { label: "10", value: "10" },
-  { label: "15", value: "15" },
-  { label: "20", value: "20" },
-  { label: "50", value: "50" },
-];
-
-interface FilterState {
-  is_active: boolean | undefined;
-  order: "asc" | "desc";
-  limit: number;
-}
-
-const DEFAULT_FILTER: FilterState = {
-  is_active: undefined,
-  order: "desc",
-  limit: DEFAULT_LIMIT,
-};
+import ProductFilter, {
+  DEFAULT_FILTER,
+  FilterState,
+} from "@/app/(admin)/admin/products/components/Filter";
+import { formatStatusBooleanColor } from "@/utils/format-status";
+import toast from "react-hot-toast";
 
 export default function AdminProductPage() {
   const { locale, t } = useI18n();
-
-  const STATUS_OPTIONS = [
-    { label: t("admin.productsPage.filter.options.all"), value: "" },
-    { label: t("admin.productsPage.filter.options.active"), value: "true" },
-    {
-      label: t("admin.productsPage.filter.options.inactive"),
-      value: "false",
-    },
-  ];
-
-  const ORDER_OPTIONS = [
-    {
-      label: t("admin.productsPage.filter.options.dateDesc"),
-      value: "desc",
-    },
-    {
-      label: t("admin.productsPage.filter.options.dateAsc"),
-      value: "asc",
-    },
-  ];
 
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,7 +99,7 @@ export default function AdminProductPage() {
   // delete
   const deleteProduct = async (id: string) => {
     try {
-      await fetch(`/api/admin/products/${id}`, {
+      await fetch(`/api/admin/products/${id}/delete`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -153,6 +107,62 @@ export default function AdminProductPage() {
     } catch (error) {
       console.error(error);
       alert("Failed to delete");
+    }
+  };
+
+  const handleDisabled = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/disabled`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to disable product");
+      }
+
+      await fetchProducts(appliedFilter, page);
+
+      toast.success(
+        locale === "vi"
+          ? "Đã ẩn sản phẩm thành công"
+          : "Product disabled successfully",
+      );
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        locale === "vi" ? "Không thể ẩn sản phẩm" : "Failed to disable product",
+      );
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/restore`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to restore product");
+      }
+
+      await fetchProducts(appliedFilter, page);
+
+      toast.success(
+        locale === "vi"
+          ? "Đã khôi phục sản phẩm thành công"
+          : "Product restored successfully",
+      );
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        locale === "vi"
+          ? "Không thể khôi phục sản phẩm"
+          : "Failed to restore product",
+      );
     }
   };
 
@@ -171,17 +181,6 @@ export default function AdminProductPage() {
     fetchProducts(DEFAULT_FILTER, 1);
   };
 
-  //check filter
-  const isFilterActive =
-    appliedFilter.is_active !== undefined ||
-    appliedFilter.order !== DEFAULT_FILTER.order ||
-    appliedFilter.limit !== DEFAULT_FILTER.limit;
-
-  const activeFilterCount =
-    (appliedFilter.is_active !== undefined ? 1 : 0) +
-    (appliedFilter.order !== DEFAULT_FILTER.order ? 1 : 0) +
-    (appliedFilter.limit !== DEFAULT_FILTER.limit ? 1 : 0);
-
   return (
     <div className="space-y-6">
       <div>
@@ -194,151 +193,22 @@ export default function AdminProductPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
         {/* Card header */}
-        <div className="flex items-center justify-between border-b px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Popover
-              onOpenChange={(open) => open && setTempFilter(appliedFilter)}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-card hover:bg-sand-100"
-                >
-                  <Filter className="h-4 w-4" />
-                  {t("button.filter")}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-white leading-none">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="w-64">
-                <div className="grid gap-4">
-                  {/* Status filter */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.productsPage.filter.status")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={
-                        tempFilter.is_active === undefined
-                          ? ""
-                          : String(tempFilter.is_active)
-                      }
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          is_active: v === "" ? undefined : v === "true",
-                        }));
-                      }}
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Order */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.productsPage.filter.order")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={tempFilter.order}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          order: e.target.value as FilterState["order"],
-                        }))
-                      }
-                    >
-                      {ORDER_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Limit per page */}
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium leading-none">
-                      {t("admin.productsPage.filter.limit")}
-                    </p>
-                    <select
-                      className="border rounded-md h-9 px-2 w-full text-sm"
-                      value={String(tempFilter.limit)}
-                      onChange={(e) =>
-                        setTempFilter((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value, 10),
-                        }))
-                      }
-                    >
-                      {LIMIT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <PopoverClose asChild>
-                    <Button variant={"default"} size="sm" onClick={handleApply}>
-                      {t("button.apply")}
-                    </Button>
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
-
-            <div className="group relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={
-                  locale === "vi" ? "Tìm sản phẩm..." : "Search products..."
-                }
-                className="h-9 w-56 border-primary/30 hover:border-primary/50 focus:border-primary focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 bg-white pl-8 pr-8 text-sm transition-colors"
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch("")}
-                  aria-label={locale === "vi" ? "Xóa tìm kiếm" : "Clear search"}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
-            {isFilterActive && (
-              <button
-                onClick={handleClearFilter}
-                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-              >
-                {t("button.clearFilter")}
-              </button>
-            )}
-          </div>
-
-          <CreateProductModal onCreated={() => fetchProducts(appliedFilter)} />
-        </div>
+        <ProductFilter
+          appliedFilter={appliedFilter}
+          tempFilter={tempFilter}
+          setTempFilter={setTempFilter}
+          search={search}
+          setSearch={setSearch}
+          onApply={handleApply}
+          onClearFilter={handleClearFilter}
+          onCreated={() => fetchProducts(appliedFilter)}
+        />
 
         {/* Table */}
         <Table>
-          <TableHeader className="bg-sand">
+          <TableHeader className="bg-gradient-to-br from-white to-[#FAF6F0]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}
@@ -418,15 +288,15 @@ export default function AdminProductPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={product.is_active ? "success" : "warning"}>
-                      {product.is_active
-                        ? locale === "vi"
-                          ? "Hoạt động"
-                          : "Active"
-                        : locale === "vi"
-                          ? "Không hoạt động"
-                          : "Inactive"}
-                    </Badge>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatStatusBooleanColor(
+                        product.is_active,
+                      )}`}
+                    >
+                      {t(
+                        `admin.storeInventoriesPage.status.${product.is_active ? "active" : "inactive"}`,
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(product.created_at).toLocaleDateString("vi-VN")}
@@ -437,14 +307,41 @@ export default function AdminProductPage() {
                         product={product}
                         onUpdated={() => fetchProducts(appliedFilter, page)}
                       />
-                      <Button
-                        onClick={() => deleteProduct(product.id)}
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      {product.is_active ? (
+                        <Button
+                          onClick={() => handleDisabled(product.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                          aria-label="Disable product"
+                          title="Disable product"
+                        >
+                          <Ban className="h-5 w-5" />
+                        </Button>
+                      ) : (
+                        <div className="flex gap-2 items-center">
+                          <Button
+                            onClick={() => handleRestore(product.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                            aria-label="Restore product"
+                            title="Restore product"
+                          >
+                            <RotateCcw className="h-5 w-5" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteProduct(product.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            aria-label="Delete product"
+                            title="Delete product"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

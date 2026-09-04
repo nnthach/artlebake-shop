@@ -136,8 +136,7 @@ export default function UpdateProductModal({
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const currentIngredients = (product as any).ingredients as
-          | IngredientItem[]
-          | undefined;
+          IngredientItem[] | undefined;
 
         reset({
           name_vi: viData.name ?? "",
@@ -261,8 +260,13 @@ export default function UpdateProductModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Pencil className="h-3.5 w-3.5" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          title="Update product"
+        >
+          <Pencil className="h-5 w-5" />
         </Button>
       </DialogTrigger>
 
@@ -369,7 +373,9 @@ export default function UpdateProductModal({
 
                 <div className="flex h-10 items-center justify-between rounded-md border px-3">
                   <span className="text-sm text-muted-foreground">
-                    {t("admin.productsPage.updateModal.fields.markAsBestseller")}
+                    {t(
+                      "admin.productsPage.updateModal.fields.markAsBestseller",
+                    )}
                   </span>
 
                   <Switch
