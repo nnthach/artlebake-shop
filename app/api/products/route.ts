@@ -1,4 +1,4 @@
-import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
+// import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { getSearchParams } from "@/utils/logic-get";
 import { IngredientItem, ProductIngredientRow, RawProduct } from "@/types";
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
       page,
       limit,
       is_bestseller,
-      search,
+      // search,
     } = getSearchParams(req);
 
     const validSortBy = ["name", "created_at"].includes(sort_by)
@@ -68,37 +68,37 @@ export async function GET(req: NextRequest) {
     const to = from + limitNum - 1;
 
     // 3. Generate redis cache key
-    const cacheKey = generateCacheKey(
-      "products",
-      search,
-      limitNum,
-      pageNum,
-      validSortBy,
-      ascending ? "asc" : "desc",
-      locale,
-      is_active === "true" ? true : is_active === "false" ? false : null,
-      is_bestseller === "true"
-        ? true
-        : is_bestseller === "false"
-          ? false
-          : null,
-      category_id || null,
-      null,
-      null,
-    );
+    // const cacheKey = generateCacheKey(
+    //   "products",
+    //   search,
+    //   limitNum,
+    //   pageNum,
+    //   validSortBy,
+    //   ascending ? "asc" : "desc",
+    //   locale,
+    //   is_active === "true" ? true : is_active === "false" ? false : null,
+    //   is_bestseller === "true"
+    //     ? true
+    //     : is_bestseller === "false"
+    //       ? false
+    //       : null,
+    //   category_id || null,
+    //   null,
+    //   null,
+    // );
 
     // 4. GET redis cache
-    const cached = await getCache<ProductListResponse>(cacheKey);
+    // const cached = await getCache<ProductListResponse>(cacheKey);
 
-    if (cached) {
-      return NextResponse.json(
-        {
-          success: true,
-          ...cached,
-        },
-        { status: 200 },
-      );
-    }
+    // if (cached) {
+    //   return NextResponse.json(
+    //     {
+    //       success: true,
+    //       ...cached,
+    //     },
+    //     { status: 200 },
+    //   );
+    // }
 
     // 5. CREATE Query database
     let query = supabase
@@ -169,7 +169,7 @@ export async function GET(req: NextRequest) {
     };
 
     // 9. SET CACHE REDIS
-    void setCache(cacheKey, responseData, 5 * 60 * 60);
+    // void setCache(cacheKey, responseData, 5 * 60 * 60);
 
     // 10. RESPONSE
     return NextResponse.json(
