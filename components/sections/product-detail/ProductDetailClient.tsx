@@ -194,14 +194,14 @@ export default function ProductDetailClient({
           </p>
 
           {product.ingredients.length > 0 && (
-            <div className="mx-auto mt-10 max-w-sm text-left">
-              <h2 className="flex items-center gap-2 font-serif text-base sm:text-lg font-bold text-charcoal">
+            <div className="mx-auto mt-10 max-w-sm text-center sm:text-left">
+              <h2 className="flex justify-center sm:justify-start gap-2 font-serif text-base sm:text-lg font-bold text-charcoal">
                 <Wheat className="h-4 w-4 text-primary" />
                 {t("productDetailPage.ingredients")}
               </h2>
-              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm text-charcoal/60">
+              <ul className="mx-auto sm:mx-0 mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm text-charcoal/60 sm:w-full w-[80%]">
                 {product.ingredients.map((ingredient) => (
-                  <li key={ingredient.id} className="flex items-center gap-2">
+                  <li key={ingredient.id} className="flex justify-start gap-2">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                     {ingredient.name?.[locale as "en" | "vi"] ??
                       ingredient.name.vi}

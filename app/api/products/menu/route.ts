@@ -11,6 +11,7 @@ interface DailyInventoryRow {
   planned_quantity: number;
   remaining_quantity: number;
   status: string;
+  is_active: boolean;
 }
 
 interface PreorderItemRow {
@@ -110,7 +111,8 @@ export async function GET(req: NextRequest) {
           product_id,
           planned_quantity,
           remaining_quantity,
-          status
+          status,
+          is_active
         `,
       )
       .eq("business_date", businessDate);
@@ -193,7 +195,12 @@ export async function GET(req: NextRequest) {
             inventory?.remaining_quantity && inventory.remaining_quantity > 0
               ? inventory.status
               : "out_of_stock",
-          available: (inventory?.remaining_quantity ?? 0) > 0,
+          available:
+            inventory?.is_active === true &&
+            inventory?.status !== "draft" &&
+            inventory?.status !== "closed" &&
+            inventory?.status !== "out_of_stock" &&
+            (inventory?.remaining_quantity ?? 0) > 0,
         },
         // ------------------------------
         // Preorder availability

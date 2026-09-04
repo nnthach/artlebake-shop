@@ -205,7 +205,7 @@ export default function CreateStoreInventoryModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={"default"} size="sm" className="gap-2">
+        <Button variant={"default"} size="sm">
           <Plus className="h-4 w-4" />
           {t("staff.storeInventoriesPage.createModal.trigger")}
         </Button>

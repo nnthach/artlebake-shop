@@ -139,7 +139,7 @@ export default function CalendarSchedule({
         </div>
 
         {/* Week days */}
-        <div className="grid grid-cols-7 border-b border-zinc-200 bg-zinc-100">
+        <div className="grid grid-cols-7 border-b border-zinc-200 bg-sand">
           {weekDays.map((day) => (
             <div
               key={day}

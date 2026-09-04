@@ -27,7 +27,7 @@ export default function ProductCard({
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
-  const hasDaily = (product.daily?.remaining_quantity ?? 0) > 0;
+  const hasDaily = product.daily?.available ?? false;
   const hasPreorder = product.preorder?.available ?? false;
   const isAvailable = hasDaily || hasPreorder;
 

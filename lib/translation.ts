@@ -815,6 +815,7 @@ export const translations = {
             remainQuantity: "Remain Quantity",
             updatedBy: "Updated By",
             status: "Status",
+            isActive: "Is Active",
             businessDate: "Business Date",
           },
         },
@@ -823,6 +824,9 @@ export const translations = {
           out_of_stock: "Out of Stock",
           low_stock: "Low Stock",
           draft: "Draft",
+          closed: "Closed",
+          active: "Active",
+          inactive: "Inactive",
           unknown: "Unknown",
         },
         storeSelect: {
@@ -1033,6 +1037,10 @@ export const translations = {
           subtotal: "Subtotal",
           shippingFee: "Shipping fee",
           total: "Total payment",
+        },
+        footer: {
+          cancel: "Cancel order",
+          delivered: "Mark as delivered",
         },
         state: {
           loading: "Loading...",
@@ -1931,6 +1939,7 @@ export const translations = {
             remainQuantity: "Số lượng còn lại",
             updatedBy: "Người cập nhật",
             status: "Trạng thái",
+            isActive: "Đang hoạt động",
             businessDate: "Ngày bán",
           },
         },
@@ -1939,6 +1948,9 @@ export const translations = {
           out_of_stock: "Hết hàng",
           low_stock: "Sắp hết hàng",
           draft: "Bản nháp",
+          closed: "Đã đóng",
+          active: "Đang hoạt động",
+          inactive: "Không hoạt động",
           unknown: "Không xác định",
         },
         storeSelect: {
@@ -2139,6 +2151,10 @@ export const translations = {
           subtotal: "Tạm tính",
           shippingFee: "Phí giao hàng",
           total: "Tổng thanh toán",
+        },
+        footer: {
+          cancel: "Hủy đơn",
+          delivered: "Đã giao hàng",
         },
         state: {
           loading: "Đang tải...",

@@ -34,7 +34,7 @@ export default function OrderTypeSelect({
           disabled={isSubmitting}
           onClick={() => onChange("available")}
           className={cn(
-            "flex items-center gap-3 rounded-xl border p-4 text-left transition",
+            "flex items-center gap-2 rounded-xl border p-3 text-left transition sm:gap-3 sm:p-4",
             orderType === "available"
               ? "border-primary bg-primary/5 ring-1 ring-primary"
               : "border-charcoal/10 hover:border-charcoal/20",
@@ -42,21 +42,21 @@ export default function OrderTypeSelect({
         >
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full sm:h-8 sm:w-8",
               orderType === "available"
                 ? "bg-primary text-white"
                 : "bg-charcoal/5 text-charcoal/50",
             )}
           >
-            <PackageCheck className="h-5 w-5" />
+            <PackageCheck className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
 
           <div>
-            <p className="font-semibold text-charcoal">
+            <p className="text-sm font-semibold text-charcoal sm:text-base">
               {locale === "vi" ? "Có sẵn" : "Available"}
             </p>
 
-            <p className="mt-1 text-xs text-charcoal/50">
+            <p className="mt-0.5 text-xs text-charcoal/50">
               {locale === "vi"
                 ? "Nhận bánh trong ngày"
                 : "Receive available products"}
@@ -69,7 +69,7 @@ export default function OrderTypeSelect({
           disabled={isSubmitting}
           onClick={() => onChange("preorder")}
           className={cn(
-            "flex items-center gap-3 rounded-xl border p-4 text-left transition",
+            "flex items-center gap-2 rounded-xl border p-3 text-left transition sm:gap-3 sm:p-4",
             orderType === "preorder"
               ? "border-primary bg-primary/5 ring-1 ring-primary"
               : "border-charcoal/10 hover:border-charcoal/20",
@@ -77,21 +77,21 @@ export default function OrderTypeSelect({
         >
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+              "flex h-7 w-7 shrink-0 items-center justify-center rounded-full sm:h-8 sm:w-8",
               orderType === "preorder"
                 ? "bg-primary text-white"
                 : "bg-charcoal/5 text-charcoal/50",
             )}
           >
-            <CalendarClock className="h-5 w-5" />
+            <CalendarClock className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
 
           <div>
-            <p className="font-semibold text-charcoal">
+            <p className="text-sm font-semibold text-charcoal sm:text-base">
               {locale === "vi" ? "Đặt trước" : "Pre-order"}
             </p>
 
-            <p className="mt-1 text-xs text-charcoal/50">
+            <p className="mt-0.5 text-xs text-charcoal/50">
               {locale === "vi"
                 ? "Chọn ngày nhận bánh"
                 : "Choose your preferred date"}
@@ -102,4 +102,3 @@ export default function OrderTypeSelect({
     </section>
   );
 }
-

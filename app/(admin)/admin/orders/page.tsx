@@ -357,7 +357,7 @@ export default function AdminOrderPage() {
 
         {/* Table */}
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-sand">
             <TableRow className="hover:bg-transparent">
               <TableHead className="">
                 {t("admin.orderPage.table.columns.orderCode")}
@@ -470,7 +470,10 @@ export default function AdminOrderPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
-                      <OrderDetailSheet orderId={order.id} />
+                      <OrderDetailSheet
+                        orderId={order.id}
+                        onUpdated={() => fetchOrders()}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

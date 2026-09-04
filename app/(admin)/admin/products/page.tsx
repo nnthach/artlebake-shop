@@ -338,7 +338,7 @@ export default function AdminProductPage() {
 
         {/* Table */}
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-sand">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}

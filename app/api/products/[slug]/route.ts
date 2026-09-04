@@ -102,7 +102,8 @@ export async function GET(
         `
           planned_quantity,
           remaining_quantity,
-          status
+          status,
+          is_active
         `,
       )
       .eq("product_id", product.id)
@@ -177,7 +178,12 @@ export async function GET(
         planned_quantity: dailyInventory?.planned_quantity ?? 0,
         remaining_quantity: dailyInventory?.remaining_quantity ?? 0,
 
-        available: (dailyInventory?.remaining_quantity ?? 0) > 0,
+        available:
+          dailyInventory?.is_active === true &&
+          dailyInventory?.status !== "draft" &&
+          dailyInventory?.status !== "closed" &&
+          dailyInventory?.status !== "out_of_stock" &&
+          (dailyInventory?.remaining_quantity ?? 0) > 0,
       },
       // --------------------------------------
       // Preorder

@@ -31,6 +31,8 @@ import {
 } from "@/utils/format-status";
 import { useI18n } from "@/context/I18nContext";
 import { formatDateReverse, formatDateTime } from "@/utils/format-date";
+import { OrderEnum } from "@/enums/order-status.enum";
+import toast from "react-hot-toast";
 
 interface ProductTranslation {
   locale: string;
@@ -127,13 +129,18 @@ const getProductImage = (item: OrderItemDetail) =>
 
 interface OrderDetailSheetProps {
   orderId: string;
+  onUpdated?: () => void;
 }
 
-export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
+export default function OrderDetailSheet({
+  orderId,
+  onUpdated,
+}: OrderDetailSheetProps) {
   const { t, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -163,6 +170,84 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
 
     fetchOrder();
   }, [open, orderId, locale, t]);
+
+  const handleDelivered = async (orderId: string) => {
+    try {
+      setIsUpdating(true);
+      setError(null);
+
+      const response = await fetch(`/api/admin/orders/${orderId}/delivered`, {
+        method: "PATCH",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to update order status");
+      }
+
+      setOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: OrderEnum.Delivered,
+              delivered_at: data.data.delivered_at,
+            }
+          : prev,
+      );
+
+      onUpdated?.();
+
+      toast.success(
+        locale === "vi"
+          ? "Cập nhật trạng thái đơn hàng thành công"
+          : "Order status updated successfully",
+      );
+    } catch (error) {
+      console.error("Update order delivered error:", error);
+      setError(t("admin.orderDetailSheet.state.error"));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelled = async (orderId: string) => {
+    try {
+      setIsUpdating(true);
+      setError(null);
+
+      const response = await fetch(`/api/admin/orders/${orderId}/cancelled`, {
+        method: "PATCH",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to update order status");
+      }
+
+      setOrder((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: OrderEnum.Cancelled,
+              cancelled_at: data.data.cancelled_at,
+            }
+          : prev,
+      );
+      toast.success(
+        locale === "vi"
+          ? "Cập nhật trạng thái đơn hàng thành công"
+          : "Order status updated successfully",
+      );
+      onUpdated?.();
+    } catch (error) {
+      console.error("Update order cancelled error:", error);
+      setError(t("admin.orderDetailSheet.state.error"));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -331,42 +416,45 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
                       )}
                     </span>
                   </div>
+                  {order.order_type !== "available" && (
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Preorder Schedule Date (Hiển thị nếu là đơn preorder và có ngày giao/nhận) */}
+                      {order.order_type === "preorder" &&
+                        order.preorder_schedule?.date && (
+                          <div className="space-y-1 text-sm">
+                            <p className="text-sm text-grey-100">
+                              {t(
+                                "admin.orderDetailSheet.fulfillment.preorderDate",
+                              )}
+                            </p>
+                            <p className="font-semibold">
+                              {formatDateReverse(order.preorder_schedule.date)}
+                            </p>
+                          </div>
+                        )}
 
-                  <div className="grid grid-cols-1 gap-4">
-                    {/* Preorder Schedule Date (Hiển thị nếu là đơn preorder và có ngày giao/nhận) */}
-                    {order.order_type === "preorder" &&
-                      order.preorder_schedule?.date && (
+                      {/* Delivery Address (Chỉ hiển thị khi fulfillment_method === 'delivery') */}
+                      {order.fulfillment_method === "delivery" && (
                         <div className="space-y-1 text-sm">
                           <p className="text-sm text-grey-100">
                             {t(
-                              "admin.orderDetailSheet.fulfillment.preorderDate",
+                              "admin.orderDetailSheet.fulfillment.addressTitle",
                             )}
                           </p>
                           <p className="font-semibold">
-                            {formatDateReverse(order.preorder_schedule.date)}
+                            {[
+                              order.address,
+                              order.ward,
+                              order.district,
+                              order.city,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
                           </p>
                         </div>
                       )}
-
-                    {/* Delivery Address (Chỉ hiển thị khi fulfillment_method === 'delivery') */}
-                    {order.fulfillment_method === "delivery" && (
-                      <div className="space-y-1 text-sm">
-                        <p className="text-sm text-grey-100">
-                          {t("admin.orderDetailSheet.fulfillment.addressTitle")}
-                        </p>
-                        <p className="font-semibold">
-                          {[
-                            order.address,
-                            order.ward,
-                            order.district,
-                            order.city,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -454,15 +542,30 @@ export default function OrderDetailSheet({ orderId }: OrderDetailSheetProps) {
             </div>
 
             <SheetFooter className="flex w-full flex-row items-center justify-between border-t px-6 py-4">
-              <Button type="button" variant="outline" className="gap-2">
-                <X className="h-4 w-4" />
-                Hủy đơn
-              </Button>
+              {order.status !== OrderEnum.Cancelled && (
+                <Button
+                  disabled={isUpdating}
+                  onClick={() => handleCancelled(order.id)}
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  {t("admin.orderDetailSheet.footer.cancel")}
+                </Button>
+              )}
 
-              <Button type="button" className="gap-2">
-                <Check className="h-4 w-4" />
-                Đã giao hàng
-              </Button>
+              {order.status !== OrderEnum.Delivered && (
+                <Button
+                  disabled={isUpdating}
+                  onClick={() => handleDelivered(order.id)}
+                  type="button"
+                  className="gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  {t("admin.orderDetailSheet.footer.delivered")}
+                </Button>
+              )}
             </SheetFooter>
           </>
         ) : (

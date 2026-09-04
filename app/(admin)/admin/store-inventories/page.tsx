@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Filter, LayoutGrid, Loader2, Eye } from "lucide-react";
+import { Filter, LayoutGrid, Loader2, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -26,7 +26,10 @@ import CreateStoreInventoryModal from "@/components/sections/staff/store-invento
 import {
   formatDailyProductStatus,
   formatDailyProductStatusColor,
+  formatStatusBooleanColor,
 } from "@/utils/format-status";
+import { formatDateReverse } from "@/utils/format-date";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = [
   { label: "Tất cả", value: "" },
@@ -75,6 +78,8 @@ export default function AdminStoreInventoryPage() {
   const [stores, setStoreInventories] = useState<StoreInventoryRaw[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  // const [isPublishing, setIsPublishing] = useState(false);
   const [appliedFilter, setAppliedFilter] =
     useState<FilterState>(DEFAULT_FILTER);
   const [tempFilter, setTempFilter] = useState<FilterState>(DEFAULT_FILTER);
@@ -148,6 +153,122 @@ export default function AdminStoreInventoryPage() {
     resetPage();
     fetchStoreInventory(DEFAULT_FILTER, 1);
   };
+
+  const handleActive = async (inventoryId: string) => {
+    try {
+      setIsUpdating(true);
+
+      const response = await fetch(
+        `/api/admin/store-inventories/${inventoryId}/active`,
+        { method: "PATCH" },
+      );
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to update inventory status");
+      }
+
+      setStoreInventories((prev) =>
+        prev.map((inventory) =>
+          inventory.id === inventoryId
+            ? { ...inventory, is_active: true }
+            : inventory,
+        ),
+      );
+
+      toast.success(
+        locale === "vi"
+          ? "Mở bán hàng thành công"
+          : "Inventory activated",
+      );
+    } catch (error) {
+      console.error("Activate inventory error:", error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể cập nhật trạng thái hàng"
+          : "Unable to activate inventory",
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleInactive = async (inventoryId: string) => {
+    try {
+      setIsUpdating(true);
+
+      const response = await fetch(
+        `/api/admin/store-inventories/${inventoryId}/inactive`,
+        { method: "PATCH" },
+      );
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to update inventory status");
+      }
+
+      setStoreInventories((prev) =>
+        prev.map((inventory) =>
+          inventory.id === inventoryId
+            ? { ...inventory, is_active: false }
+            : inventory,
+        ),
+      );
+
+      toast.success(
+        locale === "vi"
+          ? "Đóng hàng bán thành công"
+          : "Inventory deactivated",
+      );
+    } catch (error) {
+      console.error("Deactivate inventory error:", error);
+      toast.error(
+        locale === "vi"
+          ? "Không thể cập nhật trạng thái hàng"
+          : "Unable to deactivate inventory",
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // const handlePublishAvailable = async () => {
+  //   try {
+  //     setIsPublishing(true);
+
+  //     const response = await fetch(
+  //       "/api/admin/store-inventories/publish-available",
+  //       { method: "PATCH" },
+  //     );
+  //     const data = await response.json();
+
+  //     if (!response.ok || !data.success) {
+  //       throw new Error(data.error || "Failed to publish inventories");
+  //     }
+
+  //     toast.success(
+  //       locale === "vi"
+  //         ? `Đã mở bán ${data.updated_count ?? 0} sản phẩm hôm nay`
+  //         : `${data.updated_count ?? 0} products published for today`,
+  //     );
+
+  //     if (selectedDate) {
+  //       setSelectedDate("");
+  //       resetPage();
+  //     } else {
+  //       fetchStoreInventory(appliedFilter, page);
+  //     }
+  //   } catch (error) {
+  //     console.error("Publish inventories error:", error);
+  //     toast.error(
+  //       locale === "vi"
+  //         ? "Không thể mở bán tồn kho hôm nay"
+  //         : "Unable to publish today's inventories",
+  //     );
+  //   } finally {
+  //     setIsPublishing(false);
+  //   }
+  // };
 
   //check filter
   const isFilterActive =
@@ -318,15 +439,27 @@ export default function AdminStoreInventoryPage() {
             )}
           </div>
 
-          <CreateStoreInventoryModal
-            onCreated={() => fetchStoreInventory(DEFAULT_FILTER, 1)}
-          />
+          <div className="flex items-center gap-3">
+            {/* <Button
+              size="sm"
+              disabled={isPublishing}
+              onClick={handlePublishAvailable}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <Unlock className="h-4 w-4" />
+              Publish Available
+            </Button> */}
+
+            <CreateStoreInventoryModal
+              onCreated={() => fetchStoreInventory(DEFAULT_FILTER, 1)}
+            />
+          </div>
         </div>
 
         {/* Table */}
         <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
+          <TableHeader className="bg-sand">
+            <TableRow className="hover:bg-sand">
               <TableHead className="w-12 text-center">
                 {t("admin.table.columns.no")}
               </TableHead>
@@ -346,6 +479,9 @@ export default function AdminStoreInventoryPage() {
                 {t("admin.storeInventoriesPage.table.columns.status")}
               </TableHead>
               <TableHead>
+                {t("admin.storeInventoriesPage.table.columns.isActive")}
+              </TableHead>
+              <TableHead>
                 {t("admin.storeInventoriesPage.table.columns.businessDate")}
               </TableHead>
               <TableHead className="text-right">
@@ -357,7 +493,7 @@ export default function AdminStoreInventoryPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
@@ -366,7 +502,7 @@ export default function AdminStoreInventoryPage() {
             ) : stores.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="py-20 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -421,17 +557,39 @@ export default function AdminStoreInventoryPage() {
                         )}
                       </span>
                     </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${formatStatusBooleanColor(
+                          storeInventory.is_active,
+                        )}`}
+                      >
+                        {t(
+                          `admin.storeInventoriesPage.status.${storeInventory.is_active ? "active" : "inactive"}`,
+                        )}
+                      </span>
+                    </TableCell>
                     <TableCell className="font-medium">
-                      {storeInventory.business_date ?? "-"}
+                      {formatDateReverse(storeInventory.business_date) ?? "-"}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
                         <Button
+                          disabled={isUpdating || !storeInventory.is_active}
+                          onClick={() => handleInactive(storeInventory.id)}
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                          className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-primary/10"
                         >
-                          <Eye className="h-3.5 w-3.5" />
+                          <Lock className="h-5 w-5" strokeWidth={2.5} />
+                        </Button>
+                        <Button
+                          disabled={isUpdating || storeInventory.is_active}
+                          onClick={() => handleActive(storeInventory.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-green-400 hover:text-green-600 hover:bg-green-600/10"
+                        >
+                          <Unlock className="h-5 w-5" strokeWidth={2.5} />
                         </Button>
                       </div>
                     </TableCell>

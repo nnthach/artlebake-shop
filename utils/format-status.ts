@@ -85,7 +85,7 @@ export const formatDailyProductStatusColor = (status: string): string => {
       return "bg-slate-100 text-slate-600 border-slate-200";
 
     case "closed":
-      return "bg-zinc-100 text-zinc-600 border-zinc-200";
+      return "bg-red-100 text-red-600 border-red-200";
 
     default:
       return "bg-gray-100 text-gray-600 border-gray-200";
@@ -125,6 +125,19 @@ export const formatStatusBoolean = (status: boolean): string => {
 
     case false:
       return "inactive";
+
+    default:
+      return status ? "active" : "inactive";
+  }
+};
+
+export const formatStatusActiveBoolean = (status: boolean): string => {
+  switch (status) {
+    case true:
+      return "active_online";
+
+    case false:
+      return "inactive_offline";
 
     default:
       return status ? "active" : "inactive";

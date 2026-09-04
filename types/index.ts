@@ -318,6 +318,7 @@ export interface StoreInventoryRaw {
   quantity: number;
   planned_quantity: number;
   remaining_quantity: number;
+  is_active: boolean;
   status: StoreInventoryItemStatusEnum;
   updated_at: string | null;
   created_at: string;

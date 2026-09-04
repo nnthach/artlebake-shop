@@ -1,5 +1,6 @@
+import { DailyInventoryStatusEnum } from "@/enums/daily-inventory-status.enum";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
-import { getSearchParams } from "@/utils/logic-get";
+import { getBusinessDate, getSearchParams } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -83,7 +84,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // check body
     const body = await req.json();
     const { items } = body;
 
@@ -94,30 +94,63 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // map items thành rows để upsert 1 lần
-    const rows = items.map(
-      (item: { product_id: string; quantity: number }) => ({
-        product_id: item.product_id,
-        planned_quantity: item.quantity,
-        updated_at: new Date().toISOString(),
-        business_date: new Date().toISOString().split("T")[0],
-        status: "draft",
-      }),
-    );
+    const businessDate = getBusinessDate();
 
-    const { error } = await supabaseAdmin
-      .from("daily_inventories")
-      .upsert(rows, {
-        onConflict: "product_id,business_date",
-      });
+    for (const item of items) {
+      const { product_id, quantity } = item;
 
-    if (error) throw error;
+      if (!product_id || !quantity || quantity <= 0) {
+        continue;
+      }
+
+      // Kiểm tra sản phẩm đã có inventory hôm nay chưa
+      const { data: existingInventory, error: findError } = await supabaseAdmin
+        .from("daily_inventories")
+        .select("id, planned_quantity, remaining_quantity, status")
+        .eq("product_id", product_id)
+        .eq("business_date", businessDate)
+        .maybeSingle();
+
+      if (findError) throw findError;
+
+      if (existingInventory) {
+        // Đã có -> cộng thêm số lượng
+        const { error: updateError } = await supabaseAdmin
+          .from("daily_inventories")
+          .update({
+            planned_quantity: existingInventory.planned_quantity + quantity,
+            remaining_quantity: existingInventory.remaining_quantity + quantity,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingInventory.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Chưa có -> tạo mới
+        const { error: insertError } = await supabaseAdmin
+          .from("daily_inventories")
+          .insert({
+            product_id,
+            planned_quantity: quantity,
+            remaining_quantity: quantity,
+            business_date: businessDate,
+            status: DailyInventoryStatusEnum.Available,
+            updated_at: new Date().toISOString(),
+          });
+
+        if (insertError) throw insertError;
+      }
+    }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Update inventory error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Internal Server Error" },
+      {
+        success: false,
+        error: "Internal Server Error",
+      },
       { status: 500 },
     );
   }
