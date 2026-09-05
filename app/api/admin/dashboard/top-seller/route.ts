@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
         `
           product_id,
           quantity,
+          product:products!inner (
+            id,
+            image_url
+          ),
           order:orders!inner (
             payment_status,
             created_at
@@ -61,7 +65,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 2. Get unique product IDs 
+    // 2. Get unique product IDs
     const productIds = Array.from(
       new Set(orderItems.map((item) => item.product_id)),
     );
@@ -91,6 +95,7 @@ export async function GET(req: NextRequest) {
       {
         product_id: string;
         product_name: string;
+        product_image: string;
         quantity_sold: number;
       }
     >();
@@ -98,7 +103,10 @@ export async function GET(req: NextRequest) {
     // map từng sp từ order items
     for (const item of orderItems) {
       const productId = item.product_id;
-
+      const product = Array.isArray(item.product)
+        ? item.product[0]
+        : item.product;
+      const productImage = product?.image_url?.[0] ?? "";
       const productName = productNameMap.get(productId) ?? "Unknown product";
 
       const existing = productMap.get(productId);
@@ -109,6 +117,7 @@ export async function GET(req: NextRequest) {
         productMap.set(productId, {
           product_id: productId,
           product_name: productName,
+          product_image: productImage,
           quantity_sold: Number(item.quantity),
         });
       }

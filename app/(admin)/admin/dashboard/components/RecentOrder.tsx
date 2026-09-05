@@ -14,7 +14,7 @@ import {
 import { useI18n } from "@/context/I18nContext";
 
 export default function RecentOrder() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [orders, setOrders] = useState<OrderItem[]>([]);
 
   // fetch orders from API
@@ -46,15 +46,13 @@ export default function RecentOrder() {
   }, [fetchOrders]);
 
   return (
-    <Card className="lg:col-span-2 border-border shadow-sm">
+    <Card className="lg:col-span-2 border border-zinc-200/80 shadow-md">
       <CardHeader>
         <CardTitle className="text-base font-semibold">
-          {locale === "vi" ? "Đơn hàng gần đây" : "Recent Orders"}
+          {t("admin.dashboardPage.recentOrders.title")}
         </CardTitle>
         <CardDescription>
-          {locale === "vi"
-            ? "5 đơn hàng mới nhất hôm nay"
-            : "5 most recent orders today"}
+          {t("admin.dashboardPage.recentOrders.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
@@ -63,19 +61,21 @@ export default function RecentOrder() {
             <thead>
               <tr className="border-b border-border">
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">
-                  {locale === "vi" ? "Mã đơn hàng" : "Order code"}
+                  {t("admin.dashboardPage.recentOrders.columns.orderCode")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">
-                  {locale === "vi" ? "Tên khách hàng" : "Customer name"}
+                  {t("admin.dashboardPage.recentOrders.columns.customerName")}
                 </th>
                 <th className="hidden px-6 py-3 text-left text-xs font-medium text-muted-foreground md:table-cell">
-                  {locale === "vi" ? "Tổng sản phẩm" : "Product quantity"}
+                  {t(
+                    "admin.dashboardPage.recentOrders.columns.productQuantity",
+                  )}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">
-                  {locale === "vi" ? "Trạng thái" : "Order status"}
+                  {t("admin.dashboardPage.recentOrders.columns.orderStatus")}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground">
-                  {locale === "vi" ? "Tổng tiền" : "Total"}
+                  {t("admin.dashboardPage.recentOrders.columns.total")}
                 </th>
               </tr>
             </thead>
@@ -104,7 +104,7 @@ export default function RecentOrder() {
                     </span>
                   </td>
                   <td className="px-6 py-3 text-right font-medium">
-                    {order.total}
+                    {order.total.toLocaleString("vi-VN")} đ
                   </td>
                 </tr>
               ))}

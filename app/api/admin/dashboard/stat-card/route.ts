@@ -1,4 +1,6 @@
+import { OrderEnum } from "@/enums/order-status.enum";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
+import { getMonthDateRange } from "@/utils/logic-get";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -10,23 +12,31 @@ export async function GET() {
       );
     }
 
-    // Current month in Vietnam timezone
-    const now = new Date();
+    // 1. get previous month range and current month range
+    const {
+      year,
+      month,
+      currentStart,
+      currentEnd,
+      previousStart,
+      previousEnd,
+    } = getMonthDateRange();
 
-    const vietnamDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Ho_Chi_Minh",
-    }).format(now);
+    // 2. Helper function calculate % growth
+    const calculateGrowth = (
+      current: number,
+      previous: number,
+    ): number | null => {
+      if (previous === 0) return null;
 
-    const [year, month] = vietnamDate.split("-").map(Number);
+      return Number((((current - previous) / previous) * 100).toFixed(2));
+    };
 
-    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    // =========================================================
+    // 3. CURRENT MONTH
+    // =========================================================
 
-    const nextMonth = new Date(year, month, 1);
-    const endDate = `${nextMonth.getFullYear()}-${String(
-      nextMonth.getMonth() + 1,
-    ).padStart(2, "0")}-01`;
-
-    // get total order of month
+    // 3.1 Total orders current month
     const { count: totalOrders, error: orderError } = await supabaseAdmin
       .from("orders")
       .select("id", {
@@ -34,19 +44,25 @@ export async function GET() {
         head: true,
       })
       .eq("payment_status", "paid")
-      .gte("created_at", `${startDate}T00:00:00+07:00`)
-      .lt("created_at", `${endDate}T00:00:00+07:00`);
+      .gte("created_at", currentStart)
+      .lt("created_at", currentEnd);
 
     if (orderError) throw orderError;
 
-    // get total revenue of month from order
+    // 3.2 Revenue current month
     const { data: revenueOrders, error: revenueError } = await supabaseAdmin
       .from("orders")
-      .select("total")
+      .select("id, created_at, total, payment_status")
       .eq("payment_status", "paid")
-      .gte("created_at", `${startDate}T00:00:00+07:00`)
-      .lt("created_at", `${endDate}T00:00:00+07:00`);
+      .gte("created_at", currentStart)
+      .lt("created_at", currentEnd);
 
+    console.log("STAT CARD RANGE", {
+      currentStart,
+      currentEnd,
+    });
+
+    console.log("STAT CARD ORDERS", revenueOrders);
     if (revenueError) throw revenueError;
 
     const totalRevenue = (revenueOrders ?? []).reduce(
@@ -54,21 +70,21 @@ export async function GET() {
       0,
     );
 
-    // get total product sold of month from order
+    // 3.2 Products sold current month
     const { data: orderItems, error: orderItemsError } = await supabaseAdmin
       .from("order_items")
       .select(
         `
-          quantity,
-          order:orders!inner (
-            payment_status,
-            created_at
-          )
-        `,
+            quantity,
+            order:orders!inner (
+              payment_status,
+              created_at
+            )
+          `,
       )
       .eq("order.payment_status", "paid")
-      .gte("order.created_at", `${startDate}T00:00:00+07:00`)
-      .lt("order.created_at", `${endDate}T00:00:00+07:00`);
+      .gte("order.created_at", currentStart)
+      .lt("order.created_at", currentEnd);
 
     if (orderItemsError) throw orderItemsError;
 
@@ -77,17 +93,90 @@ export async function GET() {
       0,
     );
 
-    // get total new user of month
-    const { count: totalNewUsers, error: userError } = await supabaseAdmin
-      .from("users")
-      .select("id", {
-        count: "exact",
-        head: true,
-      })
-      .gte("created_at", `${startDate}T00:00:00+07:00`)
-      .lt("created_at", `${endDate}T00:00:00+07:00`);
+    // =========================================================
+    // 4. PREVIOUS MONTH
+    // =========================================================
 
-    if (userError) throw userError;
+    // 4.1 Previous month orders
+    const { count: previousTotalOrders, error: previousOrderError } =
+      await supabaseAdmin
+        .from("orders")
+        .select("id", {
+          count: "exact",
+          head: true,
+        })
+        .eq("payment_status", "paid")
+        .gte("created_at", previousStart)
+        .lt("created_at", previousEnd);
+
+    if (previousOrderError) throw previousOrderError;
+
+    // 4.2 Previous month revenue
+    const { data: previousRevenueOrders, error: previousRevenueError } =
+      await supabaseAdmin
+        .from("orders")
+        .select("total")
+        .eq("payment_status", "paid")
+        .gte("created_at", previousStart)
+        .lt("created_at", previousEnd);
+
+    if (previousRevenueError) throw previousRevenueError;
+
+    const previousTotalRevenue = (previousRevenueOrders ?? []).reduce(
+      (sum, order) => sum + Number(order.total || 0),
+      0,
+    );
+
+    // 4.3 Previous month products sold
+    const { data: previousOrderItems, error: previousOrderItemsError } =
+      await supabaseAdmin
+        .from("order_items")
+        .select(
+          `
+          quantity,
+          order:orders!inner (
+            payment_status,
+            created_at
+          )
+        `,
+        )
+        .eq("order.payment_status", "paid")
+        .gte("order.created_at", previousStart)
+        .lt("order.created_at", previousEnd);
+
+    if (previousOrderItemsError) throw previousOrderItemsError;
+
+    const previousTotalProductsSold = (previousOrderItems ?? []).reduce(
+      (sum, item) => sum + Number(item.quantity || 0),
+      0,
+    );
+
+    // =========================================================
+    // 5. GROWTH
+    // =========================================================
+
+    const ordersGrowth = calculateGrowth(
+      totalOrders ?? 0,
+      previousTotalOrders ?? 0,
+    );
+
+    const revenueGrowth = calculateGrowth(totalRevenue, previousTotalRevenue);
+
+    const productsSoldGrowth = calculateGrowth(
+      totalProductsSold,
+      previousTotalProductsSold,
+    );
+
+    const { count: unshippedOrder, error: unshippedOrderError } =
+      await supabaseAdmin
+        .from("orders")
+        .select("id", {
+          count: "exact",
+          head: true,
+        })
+        .eq("status", OrderEnum.Confirmed);
+
+    if (unshippedOrderError) throw unshippedOrderError;
 
     return NextResponse.json(
       {
@@ -96,16 +185,27 @@ export async function GET() {
           total_orders: totalOrders ?? 0,
           total_revenue: totalRevenue,
           total_products_sold: totalProductsSold,
-          total_new_users: totalNewUsers ?? 0,
+          unshipped_orders: unshippedOrder ?? 0,
+
+          growth: {
+            total_orders: ordersGrowth,
+            total_revenue: revenueGrowth,
+            total_products_sold: productsSoldGrowth,
+          },
+
           month: `${year}-${String(month).padStart(2, "0")}`,
         },
       },
       { status: 200 },
     );
   } catch (error) {
-    console.error("Fetch orders error:", error);
+    console.error("Fetch dashboard stats error:", error);
+
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      {
+        success: false,
+        error: "Internal server error",
+      },
       { status: 500 },
     );
   }

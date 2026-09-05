@@ -27,3 +27,16 @@ export function formatDateReverse(date: string): string {
   const [year, month, day] = date.split("-");
   return `${day}-${month}-${year}`;
 }
+
+export function formatDateChart(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+export function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}

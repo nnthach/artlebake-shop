@@ -92,7 +92,9 @@ export default function AdminIngredientPage() {
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể xóa nguyên liệu" : "Failed to delete ingredient",
+        locale === "vi"
+          ? "Không thể xóa nguyên liệu"
+          : "Failed to delete ingredient",
       );
     }
   };
@@ -161,7 +163,7 @@ export default function AdminIngredientPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeInUp">
       <div>
         <h1 className="text-2xl font-bold text-primary">
           {t("admin.ingredientsPage.headerTitle.title")}
@@ -172,7 +174,7 @@ export default function AdminIngredientPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+      <div className="rounded-xl border border-zinc-100 bg-white shadow-md">
         {/* Card header */}
         <IngredientFilter
           appliedFilter={appliedFilter}

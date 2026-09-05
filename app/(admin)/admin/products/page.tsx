@@ -182,7 +182,7 @@ export default function AdminProductPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeInUp">
       <div>
         <h1 className="text-2xl font-bold text-primary">
           {t("admin.productsPage.headerTitle.title")}
@@ -193,7 +193,7 @@ export default function AdminProductPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+      <div className="rounded-xl border border-zinc-100 bg-white shadow-md">
         {/* Card header */}
         <ProductFilter
           appliedFilter={appliedFilter}

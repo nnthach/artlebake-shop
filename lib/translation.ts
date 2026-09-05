@@ -422,6 +422,83 @@ export const translations = {
           title: "Dashboard",
           subtitle: "Overview of Artle Bakeshop's activity",
         },
+        statCard: {
+          monthlyOrders: {
+            label: "Orders in the month",
+          },
+          monthlyRevenue: {
+            label: "Monthly revenue",
+          },
+          productsSold: {
+            label: "Products sold",
+          },
+          unshippedOrders: {
+            label: "Unshipped orders",
+            subtext: "Needs attention",
+          },
+          compare: {
+            noData: "No comparison data",
+            zero: "0% vs previous month",
+            vsPreviousMonth: "vs previous month",
+          },
+        },
+        recentOrders: {
+          title: "Recent orders",
+          subtitle: "5 most recent orders today",
+          columns: {
+            orderCode: "Order code",
+            customerName: "Customer name",
+            productQuantity: "Product quantity",
+            orderStatus: "Order status",
+            total: "Total",
+          },
+        },
+        topSeller: {
+          title: "Top seller",
+          subtitle: "Top 5 products this month",
+          sold: "sold",
+        },
+        totalOrderChart: {
+          title: "Total orders sold by",
+          viewLabel: {
+            week: "this week",
+            month: "this month",
+            year: "this year",
+          },
+          unit: "orders",
+          tooltip: "Orders",
+          filter: {
+            week: "By week",
+            month: "By month",
+            year: "By year",
+          },
+        },
+        totalRevenueChart: {
+          title: "Total revenue by",
+          viewLabel: {
+            week: "this week",
+            month: "this month",
+            year: "this year",
+          },
+          unit: "VND",
+          tooltip: "Revenue",
+        },
+        orderStatusChart: {
+          title: "Order status by",
+          viewLabel: {
+            week: "this week",
+            month: "this month",
+            year: "this year",
+          },
+          unit: "orders",
+          tooltip: "Orders",
+          status: {
+            confirmed: "Confirmed",
+            delivered: "Delivered",
+            pending: "Pending",
+            cancelled: "Cancelled",
+          },
+        },
       },
       preorderSchedulePage: {
         headerTitle: {
@@ -1560,6 +1637,83 @@ export const translations = {
         headerTitle: {
           title: "Tổng quan",
           subtitle: "Tổng quan hoạt động của Artle Bakeshop",
+        },
+        statCard: {
+          monthlyOrders: {
+            label: "Đơn hàng trong tháng",
+          },
+          monthlyRevenue: {
+            label: "Doanh thu tháng",
+          },
+          productsSold: {
+            label: "Sản phẩm đã bán",
+          },
+          unshippedOrders: {
+            label: "Đơn hàng chưa giao",
+            subtext: "Cần xử lý ngay",
+          },
+          compare: {
+            noData: "Không có dữ liệu so sánh",
+            zero: "0% so với tháng trước",
+            vsPreviousMonth: "so với tháng trước",
+          },
+        },
+        recentOrders: {
+          title: "Đơn hàng gần đây",
+          subtitle: "5 đơn hàng mới nhất hôm nay",
+          columns: {
+            orderCode: "Mã đơn hàng",
+            customerName: "Tên khách hàng",
+            productQuantity: "Tổng sản phẩm",
+            orderStatus: "Trạng thái",
+            total: "Tổng tiền",
+          },
+        },
+        topSeller: {
+          title: "Sản phẩm bán chạy",
+          subtitle: "Top 5 sản phẩm tháng này",
+          sold: "đã bán",
+        },
+        totalOrderChart: {
+          title: "Tổng đơn bán hàng theo",
+          viewLabel: {
+            week: "tuần này",
+            month: "tháng này",
+            year: "năm nay",
+          },
+          unit: "đơn",
+          tooltip: "Đơn hàng",
+          filter: {
+            week: "Theo tuần",
+            month: "Theo tháng",
+            year: "Theo năm",
+          },
+        },
+        totalRevenueChart: {
+          title: "Tổng doanh thu theo",
+          viewLabel: {
+            week: "tuần này",
+            month: "tháng này",
+            year: "năm nay",
+          },
+          unit: "₫",
+          tooltip: "Doanh thu",
+        },
+        orderStatusChart: {
+          title: "Trạng thái đơn hàng theo",
+          viewLabel: {
+            week: "tuần này",
+            month: "tháng này",
+            year: "năm nay",
+          },
+          unit: "đơn",
+          tooltip: "Đơn hàng",
+          status: {
+            confirmed: "Đã xác nhận",
+            delivered: "Đã giao",
+            pending: "Chờ xử lý",
+            cancelled: "Đã hủy",
+          },
         },
       },
       preorderSchedulePage: {

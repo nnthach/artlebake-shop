@@ -89,7 +89,9 @@ export default function AdminCategoryPage() {
     } catch (error) {
       console.error(error);
       toast.error(
-        locale === "vi" ? "Không thể xóa danh mục" : "Failed to delete category",
+        locale === "vi"
+          ? "Không thể xóa danh mục"
+          : "Failed to delete category",
       );
     }
   };
@@ -158,7 +160,7 @@ export default function AdminCategoryPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeInUp">
       <div>
         <h1 className="text-2xl font-bold text-primary">
           {t("admin.categoriesPage.headerTitle.title")}
@@ -169,7 +171,7 @@ export default function AdminCategoryPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+      <div className="rounded-xl border border-zinc-100 bg-white shadow-md">
         <CategoryFilter
           appliedFilter={appliedFilter}
           tempFilter={tempFilter}

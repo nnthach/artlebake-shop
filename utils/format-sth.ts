@@ -17,3 +17,13 @@ export function formatToSlug(text: string): string {
     .replace(/[^\w-]+/g, "") // Xóa ký tự đặc biệt
     .replace(/--+/g, "-"); // Gộp nhiều dấu - thành 1
 }
+
+export function formatLabelChart(date: Date, type: "day") {
+  if (type === "day") {
+    return `${String(date.getDate()).padStart(2, "0")}/${String(
+      date.getMonth() + 1,
+    ).padStart(2, "0")}`;
+  }
+
+  return "";
+}

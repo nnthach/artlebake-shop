@@ -135,7 +135,7 @@ export default function AdminPreOrderItemPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeInUp">
       <div>
         <h1 className="text-2xl font-bold text-primary">
           {t("admin.preorderItemPage.headerTitle.title")}
@@ -146,7 +146,7 @@ export default function AdminPreOrderItemPage() {
       </div>
 
       {/* Main card */}
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+      <div className="rounded-xl border border-zinc-100 bg-white shadow-md">
         {/* Card header */}
         <PreOrderItemFilter
           appliedFilter={appliedFilter}

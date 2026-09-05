@@ -110,7 +110,7 @@ export default function AdminOrderPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeInUp">
       <div>
         <h1 className="text-2xl font-bold text-primary">
           {t("admin.orderPage.headerTitle.title")}
@@ -120,7 +120,7 @@ export default function AdminOrderPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-white shadow-md">
+      <div className="rounded-xl border border-zinc-100 bg-white shadow-md">
         {/* Card header */}
         <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-4">
           <OrderFilter
