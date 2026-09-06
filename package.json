@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "email:dev": "email dev",
-    "worker:dev": "tsx worker/src/index.ts"
+    "worker:dev": "tsx worker/src/index.ts",
+    "worker:start": "tsx worker/src/index.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
