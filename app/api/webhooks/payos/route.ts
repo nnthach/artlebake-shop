@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 6. PayOS requires HTTP 200
+    // 7. PayOS requires HTTP 200
     return NextResponse.json({
       error: 0,
       message: "success",

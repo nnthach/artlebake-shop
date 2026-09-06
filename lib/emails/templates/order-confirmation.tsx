@@ -1,3 +1,4 @@
+import React from "react";
 import { OrderConfirmationEmailProps } from "../../../types/form-type";
 import { formatDateReverse, formatDateTime } from "../../../utils/format-date";
 import {

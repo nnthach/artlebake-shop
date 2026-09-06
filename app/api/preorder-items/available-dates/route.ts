@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase";
 import { getPreorderDateRange } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -18,10 +18,7 @@ interface AvailableDate {
 }
 
 export async function GET(request: NextRequest) {
-  const res = new NextResponse();
   try {
-    const supabase = await createSupabaseServerClient(request, res);
-
     const { searchParams } = new URL(request.url);
 
     const productIds = searchParams
@@ -39,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     // Get preorder items
     const { data: preorderItemsData, error: preorderItemsError } =
-      await supabase
+      await supabaseAdmin
         .from("preorder_items")
         .select("product_id, schedule_id")
         .in("product_id", productIds);
@@ -75,7 +72,7 @@ export async function GET(request: NextRequest) {
       getPreorderDateRange();
 
     // Get schedules
-    const { data: schedulesData, error: schedulesError } = await supabase
+    const { data: schedulesData, error: schedulesError } = await supabaseAdmin
       .from("preorder_schedules")
       .select("id, date, status")
       .in("id", scheduleIds)
