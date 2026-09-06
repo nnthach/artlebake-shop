@@ -1,4 +1,6 @@
+import { OrderQueueEnum } from "@/enums/order-queue.enum";
 import { payosConfig } from "@/lib/payos";
+import { orderQueue } from "@/lib/queues/order.queue";
 import { supabaseAdmin } from "@/lib/supabase";
 import { generateOrderCode, getBusinessDate } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
@@ -177,6 +179,18 @@ export async function POST(req: NextRequest) {
 
     // 4. CREATE PAYOS LINK
     const paymentLink = await payosConfig.paymentRequests.create(paymentData);
+
+    // 5. CANCEL ORDER AFTER 5 MINUTE
+    await orderQueue.add(
+      OrderQueueEnum.CancelExpirePaymentOrder,
+      {
+        orderId: order.id,
+      },
+      {
+        delay: 5 * 60 * 1000, // 5 phút
+        jobId: `cancel-order-${order.id}`,
+      },
+    );
 
     return NextResponse.json(
       {

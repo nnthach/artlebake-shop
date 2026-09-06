@@ -1,6 +1,6 @@
 export enum OrderQueueEnum {
   SendEmailOrderConfirmation = "send-order-confirmation-email",
-  Confirmed = "confirmed",
+  CancelExpirePaymentOrder = "cancel-expire-payment-order",
   Delivered = "delivered",
   Cancelled = "cancelled",
 }
