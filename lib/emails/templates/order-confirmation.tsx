@@ -1,5 +1,5 @@
-import { OrderConfirmationEmailProps } from "@/types/form-type";
-import { formatDateReverse } from "@/utils/format-date";
+import { OrderConfirmationEmailProps } from "../../../types/form-type";
+import { formatDateReverse, formatDateTime } from "../../../utils/format-date";
 import {
   Body,
   Container,
@@ -28,6 +28,7 @@ export function OrderConfirmationEmail({
   city,
   district,
   ward,
+  createdAt,
 }: OrderConfirmationEmailProps) {
   const deliveryAddress = [address, ward, district, city]
     .filter(Boolean)
@@ -75,17 +76,19 @@ export function OrderConfirmationEmail({
               <Text className="mt-6 text-[15px] font-semibold">
                 Order #{orderCode}
               </Text>
+
+              {createdAt && (
+                <Text className="mt-1 text-[13px] text-[#777777]">
+                  Order time: {formatDateTime(createdAt).full}
+                </Text>
+              )}
             </Section>
 
             {/* Preorder */}
             {orderType === "preorder" && preorderDate && (
               <Section className="my-6 rounded-lg bg-[#AF2D35] px-5 py-4">
-                <Text className="m-0 text-[14px] font-semibold">
-                  Pre-order Date
-                </Text>
-
-                <Text className="m-0 mt-2 text-[14px] leading-[22px] text-[#222222]">
-                  {formatDateReverse(preorderDate)}
+                <Text className="m-0 text-[14px] text-white font-semibold">
+                  Pre-order Date: {formatDateReverse(preorderDate)}
                 </Text>
               </Section>
             )}
@@ -241,11 +244,11 @@ export function OrderConfirmationEmail({
                   </Text>
 
                   <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
-                    1243 ABC Street, XYZ District, Ho Chi Minh City
+                    331 Ben Van Don, Vinh Hoi Ward, District 4, Ho Chi Minh City
                   </Text>
 
                   <Text className="m-0 text-[14px] leading-[22px] text-[#222222]">
-                    Phone: 0909 123 456
+                    0123456789
                   </Text>
                 </>
               )}

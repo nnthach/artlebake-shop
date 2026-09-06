@@ -1,4 +1,4 @@
-import type { OrderConfirmationEmailProps } from "@/types/form-type";
+import type { OrderConfirmationEmailProps } from "../../types/form-type";
 import { OrderConfirmationEmail } from "./templates/order-confirmation";
 import { transporter } from "../nodemailer";
 import { render } from "react-email";

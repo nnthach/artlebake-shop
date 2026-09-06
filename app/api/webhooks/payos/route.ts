@@ -4,8 +4,8 @@ import { payosConfig } from "@/lib/payos";
 import { PayOSWebhookBody } from "@/types";
 import { supabaseAdmin } from "@/lib/supabase";
 import { deleteCacheByResource } from "@/lib/redis-cache";
-import { sendOrderConfirmationEmail } from "@/lib/emails/send-order-confirmation";
 import { getBusinessDate } from "@/utils/logic-get";
+import { orderQueue } from "@/lib/queues/order.queue";
 type OrderItemRow = {
   product_name: string;
   quantity: number | string;
@@ -144,41 +144,39 @@ export async function POST(req: NextRequest) {
 
     // 6. Send order confirmation email
     if (order.email) {
-      try {
-        await sendOrderConfirmationEmail({
-          name: order.name,
-          email: order.email,
-          phone: order.phone,
+      await orderQueue.add("send-order-confirmation-email", {
+        name: order.name,
+        email: order.email,
+        phone: order.phone,
 
-          orderCode: order.order_code,
-          orderType: order.order_type,
+        orderCode: order.order_code,
+        orderType: order.order_type,
 
-          preorderDate: order.preorder_schedules?.date,
+        preorderDate: order.preorder_schedules?.date,
 
-          items: order.order_items.map((item: OrderItemRow) => ({
-            product_name: item.product_name,
-            quantity: Number(item.quantity),
-            unit_price: Number(item.unit_price),
-            subtotal: Number(item.subtotal),
-            products: {
-              image_url: item.products?.image_url ?? [],
-            },
-          })),
+        items: order.order_items.map((item: OrderItemRow) => ({
+          product_name: item.product_name,
+          quantity: Number(item.quantity),
+          unit_price: Number(item.unit_price),
+          subtotal: Number(item.subtotal),
+          products: {
+            image_url: item.products?.image_url ?? [],
+          },
+        })),
 
-          subtotal: Number(order.subtotal),
-          shippingFee: Number(order.shipping_fee),
-          total: Number(order.total),
+        subtotal: Number(order.subtotal),
+        shippingFee: Number(order.shipping_fee),
+        total: Number(order.total),
 
-          fulfillmentMethod: order.fulfillment_method,
+        fulfillmentMethod: order.fulfillment_method,
 
-          address: order.address,
-          city: order.city,
-          district: order.district,
-          ward: order.ward,
-        });
-      } catch (emailError) {
-        console.error("Failed to send order confirmation email:", emailError);
-      }
+        address: order.address,
+        city: order.city,
+        district: order.district,
+        ward: order.ward,
+
+        created_at: order.created_at,
+      });
     }
 
     // 6. PayOS requires HTTP 200

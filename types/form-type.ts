@@ -42,4 +42,6 @@ export type OrderConfirmationEmailProps = {
   city?: string;
   district?: string;
   ward?: string;
+
+  createdAt?: string;
 };

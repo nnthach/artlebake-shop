@@ -1,8 +1,8 @@
-import { redis } from "./redis";
+import { redisCache } from "./redis";
 
 export async function getCache<T>(key: string): Promise<T | null> {
   try {
-    const data = await redis.get<T>(key);
+    const data = await redisCache.get<T>(key);
 
     return data;
   } catch (error) {
@@ -17,7 +17,7 @@ export async function setCache<T>(
   ttl: number,
 ): Promise<void> {
   try {
-    await redis.set(key, data, {
+    await redisCache.set(key, data, {
       ex: ttl,
     });
   } catch (error) {
@@ -26,7 +26,7 @@ export async function setCache<T>(
 }
 
 export async function deleteCache(key: string) {
-  await redis.del(key);
+  await redisCache.del(key);
 }
 
 export async function deleteCacheByResource(resource: string): Promise<void> {
@@ -34,7 +34,7 @@ export async function deleteCacheByResource(resource: string): Promise<void> {
     let cursor = 0;
 
     do {
-      const [nextCursor, keys] = await redis.scan(cursor, {
+      const [nextCursor, keys] = await redisCache.scan(cursor, {
         match: `${resource}:*`,
         count: 100,
       });
@@ -42,7 +42,7 @@ export async function deleteCacheByResource(resource: string): Promise<void> {
       cursor = Number(nextCursor);
 
       if (keys.length > 0) {
-        await redis.del(...keys);
+        await redisCache.del(...keys);
       }
     } while (cursor !== 0);
   } catch (error) {
