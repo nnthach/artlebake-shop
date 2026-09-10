@@ -7,24 +7,21 @@ import { useI18n } from "@/context/I18nContext";
 import { handleLoginGoogle } from "@/lib/login-google";
 import { createSignUpSchema, SignUpFormData } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  User,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const { t, locale } = useI18n();
   const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/signin");
+  }, [router]);
 
   const [showPassword, setShowPassword] = useState(false);
 

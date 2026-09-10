@@ -385,6 +385,7 @@ export const translations = {
         account: "Account",
         profile: "Profile",
         accountSettings: "Account Settings",
+        changePassword: "Change Password",
         signOut: "Sign Out",
       },
       // sidebar
@@ -1601,6 +1602,7 @@ export const translations = {
         account: "Tài khoản",
         profile: "Hồ sơ",
         accountSettings: "Cài đặt tài khoản",
+        changePassword: "Đổi mật khẩu",
         signOut: "Đăng xuất",
       },
       // sidebar

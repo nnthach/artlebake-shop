@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useI18n } from "@/context/I18nContext";
-import { handleLoginGoogle } from "@/lib/login-google";
+// import { handleLoginGoogle } from "@/lib/login-google";
 import { createSignInSchema, SignInFormData } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
@@ -174,7 +174,7 @@ export default function SignInPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button
+            {/* <Button
               type="button"
               onClick={handleLoginGoogle}
               variant="outline"
@@ -199,13 +199,13 @@ export default function SignInPage() {
                 />
               </svg>
               Google
-            </Button>
+            </Button> */}
 
             <Button
               type="submit"
               variant="default"
               disabled={isSubmitting}
-              className="w-full font-semibold"
+              className="w-full font-semibold col-span-2"
             >
               {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -216,7 +216,7 @@ export default function SignInPage() {
           </div>
         </form>
 
-        <p className="mt-6 text-center text-sm text-white/60">
+        {/* <p className="mt-6 text-center text-sm text-white/60">
           {t("authPage.signinPage.noAccount")}{" "}
           <Link
             href="/signup"
@@ -224,7 +224,7 @@ export default function SignInPage() {
           >
             {t("authPage.signinPage.signUpLink")}
           </Link>
-        </p>
+        </p> */}
       </div>
     </main>
   );

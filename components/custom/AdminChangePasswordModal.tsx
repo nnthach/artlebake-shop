@@ -93,7 +93,7 @@ export default function AdminChangePasswordModal({
 
       handleOpenChange(false);
 
-      logout();
+      await logout();
 
       toast.success(
         locale === "vi" ? "Vui lòng đăng nhập lại!" : "Please sign in again!",

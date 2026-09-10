@@ -151,9 +151,9 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem asChild className="cursor-pointer">
+                {/* <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/profile">{t("headerDropdown.profile")}</Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={logout}
@@ -235,14 +235,14 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
                         </Link>
                       </SheetClose>
                     )}
-                    <SheetClose asChild>
+                    {/* <SheetClose asChild>
                       <Link
                         href="/profile"
                         className="text-sm font-medium transition hover:text-charcoal"
                       >
                         {t("headerDropdown.profile")}
                       </Link>
-                    </SheetClose>
+                    </SheetClose> */}
                     <SheetClose asChild>
                       <Button
                         variant="outline"
