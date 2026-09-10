@@ -86,7 +86,7 @@ export default function Footer() {
               height={32}
               className="h-8 w-8 rounded-full object-cover"
             />
-            <span className="font-serif">Artle Bakeshop</span>
+            <span className="font-script">Artle Bakeshop</span>
           </div>
           <p className="mt-4 text-sm text-charcoal/60 whitespace-pre-line">
             {t("footer.brand.description")}

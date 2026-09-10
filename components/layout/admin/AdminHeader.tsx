@@ -20,7 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, User } from "lucide-react";
+import { User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import LanguageToggle from "@/components/custom/LanguageToggle";
@@ -106,17 +106,6 @@ export function AdminHeader() {
 
       {/* Right actions */}
       <div className="flex items-center gap-2">
-        {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative h-8 w-8 text-muted-foreground hover:text-white"
-          aria-label="Thông báo"
-        >
-          <Bell className="h-6 w-6" />
-          {/* Notification badge */}
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
-        </Button>
 
         <LanguageToggle scrolled={true} admin={true} />
 
@@ -148,7 +137,7 @@ export function AdminHeader() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-              {t("admin.headerDropdown.profile")}
+              {t("admin.headerDropdown.changePassword")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

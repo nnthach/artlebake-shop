@@ -8,7 +8,6 @@ import { handleLoginGoogle } from "@/lib/login-google";
 import { createSignUpSchema, SignUpFormData } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Croissant,
   Eye,
   EyeOff,
   Loader2,
@@ -78,16 +77,20 @@ export default function SignUpPage() {
 
       <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-charcoal-900/40 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
         <Link href="/" className="mb-5 flex items-center justify-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber">
-            <Croissant className="h-5 w-5 text-white" />
-          </span>
-          <span className="font-serif text-xl font-bold text-white">
+          <Image
+            src="/images/logo.jpg"
+            alt="Artle Bakeshop"
+            width={36}
+            height={36}
+            className="h-9 w-9 rounded-full object-cover"
+          />
+          <span className="font-script text-xl font-bold text-white">
             Artle Bakeshop
           </span>
         </Link>
 
         <div className="mb-5 text-center">
-          <p className="font-script text-3xl text-amber">
+          <p className="font-script text-3xl text-primary">
             {t("authPage.signupPage.badge")}
           </p>
           <h1 className="mt-1 text-2xl font-bold text-white">
@@ -118,7 +121,7 @@ export default function SignUpPage() {
                 autoComplete="name"
                 placeholder={t("authPage.signupPage.fullNamePlaceholder")}
                 disabled={isSubmitting}
-                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-amber/40 focus-visible:border-amber focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 {...register("full_name")}
               />
             </div>
@@ -144,7 +147,7 @@ export default function SignUpPage() {
                 autoComplete="email"
                 placeholder={t("authPage.signupPage.emailPlaceholder")}
                 disabled={isSubmitting}
-                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-amber/40 focus-visible:border-amber focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 {...register("email")}
               />
             </div>
@@ -170,7 +173,7 @@ export default function SignUpPage() {
                 autoComplete="new-password"
                 placeholder={t("authPage.signupPage.passwordPlaceholder")}
                 disabled={isSubmitting}
-                className="border-white/15 bg-white/5 pl-10 pr-10 text-white placeholder:text-white/35 hover:border-amber/40 focus-visible:border-amber focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border-white/15 bg-white/5 pl-10 pr-10 text-white placeholder:text-white/35 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0"
                 {...register("password")}
               />
               <button
@@ -240,7 +243,7 @@ export default function SignUpPage() {
           {t("authPage.signupPage.haveAccount")}{" "}
           <Link
             href="/signin"
-            className="font-semibold text-amber hover:underline"
+            className="font-semibold text-primary hover:underline"
           >
             {t("authPage.signupPage.signInLink")}
           </Link>

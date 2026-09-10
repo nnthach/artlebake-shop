@@ -88,7 +88,7 @@ export default function Header({ forceScrolled = false }: HeaderProps) {
               className="h-8 w-8 rounded-full object-cover"
             />
 
-            <span className="font-serif sm:text-base text-sm">
+            <span className="font-script sm:text-base text-sm">
               Artle Bakeshop
             </span>
           </div>
