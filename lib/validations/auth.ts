@@ -41,3 +41,27 @@ export const createRegisterPasswordSchema = (t: (path: string) => string) =>
 export type RegisterPasswordFormData = z.infer<
   ReturnType<typeof createRegisterPasswordSchema>
 >;
+
+export const adminResetPasswordSchema = (t: (path: string) => string) =>
+  z
+    .object({
+      currentPassword: z
+        .string()
+        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+
+      newPassword: z
+        .string()
+        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+
+      confirmPassword: z
+        .string()
+        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: "Passwords do not match.",
+      path: ["confirmPassword"],
+    });
+
+export type AdminResetPasswordFormData = z.infer<
+  ReturnType<typeof adminResetPasswordSchema>
+>;

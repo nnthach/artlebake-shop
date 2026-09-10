@@ -26,6 +26,8 @@ import Link from "next/link";
 import LanguageToggle from "@/components/custom/LanguageToggle";
 import { useI18n } from "@/context/I18nContext";
 import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import AdminChangePasswordModal from "@/components/custom/AdminChangePasswordModal";
 
 const BREADCRUMB_MAP: Record<string, string> = {
   dashboard: "dashboard",
@@ -59,96 +61,105 @@ export function AdminHeader() {
   const crumbs = useBreadcrumbs();
   const { t } = useI18n();
   const { logout } = useAuth();
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-zinc-200 bg-white px-6 backdrop-blur-sm">
-      {/* Sidebar toggle */}
-      <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground" />
+    <>
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-zinc-200 bg-white px-6 backdrop-blur-sm">
+        {/* Sidebar toggle */}
+        <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground" />
 
-      <Separator orientation="vertical" className="mr-2 h-4" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
 
-      {/* Breadcrumb */}
-      <Breadcrumb className="flex-1">
-        <BreadcrumbList>
-          <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink asChild>
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Artle Bakeshop
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          {crumbs.map((crumb) => (
-            <span key={crumb.href} className="flex items-center gap-1.5">
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                {crumb.isLast ? (
-                  <BreadcrumbPage className="font-medium">
-                    {t(`admin.headerBreadcrumb.${crumb.label}`)}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <Link
-                      href={crumb.href}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
+        {/* Breadcrumb */}
+        <Breadcrumb className="flex-1">
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink asChild>
+                <Link
+                  href="/"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Artle Bakeshop
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {crumbs.map((crumb) => (
+              <span key={crumb.href} className="flex items-center gap-1.5">
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  {crumb.isLast ? (
+                    <BreadcrumbPage className="font-medium">
                       {t(`admin.headerBreadcrumb.${crumb.label}`)}
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </span>
-          ))}
-        </BreadcrumbList>
-      </Breadcrumb>
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link
+                        href={crumb.href}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        {t(`admin.headerBreadcrumb.${crumb.label}`)}
+                      </Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </span>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
 
-      {/* Right actions */}
-      <div className="flex items-center gap-2">
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
+          <LanguageToggle scrolled={true} admin={true} />
 
-        <LanguageToggle scrolled={true} admin={true} />
-
-        {/* User avatar dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full border-primary/30 bg-background shadow-sm hover:bg-primary/5"
-              aria-label="Tài khoản"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatar.png" alt="Admin" />
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col gap-0.5">
-                <p className="text-sm font-semibold">Admin</p>
-                <p className="text-xs text-muted-foreground">
-                  admin@artlebakeshop.com
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              {t("admin.headerDropdown.changePassword")}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={logout}
-              className="text-destructive focus:text-destructive cursor-pointer"
-            >
-              {t("admin.headerDropdown.signOut")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </header>
+          {/* User avatar dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-full border-primary/30 bg-background shadow-sm hover:bg-primary/5"
+                aria-label="Tài khoản"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/avatar.png" alt="Admin" />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-sm font-semibold">Admin</p>
+                  <p className="text-xs text-muted-foreground">
+                    admin@artlebakeshop.com
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => setChangePasswordOpen(true)}
+              >
+                {t("admin.headerDropdown.changePassword")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={logout}
+                className="text-destructive focus:text-destructive cursor-pointer"
+              >
+                {t("admin.headerDropdown.signOut")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+      <AdminChangePasswordModal
+        open={changePasswordOpen}
+        onOpenChange={setChangePasswordOpen}
+      />
+    </>
   );
 }
