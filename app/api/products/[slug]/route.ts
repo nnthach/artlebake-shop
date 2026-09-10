@@ -1,6 +1,6 @@
 import { isSupabaseConfigured, supabase, supabaseAdmin } from "@/lib/supabase";
 import { ProductIngredientRow, RawProduct } from "@/types";
-import { getBusinessDate, getPreorderDateRange } from "@/utils/logic-get";
+import { getBusinessDate } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
 interface PreorderItemRow {
@@ -117,7 +117,6 @@ export async function GET(
     // ----------------------------------------
     // 5. Get upcoming preorder
     // ----------------------------------------
-    const { startDate, endDate } = getPreorderDateRange();
 
     const { data: preorderItems, error: preorderError } = await supabaseAdmin
       .from("preorder_items")
@@ -135,8 +134,8 @@ export async function GET(
         `,
       )
       .eq("product_id", product.id)
-      .gte("preorder_schedules.date", startDate)
-      .lte("preorder_schedules.date", endDate)
+      // .gte("preorder_schedules.date", startDate)
+      // .lte("preorder_schedules.date", endDate)
       .eq("preorder_schedules.status", true)
       .eq("is_active", true)
       .gt("remaining_quantity", 0)

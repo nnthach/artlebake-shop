@@ -1,16 +1,18 @@
 import { supabaseAdmin } from "@/lib/supabase";
-import { getPreorderDateRange } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
 
-interface PreorderItem {
+interface PreorderItemRow {
   product_id: string;
-  schedule_id: string;
+  planned_quantity: number;
+  remaining_quantity: number;
+  is_active: boolean;
+  preorder_schedules: PreorderSchedule;
 }
 
 interface PreorderSchedule {
   id: string;
   date: string;
-  status: string;
+  status: boolean;
 }
 interface AvailableDate {
   schedule_id: string;
@@ -38,8 +40,29 @@ export async function GET(request: NextRequest) {
     const { data: preorderItemsData, error: preorderItemsError } =
       await supabaseAdmin
         .from("preorder_items")
-        .select("product_id, schedule_id")
-        .in("product_id", productIds);
+        .select(
+          `
+          product_id,
+          planned_quantity,
+          remaining_quantity,
+          is_active,
+
+          preorder_schedules!inner(
+            id,
+            date,
+            status
+          )
+        `,
+        )
+        .in("product_id", productIds)
+        .eq("is_active", true)
+        .gt("remaining_quantity", 0)
+        .eq("preorder_schedules.status", true)
+        .order("date", {
+          foreignTable: "preorder_schedules",
+          ascending: true,
+        })
+        .returns<PreorderItemRow[]>();
 
     if (preorderItemsError) {
       console.error("Failed to fetch preorder items:", preorderItemsError);
@@ -53,7 +76,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const preorderItems: PreorderItem[] = preorderItemsData ?? [];
+    const preorderItems = preorderItemsData ?? [];
 
     if (preorderItems.length === 0) {
       return NextResponse.json({
@@ -61,47 +84,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get unique schedule IDs
-    const scheduleIds = preorderItems
-      .map((item) => item.schedule_id)
-      .filter(
-        (value, index, values) => value && values.indexOf(value) === index,
-      );
-
-    const { startDate: preorderStartDate, endDate: preorderEndDate } =
-      getPreorderDateRange();
-
-    // Get schedules
-    const { data: schedulesData, error: schedulesError } = await supabaseAdmin
-      .from("preorder_schedules")
-      .select("id, date, status")
-      .in("id", scheduleIds)
-      .eq("status", true)
-      .gte("date", preorderStartDate)
-      .lte("date", preorderEndDate);
-
-    if (schedulesError) {
-      console.error("Failed to fetch preorder schedules:", schedulesError);
-
-      return NextResponse.json(
-        {
-          error: "Failed to fetch preorder schedules",
-          details: schedulesError.message,
-        },
-        { status: 500 },
-      );
-    }
-
-    const schedules: PreorderSchedule[] = schedulesData ?? [];
-
-    // Map schedule_id -> schedule
-    const scheduleMap = new Map<string, PreorderSchedule>();
-
-    for (const schedule of schedules) {
-      scheduleMap.set(schedule.id, schedule);
-    }
-
+    // ----------------------------------------
     // product_id -> available dates
+    // ----------------------------------------
     const datesByProduct = new Map<string, Map<string, string>>();
 
     for (const productId of productIds) {
@@ -109,11 +94,7 @@ export async function GET(request: NextRequest) {
     }
 
     for (const item of preorderItems) {
-      const schedule = scheduleMap.get(item.schedule_id);
-
-      if (!schedule) {
-        continue;
-      }
+      const schedule = item.preorder_schedules;
 
       datesByProduct.get(item.product_id)?.set(schedule.date, schedule.id);
     }

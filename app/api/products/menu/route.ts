@@ -136,8 +136,8 @@ export async function GET(req: NextRequest) {
           )
         `,
       )
-      .gte("preorder_schedules.date", preorderStartDate)
-      .lte("preorder_schedules.date", preorderEndDate)
+      // .gte("preorder_schedules.date", preorderStartDate)
+      // .lte("preorder_schedules.date", preorderEndDate)
       .eq("preorder_schedules.status", true)
       .eq("is_active", true)
       .gt("remaining_quantity", 0)
