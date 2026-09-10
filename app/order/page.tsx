@@ -114,7 +114,6 @@ export default function OrderPage() {
       payment_method: "payos",
     };
 
-    console.log("paymentPayload", paymentPayload);
     try {
       const res = await fetch("/api/order", {
         method: "POST",

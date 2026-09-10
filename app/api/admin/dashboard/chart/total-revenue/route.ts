@@ -110,8 +110,6 @@ export async function GET(req: NextRequest) {
         .gte("created_at", `${start}T00:00:00+07:00`)
         .lt("created_at", `${end}T00:00:00+07:00`);
 
-      console.log("chart revenue", orders);
-
       if (error) throw error;
 
       const daysInMonth = new Date(year, month, 0).getDate();

@@ -57,12 +57,6 @@ export async function GET() {
       .gte("created_at", currentStart)
       .lt("created_at", currentEnd);
 
-    console.log("STAT CARD RANGE", {
-      currentStart,
-      currentEnd,
-    });
-
-    console.log("STAT CARD ORDERS", revenueOrders);
     if (revenueError) throw revenueError;
 
     const totalRevenue = (revenueOrders ?? []).reduce(

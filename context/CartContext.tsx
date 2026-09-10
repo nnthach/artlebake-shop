@@ -172,8 +172,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             ? "preorder"
             : null;
 
-  console.log("cart type", cartType);
-
   return (
     <CartContext.Provider
       value={{
