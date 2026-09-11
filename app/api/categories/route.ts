@@ -1,4 +1,3 @@
-import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { getSearchParams } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,35 +19,6 @@ export async function GET(req: NextRequest) {
       : "created_at";
     const ascending = order === "asc";
 
-    // 2. Generate redis cache key
-    const cacheKey = generateCacheKey(
-      "categories",
-      "",
-      0,
-      0,
-      validSortBy,
-      ascending ? "asc" : "desc",
-      "",
-      is_active === "true" ? true : is_active === "false" ? false : null,
-      null,
-      null,
-      null,
-      null,
-    );
-
-    // 3. GET redis cache
-    const cached = await getCache(cacheKey);
-
-    if (cached) {
-      return NextResponse.json(
-        {
-          success: true,
-          ...cached,
-        },
-        { status: 200 },
-      );
-    }
-
     // 4. Create query database
     let query = supabase
       .from("categories")
@@ -67,8 +37,6 @@ export async function GET(req: NextRequest) {
     const responseData = {
       data: data,
     };
-
-    void setCache(cacheKey, responseData, 5 * 60 * 60);
 
     return NextResponse.json(
       { success: true, ...responseData },
