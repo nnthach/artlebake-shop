@@ -1,5 +1,8 @@
 import "dotenv/config";
+import dns from "node:dns";
 
-import "./workers/order.worker.js";
+dns.setDefaultResultOrder("ipv4first");
+
+await import("./workers/order.worker.js");
 
 console.log("Order Worker started...");
