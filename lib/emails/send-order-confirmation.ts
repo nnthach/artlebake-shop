@@ -24,7 +24,13 @@ import { render } from "react-email";
 export async function sendOrderConfirmationEmail(
   data: OrderConfirmationEmailProps,
 ) {
+  console.log("[Email] Starting email job...");
+  console.log("[Email] To:", data.email);
   const html = await render(OrderConfirmationEmail(data));
+
+  await transporter.verify();
+
+  console.log("[Email] SMTP connection OK");
 
   const result = await transporter.sendMail({
     from: `"Artle Bakeshop" <${process.env.NODEMAILER_USER}>`,
@@ -32,6 +38,8 @@ export async function sendOrderConfirmationEmail(
     subject: `Order #${data.orderCode} confirmed 🎉`,
     html,
   });
+
+  console.log("[Email] Email sent:", result.messageId);
 
   return result;
 }
