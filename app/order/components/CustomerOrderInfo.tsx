@@ -7,7 +7,7 @@ import { useI18n } from "@/context/I18nContext";
 import { ShippingFormData } from "@/lib/validations/order";
 
 const fieldClassName =
-  "flex w-full rounded-md border border-primary/50 focus:border-primary outline-none bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground";
+  "flex w-full rounded-md border border-charcoal/10 focus:border-primary outline-none bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground";
 
 interface CustomerOrderInfoProps {
   register: UseFormRegister<ShippingFormData>;
