@@ -9,11 +9,6 @@ export const orderWorker = new Worker(
   async (job) => {
     switch (job.name) {
       case OrderQueueEnum.SendEmailOrderConfirmation:
-        console.log("================================");
-        console.log("[Worker] Job received");
-        console.log("[Worker] Job ID:", job.id);
-        console.log("[Worker] Job name:", job.name);
-        console.log("[Worker] Job data:", job.data);
         await sendOrderConfirmationEmail(job.data);
         break;
       case OrderQueueEnum.CancelExpirePaymentOrder: {
