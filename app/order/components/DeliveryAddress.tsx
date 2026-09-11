@@ -9,7 +9,7 @@ import { useFetchCity } from "@/hooks/useFetchCity";
 import { ShippingFormData } from "@/lib/validations/order";
 
 const fieldClassName =
-  "flex w-full rounded-md border bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground";
+  "flex w-full rounded-md border border-primary/50 focus:border-primary outline-none bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground";
 
 type FieldChangeEvent = React.ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement

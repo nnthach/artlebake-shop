@@ -2,9 +2,13 @@ import { redisCache } from "./redis";
 
 export async function getCache<T>(key: string): Promise<T | null> {
   try {
-    const data = await redisCache.get<T>(key);
+    const data = await redisCache.get(key);
 
-    return data;
+    if (!data) {
+      return null;
+    }
+
+    return JSON.parse(data) as T;
   } catch (error) {
     console.error("[Redis] GET error:", error);
     return null;
@@ -17,9 +21,7 @@ export async function setCache<T>(
   ttl: number,
 ): Promise<void> {
   try {
-    await redisCache.set(key, data, {
-      ex: ttl,
-    });
+    await redisCache.set(key, JSON.stringify(data), "EX", ttl);
   } catch (error) {
     console.error("[Redis] SET error:", error);
   }
@@ -31,20 +33,23 @@ export async function deleteCache(key: string) {
 
 export async function deleteCacheByResource(resource: string): Promise<void> {
   try {
-    let cursor = 0;
+    let cursor = "0";
 
     do {
-      const [nextCursor, keys] = await redisCache.scan(cursor, {
-        match: `${resource}:*`,
-        count: 100,
-      });
+      const [nextCursor, keys] = await redisCache.scan(
+        cursor,
+        "MATCH",
+        `${resource}:*`,
+        "COUNT",
+        100,
+      );
 
-      cursor = Number(nextCursor);
+      cursor = nextCursor;
 
       if (keys.length > 0) {
         await redisCache.del(...keys);
       }
-    } while (cursor !== 0);
+    } while (cursor !== "0");
   } catch (error) {
     console.error(`[Redis] DELETE RESOURCE error - ${resource}:*`, error);
   }
