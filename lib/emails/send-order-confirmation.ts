@@ -1,37 +1,30 @@
 import type { OrderConfirmationEmailProps } from "../../types/form-type";
 import { OrderConfirmationEmail } from "./templates/order-confirmation";
-import { transporter } from "../nodemailer";
 import { render } from "react-email";
-
-// RESEND SERVICE
-// export async function sendOrderConfirmationEmail(
-//   data: OrderConfirmationEmailProps,
-// ) {
-//   const { data: result, error } = await resend.emails.send({
-//     from: process.env.RESEND_FROM_EMAIL!,
-//     to: [data.email],
-//     subject: `Order #${data.orderCode} confirmed 🎉`,
-//     react: createElement(OrderConfirmationEmail, data),
-//   });
-
-//   if (error) {
-//     throw error;
-//   }
-
-//   return result;
-// }
+import sgMail from "../sendgrid";
 
 export async function sendOrderConfirmationEmail(
   data: OrderConfirmationEmailProps,
 ) {
   const html = await render(OrderConfirmationEmail(data));
+  console.log("start send email");
+  console.log("[Debug] API Key set:", !!process.env.SENDGRID_API_KEY);
+  console.log("[Debug] From email:", process.env.SENDGRID_FROM_EMAIL);
 
-  const result = await transporter.sendMail({
-    from: `"Artle Bakeshop" <${process.env.NODEMAILER_USER}>`,
-    to: data.email,
-    subject: `Order #${data.orderCode} confirmed 🎉`,
-    html,
-  });
+  try {
+    const result = await sgMail.send({
+      from: `"Artle Bakeshop" <${process.env.SENDGRID_FROM_EMAIL}>`,
+      to: data.email,
+      subject: `Order #${data.orderCode} confirmed 🎉`,
+      html,
+    });
 
-  return result;
+    console.log("[Email] Status code:", result[0].statusCode);
+    console.log("[Email] Headers:", JSON.stringify(result[0].headers));
+
+    return result;
+  } catch (error) {
+    console.error("[Email] SendGrid error:", error);
+    throw error;
+  }
 }
