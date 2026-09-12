@@ -7,9 +7,9 @@ export async function sendOrderConfirmationEmail(
   data: OrderConfirmationEmailProps,
 ) {
   const html = await render(OrderConfirmationEmail(data));
-  console.log("start send email");
-  console.log("[Debug] API Key set:", !!process.env.SENDGRID_API_KEY);
-  console.log("[Debug] From email:", process.env.SENDGRID_FROM_EMAIL);
+  // console.log("start send email");
+  // console.log("[Debug] API Key set:", !!process.env.SENDGRID_API_KEY);
+  // console.log("[Debug] From email:", process.env.SENDGRID_FROM_EMAIL);
 
   try {
     const result = await sgMail.send({
@@ -19,8 +19,8 @@ export async function sendOrderConfirmationEmail(
       html,
     });
 
-    console.log("[Email] Status code:", result[0].statusCode);
-    console.log("[Email] Headers:", JSON.stringify(result[0].headers));
+    // console.log("[Email] Status code:", result[0].statusCode);
+    // console.log("[Email] Headers:", JSON.stringify(result[0].headers));
 
     return result;
   } catch (error) {
