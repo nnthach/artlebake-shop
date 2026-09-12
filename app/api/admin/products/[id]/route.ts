@@ -1,4 +1,3 @@
-import { deleteCacheByResource } from "@/lib/redis-cache";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { ProductIngredientRow, RawProduct } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
@@ -59,6 +58,7 @@ export async function GET(
       price: product.price,
       image_url: product.image_url,
       is_active: product.is_active,
+      is_bestseller: product.is_bestseller,
       created_at: product.created_at,
       updated_at: product.updated_at,
       category: product.categories,
@@ -189,11 +189,8 @@ export async function PUT(
       )
       .eq("id", id)
       .single();
-    if (fetchError) throw fetchError;
 
-    // Step 6: Delete cache
-    void deleteCacheByResource("products");
-    void deleteCacheByResource("products-menu");
+    if (fetchError) throw fetchError;
 
     return NextResponse.json(
       { success: true, data: fullProduct },
@@ -207,5 +204,3 @@ export async function PUT(
     );
   }
 }
-
-

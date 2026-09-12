@@ -145,6 +145,7 @@ export default function UpdateProductModal({
           description_en: enData.description ?? "",
           price: product.price,
           category_id: product.category?.id ?? "",
+          is_bestseller: product.is_bestseller ?? false,
           ingredient_ids: currentIngredients?.map((i) => i.id) ?? [],
         });
 
