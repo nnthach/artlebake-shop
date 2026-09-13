@@ -191,11 +191,11 @@ export default function Footer() {
                 : "331 Ben Van Don, Vinh Hoi Ward, District 4, Ho Chi Minh City"}
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" /> {"0123456789"}
+              <Phone className="h-4 w-4 text-primary" /> {"0903532335"}
             </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-primary" />{" "}
-              {"artlebakeshop@gmail.com"}
+              {"artlebakery.sg@gmail.com"}
             </li>
             <li className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />{" "}

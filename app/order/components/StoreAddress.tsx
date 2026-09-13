@@ -32,7 +32,7 @@ export default function StoreAddress() {
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
 
-                <span>0909 123 456</span>
+                <span>0903532335</span>
               </div>
 
               <div className="flex items-center gap-2">
