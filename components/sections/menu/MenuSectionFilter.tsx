@@ -174,12 +174,12 @@ export default function MenuSectionFilter({
   }
 
   return (
-    <div className="grid w-full grid-cols-3 items-center">
+    <div className="grid w-full grid-cols-4 items-center">
       {/* Cột 1: Trống (để giữ đối trọng với ô Search) */}
       <div className="hidden md:block" />
 
       {/* Cột 2: Cụm Category nằm chính giữa màn hình */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-wrap col-span-2 items-center justify-center gap-3">
         {categoryButtons}
       </div>
 
