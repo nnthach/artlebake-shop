@@ -128,6 +128,16 @@ Open [http://localhost:3000](http://localhost:3000).
 
 > ⚠️ The project requires Redis for the BullMQ queue (email channel). If you don't have Redis yet, run a local instance (`docker run -p 6379:6379 redis`) and update `AIVEN_REDIS_URI`.
 
+### FastAPI categories (optional)
+
+Set the server-side `FASTAPI_BASE_URL` to an HTTP(S) FastAPI base URL to serve active menu categories through `/store-front/categories`. For example:
+
+```env
+FASTAPI_BASE_URL=http://127.0.0.1:8000
+```
+
+The route fetches all category pages without caching. When this variable is unset, or the request does not ask for `is_active=true`, categories continue to use Supabase. Do not expose this setting with a `NEXT_PUBLIC_` prefix.
+
 ### Run the background worker (separate process)
 
 ```bash
