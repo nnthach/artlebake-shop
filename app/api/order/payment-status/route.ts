@@ -1,8 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
+import {
+  getFastApiCheckoutErrorStatus,
+  getCheckoutPaymentStatus,
+  isFastApiCheckoutEnabled,
+} from "@/lib/fastapi/checkout";
+import { FastApiHttpError } from "@/lib/fastapi/http-client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export async function GET(req: NextRequest) {
   try {
+    const orderCode = req.nextUrl.searchParams.get("orderCode");
+
+    if (isFastApiCheckoutEnabled()) {
+      if (!orderCode) {
+        return NextResponse.json(
+          { success: false, error: "orderCode is required" },
+          { status: 400 },
+        );
+      }
+
+      try {
+        const data = await getCheckoutPaymentStatus(orderCode);
+        return NextResponse.json({ success: true, data }, { status: 200 });
+      } catch (error) {
+        if (!(error instanceof FastApiHttpError)) {
+          console.warn("FastAPI payment status request failed");
+        }
+        const status = getFastApiCheckoutErrorStatus(error);
+        return NextResponse.json(
+          { success: false, error: status === 404 ? "Order not found" : "Failed to get payment status" },
+          { status },
+        );
+      }
+    }
+
     if (!isSupabaseConfigured) {
       return NextResponse.json(
         {
@@ -14,8 +45,6 @@ export async function GET(req: NextRequest) {
         },
       );
     }
-
-    const orderCode = req.nextUrl.searchParams.get("orderCode");
 
     if (!orderCode) {
       return NextResponse.json(
@@ -29,6 +58,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const { supabaseAdmin } = await import("@/lib/supabase");
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select("id, payment_status")

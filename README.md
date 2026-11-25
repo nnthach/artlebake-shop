@@ -136,7 +136,11 @@ Set the server-side `FASTAPI_BASE_URL` to an HTTP(S) FastAPI base URL for the mi
 FASTAPI_BASE_URL=http://127.0.0.1:8000
 ```
 
-When this variable is unset, categories and products continue to use Supabase. Do not expose this setting with a `NEXT_PUBLIC_` prefix. Until Phase 3 moves checkout, product, category, preorder-schedule IDs, and stock must remain aligned with the legacy checkout data.
+When this variable is unset, categories, products, and preorder dates continue to use Supabase. Do not expose this setting with a `NEXT_PUBLIC_` prefix. Until checkout cutover is approved, product, category, preorder-schedule IDs, and stock must remain aligned with the legacy checkout data.
+
+Checkout/payment migration is separately disabled by default. Set the server-only `FASTAPI_CHECKOUT_ENABLED=true` only in a test environment after Phase 6 webhook and payment-expiry/job ownership have been verified in that same environment. `FASTAPI_BASE_URL` alone never switches checkout, and this flag must remain unset until those prerequisites are met.
+
+For FastAPI test callbacks, configure the backend's `APP_BASE_URL` as the Next storefront origin so PayOS returns to its `/payment` route. Before switching checkout ownership, drain or expire pending legacy PayOS orders so their callbacks are not routed through the new provider.
 
 ### Run the background worker (separate process)
 

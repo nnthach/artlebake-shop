@@ -68,6 +68,7 @@ export default function PaymentPage() {
 
             case "failed":
             case "cancelled":
+            case "refunded":
               router.replace(`/order/fail?orderId=${data.data.order_id}`);
               break;
 

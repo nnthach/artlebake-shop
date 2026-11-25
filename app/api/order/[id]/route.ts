@@ -1,4 +1,9 @@
-import { supabaseAdmin } from "@/lib/supabase";
+import {
+  getFastApiCheckoutErrorStatus,
+  getPaidCheckoutOrder,
+  isFastApiCheckoutEnabled,
+} from "@/lib/fastapi/checkout";
+import { FastApiHttpError } from "@/lib/fastapi/http-client";
 import { NextRequest, NextResponse } from "next/server";
 
 // get order detail by id
@@ -19,6 +24,29 @@ export async function GET(
       );
     }
 
+    if (isFastApiCheckoutEnabled()) {
+      try {
+        const order = await getPaidCheckoutOrder(id);
+        return NextResponse.json(
+          { success: true, data: order },
+          { status: 200 },
+        );
+      } catch (error) {
+        if (!(error instanceof FastApiHttpError)) {
+          console.warn("FastAPI paid order request failed");
+        }
+        const status = getFastApiCheckoutErrorStatus(error);
+        return NextResponse.json(
+          {
+            success: false,
+            error: status === 404 ? "Order not found" : "Failed to fetch order",
+          },
+          { status },
+        );
+      }
+    }
+
+    const { supabaseAdmin } = await import("@/lib/supabase");
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .select(

@@ -24,9 +24,7 @@ interface OrderItemDetail {
 }
 
 interface PreorderSchedule {
-  id: string;
   date: string;
-  status: boolean;
 }
 
 interface OrderDetail {

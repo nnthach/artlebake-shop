@@ -72,6 +72,7 @@ export default function OrderPage() {
 
   // payload
   const createOrderPayload = (data: ShippingFormData) => ({
+    locale,
     name: data.name,
     phone: data.phone,
     email: data.email,

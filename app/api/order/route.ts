@@ -1,11 +1,36 @@
-import { OrderQueueEnum } from "@/enums/order-queue.enum";
-import { payosConfig } from "@/lib/payos";
-import { orderQueue } from "@/lib/queues/order.queue";
-import { supabaseAdmin } from "@/lib/supabase";
-import { generateOrderCode, getBusinessDate } from "@/utils/logic-get";
+import {
+  createCheckoutOrder,
+  getFastApiCheckoutErrorStatus,
+  isFastApiCheckoutEnabled,
+  type CheckoutCreateInput,
+} from "@/lib/fastapi/checkout";
+import { FastApiHttpError } from "@/lib/fastapi/http-client";
 import { NextRequest, NextResponse } from "next/server";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getFastApiCheckoutItems(
+  value: unknown,
+): CheckoutCreateInput["items"] | null {
+  if (!Array.isArray(value)) return null;
+
+  const items: CheckoutCreateInput["items"] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      typeof item.product_id !== "string" ||
+      typeof item.quantity !== "number"
+    ) {
+      return null;
+    }
+    items.push({ product_id: item.product_id, quantity: item.quantity });
+  }
+  return items;
+}
 
 // create order
 export async function POST(req: NextRequest) {
@@ -111,7 +136,70 @@ export async function POST(req: NextRequest) {
     }
     // end 1.6 check order type
 
+    if (isFastApiCheckoutEnabled()) {
+      const checkoutItems = getFastApiCheckoutItems(items);
+      if (!checkoutItems) {
+        return NextResponse.json(
+          { success: false, error: "Invalid order items" },
+          { status: 400, headers: res.headers },
+        );
+      }
+
+      try {
+        const order = await createCheckoutOrder({
+          name,
+          phone,
+          email,
+          address,
+          note,
+          city,
+          district,
+          ward,
+          preorder_date_id,
+          order_type,
+          fulfillment_method,
+          payment_method,
+          locale: body.locale === "en" ? "en" : "vi",
+          items: checkoutItems,
+        });
+
+        return NextResponse.json(
+          {
+            success: true,
+            data: {
+              id: order.id,
+              order_code: order.order_code,
+              payment_link: order.payment_link,
+            },
+          },
+          { status: 201, headers: res.headers },
+        );
+      } catch (error) {
+        if (!(error instanceof FastApiHttpError)) {
+          console.warn("FastAPI checkout creation failed");
+        }
+        const status = getFastApiCheckoutErrorStatus(error);
+        return NextResponse.json(
+          { success: false, error: "Failed to create order" },
+          { status, headers: res.headers },
+        );
+      }
+    }
+
     // 2. Create order + lock stock atomically
+    const [
+      { OrderQueueEnum },
+      { payosConfig },
+      { orderQueue },
+      { supabaseAdmin },
+      { generateOrderCode, getBusinessDate },
+    ] = await Promise.all([
+      import("@/enums/order-queue.enum"),
+      import("@/lib/payos"),
+      import("@/lib/queues/order.queue"),
+      import("@/lib/supabase"),
+      import("@/utils/logic-get"),
+    ]);
     const orderCode = generateOrderCode();
 
     const businessDate = getBusinessDate();
