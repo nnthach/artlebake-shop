@@ -16,7 +16,10 @@ function requestUrl(input: RequestInfo | URL) {
 function isAuthenticatedAuthRequest(input: RequestInfo | URL) {
   const url = requestUrl(input);
   return (
-    url.origin === window.location.origin && AUTHENTICATED_PATHS.has(url.pathname)
+    url.origin === window.location.origin &&
+    (AUTHENTICATED_PATHS.has(url.pathname) ||
+      url.pathname.startsWith("/api/admin/") ||
+      url.pathname === "/api/upload")
   );
 }
 

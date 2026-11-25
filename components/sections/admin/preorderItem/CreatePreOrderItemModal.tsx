@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Plus, Trash2, Loader2, ImageOff, CalendarDays } from "lucide-react";

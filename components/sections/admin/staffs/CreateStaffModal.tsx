@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -99,13 +100,21 @@ export default function CreateStaffModal({ onCreated }: CreateStaffModalProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      const result = await res.json();
 
-      if (!res.ok) throw new Error("Failed to create staff");
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to create staff");
+      }
 
       toast.success(
-        locale === "vi"
-          ? "Tạo nhân viên thành công!"
-          : "Staff created successfully!",
+        result.data?.temporary_password
+          ? locale === "vi"
+            ? `Tạo nhân viên thành công! Mật khẩu tạm thời: ${result.data.temporary_password}`
+            : `Staff created. Temporary password: ${result.data.temporary_password}`
+          : locale === "vi"
+            ? "Tạo nhân viên thành công!"
+            : "Staff created successfully!",
+        result.data?.temporary_password ? { duration: 10000 } : undefined,
       );
       reset();
       setOpen(false);

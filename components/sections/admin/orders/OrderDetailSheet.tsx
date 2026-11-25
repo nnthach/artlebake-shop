@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import {
   Check,
   CreditCard,

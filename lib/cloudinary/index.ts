@@ -1,3 +1,5 @@
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
+
 const uploadSingleFile = async (file: File) => {
   if (!file.type.startsWith("image/")) {
     throw new Error("Only image files are supported");

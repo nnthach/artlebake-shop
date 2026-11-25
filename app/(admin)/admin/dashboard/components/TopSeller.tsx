@@ -1,3 +1,4 @@
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { Award, Package, Trophy } from "lucide-react";

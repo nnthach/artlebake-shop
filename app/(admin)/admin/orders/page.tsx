@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import AdminPagination from "@/components/custom/AdminPagination";
 import { useI18n } from "@/context/I18nContext";
 import { useDebounce } from "@/hooks/useDebounce";

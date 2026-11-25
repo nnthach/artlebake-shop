@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/context/I18nContext";
 import CreatePreOrderScheduleModal from "@/components/sections/admin/preorderSchedule/CreatePreOrderScheduleModal";

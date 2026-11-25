@@ -144,6 +144,8 @@ For FastAPI test callbacks, configure the backend's `APP_BASE_URL` as the Next s
 
 FastAPI authentication is separately opt-in and remains on Supabase unless both `FASTAPI_BASE_URL` and the server-only `FASTAPI_AUTH_ENABLED=true` are set. Keep it disabled until the auth migration is verified in a test environment; customer signup, OAuth callback, and password registration remain on Supabase. The browser coordinates refresh rotation across tabs with Web Locks and same-origin local storage; clients without both capabilities fail closed on an expired access token. Refresh coordination is not server-side or cross-worker, so do not enable production cutover until that limitation and the cookie/CSRF behavior have been verified.
 
+FastAPI admin routes are separately opt-in with the server-only `FASTAPI_ADMIN_ENABLED=true`; it defaults to legacy Supabase handlers. Enable it only in a test environment after `FASTAPI_BASE_URL` and `FASTAPI_AUTH_ENABLED=true` are configured and the same admin identities, product/category/schedule IDs, and stock are aligned with legacy checkout while Phase 3 remains pending. The admin proxy forwards the access cookie and CSRF header, and the browser refreshes through `/api/auth/refresh` after an authenticated admin 401. Admin behavior still differs in two important ways: daily-inventory publishing does not reopen closed rows, and disabling a staff member also disables their account and revokes sessions. Verify these effects, plus role/UUID mappings and data ownership, before any production cutover; Phase 6 operational ownership remains a prerequisite.
+
 ### Run the background worker (separate process)
 
 ```bash

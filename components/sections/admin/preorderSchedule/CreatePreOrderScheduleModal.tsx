@@ -1,5 +1,6 @@
 "use client";
 
+import { authenticatedFetch as fetch } from "@/lib/fastapi/auth-fetch";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

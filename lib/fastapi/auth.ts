@@ -19,7 +19,7 @@ function isUserRole(value: unknown): value is UserRoleEnum {
   return value === "admin" || value === "staff" || value === "customer";
 }
 
-function authHeaders(request: Request) {
+export function fastApiAuthHeaders(request: Request) {
   const headers = new Headers();
   const cookie = request.headers.get("cookie");
   const csrfToken = request.headers.get("x-csrf-token");
@@ -88,26 +88,26 @@ export async function fastApiLogin(
   password: string,
 ) {
   const response = await post("/auth/login", {
-    headers: authHeaders(request),
+    headers: fastApiAuthHeaders(request),
     json: { email, password },
   });
   return { response, user: await userFromResponse(response) };
 }
 
 export async function fastApiCurrentUser(request: Request) {
-  const response = await get("/auth/me", { headers: authHeaders(request) });
+  const response = await get("/auth/me", { headers: fastApiAuthHeaders(request) });
   return { response, user: await userFromResponse(response) };
 }
 
 export async function fastApiRefresh(request: Request) {
   const response = await post("/auth/refresh", {
-    headers: authHeaders(request),
+    headers: fastApiAuthHeaders(request),
   });
   return { response, user: await userFromResponse(response) };
 }
 
 export function fastApiLogout(request: Request) {
-  return post("/auth/logout", { headers: authHeaders(request) });
+  return post("/auth/logout", { headers: fastApiAuthHeaders(request) });
 }
 
 export function fastApiChangePassword(
@@ -116,7 +116,7 @@ export function fastApiChangePassword(
   newPassword: string,
 ) {
   return patch("/auth/change-password", {
-    headers: authHeaders(request),
+    headers: fastApiAuthHeaders(request),
     json: {
       current_password: currentPassword,
       new_password: newPassword,

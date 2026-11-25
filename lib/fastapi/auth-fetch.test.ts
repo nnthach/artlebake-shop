@@ -139,3 +139,25 @@ test("a retried 401 does not trigger a second refresh", async () => {
   assert.equal(authRequests, 2);
   assert.equal(refreshRequests, 1);
 });
+
+test("admin 401s refresh through the auth proxy and retry only once", async () => {
+  installBrowserGlobals();
+  let adminRequests = 0;
+  let refreshRequests = 0;
+  globalThis.fetch = async (input, init) => {
+    if (String(input) === "/api/auth/refresh") {
+      refreshRequests += 1;
+      assert.equal(new Headers(init?.headers).get("x-csrf-token"), "csrf-value");
+      return new Response(null, { status: 200 });
+    }
+
+    adminRequests += 1;
+    return new Response(null, { status: adminRequests === 1 ? 401 : 200 });
+  };
+
+  const response = await authenticatedFetch("/api/admin/orders?page=1");
+
+  assert.equal(response.status, 200);
+  assert.equal(adminRequests, 2);
+  assert.equal(refreshRequests, 1);
+});
