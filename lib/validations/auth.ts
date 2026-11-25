@@ -47,15 +47,18 @@ export const adminResetPasswordSchema = (t: (path: string) => string) =>
     .object({
       currentPassword: z
         .string()
-        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+        .min(6, t("authPage.signinPage.errors.passwordRequired"))
+        .max(128, t("authPage.changePasswordPage.errors.passwordTooLong")),
 
       newPassword: z
         .string()
-        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+        .min(8, t("authPage.changePasswordPage.errors.passwordTooShort"))
+        .max(128, t("authPage.changePasswordPage.errors.passwordTooLong")),
 
       confirmPassword: z
         .string()
-        .min(6, t("authPage.signinPage.errors.passwordRequired")),
+        .min(8, t("authPage.changePasswordPage.errors.passwordTooShort"))
+        .max(128, t("authPage.changePasswordPage.errors.passwordTooLong")),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: "Passwords do not match.",

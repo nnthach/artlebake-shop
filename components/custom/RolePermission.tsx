@@ -33,12 +33,17 @@ export const RolePermission: React.FC<RolePermissionProps> = ({
       return;
     }
 
+    if (user.must_change_password) {
+      router.replace("/change-password");
+      return;
+    }
+
     if (!hasPermission) {
       router.replace(ROLE_HOME_PATH[user.role] ?? "/");
     }
   }, [isLoading, user, hasPermission, router]);
 
-  if (isLoading || !hasPermission) return null;
+  if (isLoading || user?.must_change_password || !hasPermission) return null;
 
   return <>{children}</>;
 };

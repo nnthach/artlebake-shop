@@ -142,6 +142,8 @@ Checkout/payment migration is separately disabled by default. Set the server-onl
 
 For FastAPI test callbacks, configure the backend's `APP_BASE_URL` as the Next storefront origin so PayOS returns to its `/payment` route. Before switching checkout ownership, drain or expire pending legacy PayOS orders so their callbacks are not routed through the new provider.
 
+FastAPI authentication is separately opt-in and remains on Supabase unless both `FASTAPI_BASE_URL` and the server-only `FASTAPI_AUTH_ENABLED=true` are set. Keep it disabled until the auth migration is verified in a test environment; customer signup, OAuth callback, and password registration remain on Supabase. The browser coordinates refresh rotation across tabs with Web Locks and same-origin local storage; clients without both capabilities fail closed on an expired access token. Refresh coordination is not server-side or cross-worker, so do not enable production cutover until that limitation and the cookie/CSRF behavior have been verified.
+
 ### Run the background worker (separate process)
 
 ```bash

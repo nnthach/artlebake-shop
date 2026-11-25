@@ -12,6 +12,11 @@ import toast from "react-hot-toast";
 
 import { useAuth } from "@/context/AuthContext";
 import { useI18n } from "@/context/I18nContext";
+import {
+  authenticatedFetch,
+  markAuthSessionChanged,
+} from "@/lib/fastapi/auth-fetch";
+import { useRouter } from "next/navigation";
 
 import { Button } from "../ui/button";
 import {
@@ -27,14 +32,17 @@ import { Input } from "../ui/input";
 type AdminChangePasswordModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  required?: boolean;
 };
 
 export default function AdminChangePasswordModal({
   open,
   onOpenChange,
+  required = false,
 }: AdminChangePasswordModalProps) {
   const { t, locale } = useI18n();
-  const { logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
+  const router = useRouter();
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -54,6 +62,7 @@ export default function AdminChangePasswordModal({
   });
 
   const handleOpenChange = (value: boolean) => {
+    if (required && !value) return;
     if (!value && !isSubmitting) {
       reset();
     }
@@ -63,16 +72,24 @@ export default function AdminChangePasswordModal({
 
   const onSubmit = async (data: AdminResetPasswordFormData) => {
     try {
-      const response = await fetch("/api/admin/auth/reset-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
-      });
+      const usesFastApi = user?.auth_provider === "fastapi";
+      const response = usesFastApi
+        ? await authenticatedFetch("/api/auth/change-password", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              currentPassword: data.currentPassword,
+              newPassword: data.newPassword,
+            }),
+          })
+        : await fetch("/api/admin/auth/reset-password", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              currentPassword: data.currentPassword,
+              newPassword: data.newPassword,
+            }),
+          });
 
       const result = await response.json();
 
@@ -93,7 +110,13 @@ export default function AdminChangePasswordModal({
 
       handleOpenChange(false);
 
-      await logout();
+      if (result.data?.auth_provider === "fastapi") {
+        markAuthSessionChanged(false);
+        setUser(null);
+        router.replace("/signin");
+      } else {
+        await logout();
+      }
 
       toast.success(
         locale === "vi" ? "Vui lòng đăng nhập lại!" : "Please sign in again!",

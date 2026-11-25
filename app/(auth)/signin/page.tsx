@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useI18n } from "@/context/I18nContext";
 // import { handleLoginGoogle } from "@/lib/login-google";
 import { createSignInSchema, SignInFormData } from "@/lib/validations/auth";
+import { markAuthSessionChanged } from "@/lib/fastapi/auth-fetch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Image from "next/image";
@@ -44,13 +45,20 @@ export default function SignInPage() {
       });
       const result = await res.json();
 
+      if (!res.ok || !result.success || !result.data?.user) {
+        throw new Error(result.error || "Sign-in failed.");
+      }
+
       setUser(result.data.user);
+      markAuthSessionChanged(result.data.user.auth_provider === "fastapi");
 
       toast.success(
         locale == "vi" ? "Đăng nhập thành công!" : "Sign in successful!",
       );
 
-      if (result.data.user.role === "admin") {
+      if (result.data.user.must_change_password) {
+        router.replace("/change-password");
+      } else if (result.data.user.role === "admin") {
         router.replace("/admin/dashboard");
       } else if (result.data.user.role === "staff") {
         router.replace("/staff/dashboard");

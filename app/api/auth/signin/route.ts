@@ -1,12 +1,56 @@
-import {
-  createSupabaseServerClient,
-  isSupabaseConfigured,
-  supabaseAdmin,
-} from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  appendFastApiAuthCookies,
+  fastApiAuthErrorStatus,
+  fastApiLogin,
+  isFastApiAuthEnabled,
+} from "@/lib/fastapi/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
+    const { email, password } = body;
+
+    if (typeof email !== "string" || typeof password !== "string") {
+      return NextResponse.json(
+        { success: false, error: "Email and password are required." },
+        { status: 400 },
+      );
+    }
+
+    if (isFastApiAuthEnabled()) {
+      try {
+        const { response, user } = await fastApiLogin(req, email, password);
+        const result = NextResponse.json(
+          { success: true, data: { user } },
+          { status: response.status },
+        );
+        appendFastApiAuthCookies(response, result.headers);
+        return result;
+      } catch (error) {
+        const status = fastApiAuthErrorStatus(error);
+        if (status === 502) console.warn("FastAPI auth sign-in failed");
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              status === 401
+                ? "Invalid email or password."
+                : status === 403
+                  ? "Account is disabled."
+                  : "Sign-in failed.",
+          },
+          { status },
+        );
+      }
+    }
+
+    const {
+      createSupabaseServerClient,
+      isSupabaseConfigured,
+      supabaseAdmin,
+    } = await import("@/lib/supabase");
+
     if (!isSupabaseConfigured) {
       return NextResponse.json(
         { success: false, error: "Database not configured" },
@@ -14,29 +58,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // step 1: check input
-    const { email, password } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { success: false, error: "Email and password are required." },
-        { status: 400 },
-      );
-    }
-
-    // step 2: sign in with supabaseServerClient => create and save session
     const res = new NextResponse(null);
-    // res là chỗ chứa cho createSupabaseServerClient
     const supabase = createSupabaseServerClient(req, res);
-    // createSupabaseServerClient nhận res để biết
-    // "khi cần ghi cookie, ghi vào res.headers này"
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    // sau khi signInWithPassword thành công
-    // Supabase tự gọi setAll() trong createSupabaseServerClient
-    // → ghi session cookie vào res.headers
 
     if (error) {
       return NextResponse.json(
@@ -45,7 +72,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // step 3: fetch user profile
     const { data: userProfile, error: profileError } = await supabaseAdmin
       .from("users")
       .select(
@@ -58,7 +84,6 @@ export async function POST(req: NextRequest) {
       .eq("id", data.user.id)
       .single();
 
-    // check err
     if (profileError || !userProfile) {
       return NextResponse.json(
         { success: false, error: "User profile not found." },
@@ -66,7 +91,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // check status
     if (userProfile?.status === "banned") {
       return NextResponse.json(
         { success: false, error: "Account is banned." },
@@ -80,7 +104,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // step 4: return
     return NextResponse.json(
       {
         success: true,
@@ -94,7 +117,7 @@ export async function POST(req: NextRequest) {
       },
       {
         status: 200,
-        headers: res.headers, // bắt buộc để cookie được set
+        headers: res.headers,
       },
     );
   } catch (error) {

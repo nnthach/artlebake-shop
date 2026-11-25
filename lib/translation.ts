@@ -83,6 +83,12 @@ export const translations = {
           generic: "Something went wrong. Please try again.",
         },
       },
+      changePasswordPage: {
+        errors: {
+          passwordTooShort: "Password must be at least 8 characters.",
+          passwordTooLong: "Password must be at most 128 characters.",
+        },
+      },
     },
     // home page
     homePage: {
@@ -1298,6 +1304,12 @@ export const translations = {
           passwordRequired: "Vui lòng nhập mật khẩu.",
           passwordTooShort: "Mật khẩu phải có ít nhất 6 ký tự.",
           generic: "Đã có lỗi xảy ra. Vui lòng thử lại.",
+        },
+      },
+      changePasswordPage: {
+        errors: {
+          passwordTooShort: "Mật khẩu phải có ít nhất 8 ký tự.",
+          passwordTooLong: "Mật khẩu không được vượt quá 128 ký tự.",
         },
       },
     },
