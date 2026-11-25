@@ -1,5 +1,9 @@
 import { get } from "./api";
 import { httpClient } from "./http-client";
+import {
+  isFastApiPagination,
+  type FastApiPagination,
+} from "./pagination";
 
 const CATEGORY_PAGE_SIZE = 100;
 
@@ -7,12 +11,7 @@ interface CategoryPageResponse {
   success: true;
   message: string;
   data: unknown[];
-  pagination: {
-    page: number;
-    limit: number;
-    total_items: number;
-    total_pages: number;
-  };
+  pagination: FastApiPagination;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -32,24 +31,10 @@ function isCategoryPageResponse(
     return false;
   }
 
-  const pagination = value.pagination;
-  if (!isRecord(pagination)) return false;
-
-  const { page, limit, total_items, total_pages } = pagination;
-  return (
-    typeof page === "number" &&
-    Number.isInteger(page) &&
-    page === requestedPage &&
-    typeof limit === "number" &&
-    Number.isInteger(limit) &&
-    limit === CATEGORY_PAGE_SIZE &&
-    typeof total_items === "number" &&
-    Number.isInteger(total_items) &&
-    total_items >= 0 &&
-    typeof total_pages === "number" &&
-    Number.isInteger(total_pages) &&
-    total_pages >= 0 &&
-    total_pages === Math.ceil(total_items / limit)
+  return isFastApiPagination(
+    value.pagination,
+    requestedPage,
+    CATEGORY_PAGE_SIZE,
   );
 }
 

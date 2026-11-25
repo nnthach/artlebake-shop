@@ -21,7 +21,7 @@ export interface BakeryProduct {
   image: string;
   name: string;
   description: string;
-  price: number;
+  price: number | null;
   slug: string;
 
   daily: {
@@ -157,7 +157,7 @@ export interface FetchedProductMenu {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: number | null;
   slug: string;
   image_url: string[];
   is_active: boolean;
@@ -190,7 +190,7 @@ export interface FetchedProductMenu {
 
 export interface ProductDetailPage {
   id: string;
-  price: number;
+  price: number | null;
   image_url: string[];
   is_active: boolean;
   created_at: string;

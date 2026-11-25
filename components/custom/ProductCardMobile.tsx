@@ -22,6 +22,8 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
   const isAvailable = hasDaily || hasPreorder;
 
   const addToCartButton = async (product: BakeryProduct) => {
+    if (product.price === null) return;
+
     setIsAdding(true);
     await addItem({
       id: product.id,
@@ -82,12 +84,14 @@ export default function ProductCardMobile({ product }: ProductCardMobileProps) {
         {/* Bottom */}
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <span className="text-sm font-bold text-charcoal">
-            {product.price.toLocaleString("vi-VN")} đ
+            {product.price === null
+              ? t("menuPage.productStatus.price_unavailable")
+              : `${product.price.toLocaleString("vi-VN")} đ`}
           </span>
 
           <button
             type="button"
-            disabled={!isAvailable || isAdding}
+            disabled={!isAvailable || product.price === null || isAdding}
             onClick={() => addToCartButton(product)}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
           >

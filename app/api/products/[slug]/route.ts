@@ -1,4 +1,6 @@
-import { isSupabaseConfigured, supabase, supabaseAdmin } from "@/lib/supabase";
+import { getProductBySlug } from "@/lib/fastapi/menu";
+import { FastApiHttpError, httpClient } from "@/lib/fastapi/http-client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { ProductIngredientRow, RawProduct } from "@/types";
 import { getBusinessDate } from "@/utils/logic-get";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,13 +22,6 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    if (!isSupabaseConfigured) {
-      return NextResponse.json(
-        { success: false, error: "Database not configured" },
-        { status: 500 },
-      );
-    }
-
     const { slug } = await params;
     const locale = req.nextUrl.searchParams.get("locale") ?? "vi";
 
@@ -36,6 +31,61 @@ export async function GET(
         { status: 400 },
       );
     }
+
+    if (httpClient.isConfigured()) {
+      try {
+        const product = await getProductBySlug(
+          slug,
+          locale.trim().toLowerCase() === "en" ? "en" : "vi",
+        );
+        const formatted = {
+          id: product.id,
+          price: product.price,
+          image_url: product.image_url,
+          is_active: product.is_active,
+          created_at: product.created_at,
+          updated_at: product.updated_at,
+          category: product.category,
+          name: product.name,
+          description: product.description,
+          slug: product.slug,
+          ingredients: product.ingredients,
+          daily: {
+            planned_quantity: product.daily.planned_quantity,
+            remaining_quantity: product.daily.remaining_quantity,
+            available: product.daily.available,
+          },
+          preorder: product.preorder,
+        };
+
+        return NextResponse.json(
+          { success: true, data: formatted },
+          { status: 200 },
+        );
+      } catch (error) {
+        if (error instanceof FastApiHttpError && error.status === 404) {
+          return NextResponse.json(
+            { success: false, error: "Product not found" },
+            { status: 404 },
+          );
+        }
+
+        console.warn("FastAPI product detail request failed");
+        return NextResponse.json(
+          { success: false, error: "Failed to fetch product" },
+          { status: 502 },
+        );
+      }
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { success: false, error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
+    const { supabase, supabaseAdmin } = await import("@/lib/supabase");
 
     // ----------------------------------------
     // 1. Find product ID from slug

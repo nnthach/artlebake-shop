@@ -1,4 +1,6 @@
-import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
+import { getMenu } from "@/lib/fastapi/menu";
+import { httpClient } from "@/lib/fastapi/http-client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import {
   getBusinessDate,
   getPreorderDateRange,
@@ -28,6 +30,41 @@ interface PreorderItemRow {
 
 export async function GET(req: NextRequest) {
   try {
+    // 1. GET PARAMETERS
+    const { is_active, category_id, order, locale, page, limit, search } =
+      getSearchParams(req);
+
+    const normalizedOrder = order === "asc" ? "asc" : "desc";
+    const normalizedLocale = locale.trim().toLowerCase() === "en" ? "en" : "vi";
+
+    // 2. parse page/limit & pagination
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
+
+    if (is_active === "true" && httpClient.isConfigured()) {
+      try {
+        const menu = await getMenu({
+          page: pageNum,
+          limit: limitNum,
+          locale: normalizedLocale,
+          order: normalizedOrder,
+          ...(category_id ? { category_id } : {}),
+          ...(search ? { search } : {}),
+        });
+
+        return NextResponse.json(
+          { success: true, ...menu },
+          { status: 200 },
+        );
+      } catch {
+        console.warn("FastAPI menu request failed");
+        return NextResponse.json(
+          { success: false, error: "Failed to fetch menu" },
+          { status: 502 },
+        );
+      }
+    }
+
     if (!isSupabaseConfigured) {
       return NextResponse.json(
         { success: false, error: "Database not configured" },
@@ -35,15 +72,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 1. GET PARAMETERS
-    const { is_active, category_id, order, locale, page, limit, search } =
-      getSearchParams(req);
-
-    const ascending = order === "asc";
-
-    // 2. parse page/limit & pagination
-    const pageNum = Math.max(1, parseInt(page) || 1);
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
+    const { supabaseAdmin } = await import("@/lib/supabase");
+    const ascending = normalizedOrder === "asc";
     const from = (pageNum - 1) * limitNum;
     const to = from + limitNum - 1;
 

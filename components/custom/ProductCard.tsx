@@ -32,6 +32,8 @@ export default function ProductCard({
   const isAvailable = hasDaily || hasPreorder;
 
   const addToCartButton = async (product: BakeryProduct) => {
+    if (product.price === null) return;
+
     setIsAdding(true);
     await addItem({
       id: product.id,
@@ -106,12 +108,14 @@ export default function ProductCard({
 
         <div className="mt-4 flex items-center justify-between">
           <span className="text-base sm:text-lg font-bold text-charcoal">
-            {product.price.toLocaleString("vi-VN")} đ
+            {product.price === null
+              ? t("menuPage.productStatus.price_unavailable")
+              : `${product.price.toLocaleString("vi-VN")} đ`}
           </span>
 
           <Button
             type="button"
-            disabled={!isAvailable || isAdding}
+            disabled={!isAvailable || product.price === null || isAdding}
             onClick={() => addToCartButton(product)}
             size={"sm"}
             className="rounded-full"

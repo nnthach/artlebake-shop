@@ -1,4 +1,5 @@
-import { supabaseAdmin } from "@/lib/supabase";
+import { getAvailableDates } from "@/lib/fastapi/available-dates";
+import { httpClient } from "@/lib/fastapi/http-client";
 import { NextRequest, NextResponse } from "next/server";
 
 interface PreorderItemRow {
@@ -35,6 +36,21 @@ export async function GET(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    if (httpClient.isConfigured()) {
+      try {
+        const data = await getAvailableDates(productIds);
+        return NextResponse.json({ data });
+      } catch {
+        console.warn("FastAPI available dates request failed");
+        return NextResponse.json(
+          { error: "Failed to fetch preorder dates" },
+          { status: 502 },
+        );
+      }
+    }
+
+    const { supabaseAdmin } = await import("@/lib/supabase");
 
     // Get preorder items
     const { data: preorderItemsData, error: preorderItemsError } =

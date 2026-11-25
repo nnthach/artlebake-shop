@@ -12,7 +12,7 @@ interface FetchedProduct {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: number | null;
   slug: string;
   image_url: string[];
   is_active: boolean;

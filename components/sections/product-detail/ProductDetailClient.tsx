@@ -118,6 +118,8 @@ export default function ProductDetailClient({
   }
 
   const addToCartButton = async () => {
+    if (product.price === null) return;
+
     setIsAdding(true);
     await addItem({
       id: product.id,
@@ -134,7 +136,10 @@ export default function ProductDetailClient({
   // format
   const image = product.image_url?.[0] ?? "/images/placeholder.webp";
   const categoryName = product.category?.name?.[locale as "en" | "vi"] ?? "";
-  const formattedPrice = product.price.toLocaleString("vi-VN") + " đ";
+  const formattedPrice =
+    product.price === null
+      ? t("menuPage.productStatus.price_unavailable")
+      : `${product.price.toLocaleString("vi-VN")} đ`;
 
   // Status
   const hasDaily = product.daily?.available ?? false;
@@ -235,7 +240,7 @@ export default function ProductDetailClient({
                 isOutOfStock &&
                   "cursor-not-allowed bg-charcoal/10 text-charcoal/40 hover:bg-charcoal/10",
               )}
-              disabled={isAdding || isOutOfStock}
+              disabled={isAdding || isOutOfStock || product.price === null}
               onClick={addToCartButton}
             >
               {!isOutOfStock && (
@@ -263,7 +268,7 @@ export default function ProductDetailClient({
                 >
                   <ProductCard
                     product={{
-                      id: item.slug,
+                      id: item.id,
                       image: item.image_url?.[0] ?? "/images/placeholder.webp",
                       name: item.name,
                       description: item.description,

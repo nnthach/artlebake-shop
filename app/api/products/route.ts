@@ -1,12 +1,14 @@
 // import { generateCacheKey, getCache, setCache } from "@/lib/redis-cache";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { getProducts } from "@/lib/fastapi/products";
+import { httpClient } from "@/lib/fastapi/http-client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSearchParams } from "@/utils/logic-get";
 import { IngredientItem, ProductIngredientRow, RawProduct } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export interface FormattedProduct {
   id: string;
-  price: number;
+  price: number | null;
   image_url: string[];
   is_active: boolean;
   created_at: string;
@@ -14,14 +16,14 @@ export interface FormattedProduct {
 
   category: {
     id: string;
-    name: string;
+    name: string | { vi: string; en: string };
   } | null;
 
   name: string | null;
   description: string | null;
   slug: string | null;
 
-  ingredients: IngredientItem[];
+  ingredients: Pick<IngredientItem, "id" | "name">[];
 }
 
 interface ProductListResponse {
@@ -36,13 +38,6 @@ interface ProductListResponse {
 
 export async function GET(req: NextRequest) {
   try {
-    if (!isSupabaseConfigured) {
-      return NextResponse.json(
-        { success: false, error: "Database not configured" },
-        { status: 500 },
-      );
-    }
-
     // 1. GET PARAMETERS
     const {
       is_active,
@@ -53,17 +48,67 @@ export async function GET(req: NextRequest) {
       page,
       limit,
       is_bestseller,
-      // search,
+      search,
     } = getSearchParams(req);
 
-    const validSortBy = ["name", "created_at"].includes(sort_by)
-      ? sort_by
-      : "created_at";
-    const ascending = order === "asc";
+    const validSortBy = sort_by === "name" ? "name" : "created_at";
+    const normalizedOrder = order === "asc" ? "asc" : "desc";
+    const normalizedLocale = locale.trim().toLowerCase() === "en" ? "en" : "vi";
 
     // 2. Parse page/limit & pagination
     const pageNum = Math.max(1, parseInt(page) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
+
+    if (is_active === "true" && httpClient.isConfigured()) {
+      try {
+        const products = await getProducts({
+          page: pageNum,
+          limit: limitNum,
+          locale: normalizedLocale,
+          sort_by: validSortBy,
+          order: normalizedOrder,
+          ...(is_bestseller !== null && is_bestseller !== ""
+            ? { is_bestseller: is_bestseller === "true" }
+            : {}),
+          ...(category_id ? { category_id } : {}),
+          ...(search ? { search } : {}),
+        });
+        const formatted: FormattedProduct[] = products.data.map((product) => ({
+          id: product.id,
+          price: product.price,
+          image_url: product.image_url,
+          is_active: product.is_active,
+          created_at: product.created_at,
+          updated_at: product.updated_at,
+          category: product.category,
+          name: product.name,
+          description: product.description,
+          slug: product.slug,
+          ingredients: product.ingredients,
+        }));
+
+        return NextResponse.json(
+          { success: true, data: formatted, pagination: products.pagination },
+          { status: 200 },
+        );
+      } catch {
+        console.warn("FastAPI product list request failed");
+        return NextResponse.json(
+          { success: false, error: "Failed to fetch products" },
+          { status: 502 },
+        );
+      }
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { success: false, error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
+    const { supabase } = await import("@/lib/supabase");
+    const ascending = normalizedOrder === "asc";
     const from = (pageNum - 1) * limitNum;
     const to = from + limitNum - 1;
 

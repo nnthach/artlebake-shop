@@ -183,6 +183,7 @@ export const translations = {
         preorder: "Pre-order",
         low_stock: "Low Stock",
         out_of_stock: "Out of Stock",
+        price_unavailable: "Price unavailable",
         draft: "Draft",
       },
     },
@@ -1400,6 +1401,7 @@ export const translations = {
         preorder: "Đặt trước",
         low_stock: "Sắp hết hàng",
         out_of_stock: "Hết hàng",
+        price_unavailable: "Chưa có giá",
       },
     },
 

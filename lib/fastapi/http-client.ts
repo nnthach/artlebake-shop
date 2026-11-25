@@ -7,6 +7,13 @@ type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
+export class FastApiHttpError extends Error {
+  constructor(readonly status: number) {
+    super(`FastAPI request failed with status ${status}`);
+    this.name = "FastApiHttpError";
+  }
+}
+
 function isConfigured() {
   return Boolean(process.env.FASTAPI_BASE_URL);
 }
@@ -64,7 +71,7 @@ async function request(
   });
 
   if (!response.ok) {
-    throw new Error(`FastAPI request failed with status ${response.status}`);
+    throw new FastApiHttpError(response.status);
   }
 
   return response;
