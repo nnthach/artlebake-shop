@@ -1,8 +1,12 @@
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { getBusinessDate } from "@/utils/logic-get";
 import { NextResponse } from "next/server";
+import { proxyFastApiCron } from "@/lib/fastapi/operations";
 
 export async function POST() {
+  const fastApiResponse = await proxyFastApiCron("close-preorder");
+  if (fastApiResponse) return fastApiResponse;
+
   try {
     if (!isSupabaseConfigured) {
       return NextResponse.json(

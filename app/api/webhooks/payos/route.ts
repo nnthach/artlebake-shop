@@ -6,6 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { deleteCacheByResource } from "@/lib/redis-cache";
 import { getBusinessDate } from "@/utils/logic-get";
 import { orderQueue } from "@/lib/queues/order.queue";
+import { proxyFastApiPayosWebhook } from "@/lib/fastapi/operations";
 type OrderItemRow = {
   product_name: string;
   quantity: number | string;
@@ -16,6 +17,9 @@ type OrderItemRow = {
   } | null;
 };
 export async function POST(req: NextRequest) {
+  const fastApiResponse = await proxyFastApiPayosWebhook(req);
+  if (fastApiResponse) return fastApiResponse;
+
   try {
     const body = (await req.json()) as PayOSWebhookBody;
 
